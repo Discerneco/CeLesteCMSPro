@@ -301,7 +301,7 @@
           <div class="p-4">
             <!-- Post Items -->
             <div class={`pb-4 mb-4 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-              <div class="flex justify-between items-start">
+              <div class="flex justify-between items-center">
                 <div>
                   <p class="font-medium text-base">Venue selection finalized for the reunion</p>
                   <p class="text-indigo-600 dark:text-indigo-400 text-sm mt-1">Temple Reunion</p>
@@ -314,7 +314,7 @@
             </div>
             
             <div class={`pb-4 mb-4 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-              <div class="flex justify-between items-start">
+              <div class="flex justify-between items-center">
                 <div>
                   <p class="font-medium text-base">Community Blog Launch</p>
                   <p class="text-indigo-600 dark:text-indigo-400 text-sm mt-1">Community Blog</p>
@@ -327,7 +327,7 @@
             </div>
             
             <div class="pb-4 mb-4">
-              <div class="flex justify-between items-start">
+              <div class="flex justify-between items-center">
                 <div>
                   <p class="font-medium text-base">New Portfolio Project</p>
                   <p class="text-indigo-600 dark:text-indigo-400 text-sm mt-1">Portfolio Site</p>
@@ -338,10 +338,6 @@
                 </div>
               </div>
             </div>
-            
-            <a href="/admin/posts" class="text-indigo-600 dark:text-indigo-400 text-sm hover:underline block">
-              {selectedLanguage === 'en' ? 'View all' : 'Ver todos'}
-            </a>
           </div>
         </div>
         
@@ -354,19 +350,19 @@
             <!-- Activity Items -->
             <div class={`pb-4 mb-4 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
               <p class="text-indigo-600 dark:text-indigo-400 text-sm font-medium">{selectedLanguage === 'en' ? 'User Login' : 'Login de Usuário'}</p>
-              <p class="font-medium mt-1">Maria Silva</p>
+              <p class="font-medium text-base mt-1">Maria Silva</p>
               <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">15/04/2025</p>
             </div>
             
             <div class={`pb-4 mb-4 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
               <p class="text-indigo-600 dark:text-indigo-400 text-sm font-medium">{selectedLanguage === 'en' ? 'Post Published' : 'Post Publicado'}</p>
-              <p class="font-medium mt-1">News Article</p>
+              <p class="font-medium text-base mt-1">News Article</p>
               <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">14/04/2025</p>
             </div>
             
             <div class="pb-4 mb-4">
               <p class="text-indigo-600 dark:text-indigo-400 text-sm font-medium">{selectedLanguage === 'en' ? 'New User' : 'Novo Usuário'}</p>
-              <p class="font-medium mt-1">Carlos Mendes</p>
+              <p class="font-medium text-base mt-1">Carlos Mendes</p>
               <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">14/04/2025</p>
             </div>
             
