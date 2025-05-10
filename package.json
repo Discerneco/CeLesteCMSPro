@@ -44,6 +44,7 @@
 	"dependencies": {
 		"@inlang/paraglide-js": "^2.0.12",
 		"@libsql/client": "^0.15.4",
+		"@lucide/svelte": "^0.509.0",
 		"drizzle-orm": "^0.43.1"
 	}
 }

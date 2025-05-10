@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { Eye, EyeOff, AlertCircle, Sun, Moon } from '@lucide/svelte';
+
   // Basic Svelte state
   let email = '';
   let password = '';
@@ -40,9 +42,9 @@
       aria-label="Toggle theme"
     >
       {#if isDarkMode}
-        <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m8.66-12.66l-.71.71M4.05 19.95l-.71-.71M21 12h-1M4 12H3m16.95 7.95l-.71-.71M4.05 4.05l-.71.71M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+        <Sun class="h-5 w-5" />
       {:else}
-        <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1111.21 3a7 7 0 109.79 9.79z"/></svg>
+        <Moon class="h-5 w-5" />
       {/if}
     </button>
   </header>
@@ -56,7 +58,7 @@
       </div>
       {#if error}
         <div class="mb-6 p-3 bg-red-100 border border-red-200 text-red-700 rounded-md flex items-center dark:bg-red-900/30 dark:border-red-800 dark:text-red-400">
-          <svg class="h-5 w-5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg>
+          <AlertCircle class="h-5 w-5 mr-2 flex-shrink-0" />
           <span>{error}</span>
         </div>
       {/if}
@@ -92,9 +94,9 @@
               aria-label={showPassword ? 'Hide password' : 'Show password'}
             >
               {#if showPassword}
-                <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.94 17.94A10.05 10.05 0 0112 19c-5.52 0-10-4.48-10-10 0-2.21.72-4.25 1.94-5.94M1 1l22 22"/></svg>
+                <EyeOff class="h-5 w-5" />
               {:else}
-                <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                <Eye class="h-5 w-5" />
               {/if}
             </button>
           </div>
