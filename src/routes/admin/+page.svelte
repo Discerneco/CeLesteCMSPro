@@ -249,10 +249,10 @@
       <!-- System Status Section -->
       <div class="grid grid-cols-1 gap-6 mb-6">
         <div class={`rounded-lg border ${isDarkMode ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'} overflow-hidden`}>
-          <div class={`p-4 flex justify-between items-center border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-            <h3 class="font-medium">{selectedLanguage === 'en' ? 'System Status' : 'Status do Sistema'}</h3>
+          <div class={`py-3 px-6 flex justify-between items-center border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+            <h3 class="text-lg font-medium">{selectedLanguage === 'en' ? 'System Status' : 'Status do Sistema'}</h3>
           </div>
-          <div class="p-4">
+          <div class="pt-5 px-6 pb-4">
             <div class={`mb-4 p-4 rounded-md ${isDarkMode ? 'bg-green-900/30 border border-green-800' : 'bg-green-100 border border-green-200'}`}>
               <p class={`text-sm ${isDarkMode ? 'text-green-400' : 'text-green-800'}`}>
                 {selectedLanguage === 'en' ? 'All systems operational. CeLeste CMS v0.1' : 'Todos os sistemas operacionais. CeLeste CMS v0.1'}
@@ -292,13 +292,13 @@
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         <!-- Recent Posts -->
         <div class={`rounded-lg border ${isDarkMode ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'} overflow-hidden md:col-span-2`}>
-          <div class={`p-4 flex justify-between items-center border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-            <h3 class="font-medium">{selectedLanguage === 'en' ? 'Recent Posts' : 'Posts Recentes'}</h3>
-            <a href="/admin/posts/new" class="px-3 py-1.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+          <div class={`py-3 px-6 flex justify-between items-center border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+            <h3 class="text-lg font-medium">{selectedLanguage === 'en' ? 'Recent Posts' : 'Posts Recentes'}</h3>
+            <a href="/admin/posts/new" class="px-3 py-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md text-xs font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
               {selectedLanguage === 'en' ? 'Add Post' : 'Adicionar Post'}
             </a>
           </div>
-          <div class="p-4">
+          <div class="pt-5 px-6 pb-4">
             <!-- Post Items -->
             <div class={`pb-4 mb-4 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
               <div class="flex justify-between items-center">
@@ -343,10 +343,10 @@
         
         <!-- Recent Activity -->
         <div class={`rounded-lg border ${isDarkMode ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'} overflow-hidden`}>
-          <div class={`p-4 flex justify-between items-center border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-            <h3 class="font-medium">{selectedLanguage === 'en' ? 'Recent Activity' : 'Atividade Recente'}</h3>
+          <div class={`py-3 px-6 flex justify-between items-center border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+            <h3 class="text-lg font-medium">{selectedLanguage === 'en' ? 'Recent Activity' : 'Atividade Recente'}</h3>
           </div>
-          <div class="p-4">
+          <div class="pt-5 px-6 pb-4">
             <!-- Activity Items -->
             <div class={`pb-4 mb-4 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
               <p class="text-indigo-600 dark:text-indigo-400 text-sm font-medium">{selectedLanguage === 'en' ? 'User Login' : 'Login de Usuário'}</p>
