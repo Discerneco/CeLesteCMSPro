@@ -165,7 +165,7 @@
           </nav>
         </div>
         
-        <div class="border-t p-4 mt-auto">
+        <div class={`border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} p-4 mt-auto`}>
           <a
             href="/admin/help"
             class={`flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}
