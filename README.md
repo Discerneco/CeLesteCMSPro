@@ -5,7 +5,6 @@ CeLesteCMS Pro is an extensible content management system built on modern web te
 
 ## Tech Stack
 - **Frontend**: Svelte 5 with SvelteKit
-- **UI Framework**: DaisyUI
 - **Hosting**: Cloudflare Pages
 - **Database**: Cloudflare D1 with Drizzle ORM
 - **Potential Extensions**: Vercel, Supabase (via plugins)

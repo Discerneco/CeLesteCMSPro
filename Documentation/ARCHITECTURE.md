@@ -13,16 +13,15 @@
 
 | Package | Version | Purpose |
 |---------|---------|---------|
-| [TailwindCSS](https://tailwindcss.com/) | 4.1.5 | Utility-first CSS framework |
-| [DaisyUI](https://daisyui.com/) | 5.0.35 | Component library built on top of Tailwind |
+| [TailwindCSS](https://tailwindcss.com/) | 4.1.6 | Utility-first CSS framework |
 | [@tailwindcss/typography](https://tailwindcss.com/docs/typography-plugin) | 0.5.16 | Typography plugin for Tailwind |
 
 ## Database & ORM
 
 | Package | Version | Purpose |
 |---------|---------|---------|
-| [@libsql/client](https://github.com/libsql/libsql-client-js) | 0.14.0 | Client for LibSQL/Turso databases |
-| [Drizzle ORM](https://orm.drizzle.team/) | 0.40.1 | TypeScript ORM for SQL databases |
+| [@libsql/client](https://github.com/libsql/libsql-client-js) | 0.15.4 | Client for LibSQL/Turso databases |
+| [Drizzle ORM](https://orm.drizzle.team/) | 0.43.1 | TypeScript ORM for SQL databases |
 | [Drizzle Kit](https://orm.drizzle.team/kit-docs/overview) | 0.31.1 | CLI companion for Drizzle ORM |
 
 ## Deployment & Hosting
@@ -65,7 +64,7 @@
 ## Architecture Overview
 
 ### Frontend Architecture
-CeLesteCMS Pro uses a component-based architecture powered by Svelte 5, with SvelteKit providing the full-stack framework capabilities. The UI is built using TailwindCSS with DaisyUI components for a consistent design system.
+CeLesteCMS Pro uses a component-based architecture powered by Svelte 5, with SvelteKit providing the full-stack framework capabilities. The UI is built using TailwindCSS for a consistent and utility-first design system.
 
 ### Backend Architecture
 The backend is implemented using SvelteKit server endpoints, which provide API functionality. Data persistence is handled through Drizzle ORM connecting to Cloudflare D1 or other SQL databases via the LibSQL client.

@@ -9,7 +9,7 @@
 - Application development framework
 
 #### Admin UI Framework (Month 1)
-- Set up SvelteKit and DaisyUI
+- Set up SvelteKit
 - Create basic layouts and components
 - Implement responsive design patterns
 - Design dashboard structure

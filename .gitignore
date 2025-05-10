@@ -1,32 +1,45 @@
-test-results
-node_modules
+# SvelteKit build output
+.svelte-kit/
+build/
+.output/
+.cloudflare/
 
-# Output
-.output
-.vercel
-.netlify
-.wrangler
-/.svelte-kit
-/build
+# Node modules
+node_modules/
 
-# OS
-.DS_Store
-Thumbs.db
-
-# Env
+# Environment variables
 .env
 .env.*
 !.env.example
-!.env.test
 
-# Vite
-vite.config.js.timestamp-*
-vite.config.ts.timestamp-*
+# Cloudflare
+.wrangler/
+.dev.vars
 
-# SQLite
-*.db
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
 
-# Paraglide
-src/lib/paraglide
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 
-*storybook.log
+# Drizzle
+.drizzle/
+
+# Storybook
+storybook-static/
+
+# Vitest coverage
+coverage/
