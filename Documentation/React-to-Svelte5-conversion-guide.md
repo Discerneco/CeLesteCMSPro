@@ -158,11 +158,11 @@ import { Eye, EyeOff, AlertCircle } from '@lucide/svelte';
 <Eye />
 ```
 
-### Practical Example: Admin Login Page
+### Practical Example: Admin Dashboard
 
-We successfully converted a React admin login page to Svelte with the following steps:
+We successfully converted a React admin dashboard to Svelte with the following steps:
 
-1. Created a new Svelte component at `src/routes/admin/login/+page.svelte`
+1. Created a new Svelte component at `src/routes/admin/+page.svelte`
 2. Converted React useState hooks to simple Svelte variables
 3. Converted event handlers to Svelte functions
 4. Replaced JSX conditional rendering with Svelte `{#if}` blocks
@@ -170,6 +170,126 @@ We successfully converted a React admin login page to Svelte with the following 
 6. Replaced React event handlers (onClick, onChange) with Svelte directives (on:click, bind:value)
 7. Installed and imported icons from @lucide/svelte instead of lucide-react
 8. Maintained TailwindCSS classes without changes
+9. Extracted reusable components to improve maintainability
+
+### Step 10: Extracting Reusable Components
+
+#### React component extraction:
+```jsx
+const Card = ({ title, children, actions, className = '', isDarkMode }) => (
+  <div className={`rounded-lg border ${isDarkMode ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'} overflow-hidden ${className}`}>
+    <div className="p-4 flex justify-between items-center border-b border-gray-200 dark:border-gray-800">
+      <h3 className="font-medium">{title}</h3>
+      {actions}
+    </div>
+    <div className="p-4">
+      {children}
+    </div>
+  </div>
+);
+
+// Usage
+<Card 
+  title="Recent Posts" 
+  isDarkMode={isDarkMode}
+  className="md:col-span-2"
+  actions={
+    <button className="text-sm px-2 py-1 rounded-md border">
+      Add Post
+    </button>
+  }
+>
+  <ContentItem title="Post Title" />
+</Card>
+```
+
+#### Svelte equivalent:
+```svelte
+<!-- Card.svelte -->
+<script>
+  export let title;
+  export let isDarkMode;
+  export let className = '';
+</script>
+
+<div class={`rounded-lg border ${isDarkMode ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'} overflow-hidden ${className}`}>
+  <div class={`py-3 px-6 flex justify-between items-center border-b ${isDarkMode ? 'border-gray-800' : 'border-gray-200'}`}>
+    <h3 class="text-lg font-medium">{title}</h3>
+    <slot name="actions"></slot>
+  </div>
+  <div class="pt-5 px-6 pb-4">
+    <slot></slot>
+  </div>
+</div>
+
+<!-- Usage -->
+<Card 
+  title={selectedLanguage === 'en' ? 'Recent Posts' : 'Posts Recentes'} 
+  {isDarkMode} 
+  className="md:col-span-2"
+>
+  <svelte:fragment slot="actions">
+    <a href="/admin/posts/new" class="px-3 py-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md text-xs font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+      {selectedLanguage === 'en' ? 'Add Post' : 'Adicionar Post'}
+    </a>
+  </svelte:fragment>
+  
+  <ContentItem title="Post Title" />
+</Card>
+```
+
+### Step 11: Using Named Slots
+
+Svelte provides a powerful slot system that allows for more flexible component composition than React's children prop.
+
+#### React approach (with render props or children):
+```jsx
+<Card
+  title="Card Title"
+  actions={<button>Action</button>}
+>
+  <p>Card content</p>
+</Card>
+```
+
+#### Svelte named slots:
+```svelte
+<Card title="Card Title">
+  <svelte:fragment slot="actions">
+    <button>Action</button>
+  </svelte:fragment>
+  
+  <p>Card content</p>
+</Card>
+```
+
+### Step 12: Component Property Shorthand
+
+Svelte provides a convenient shorthand for passing properties with the same name as variables.
+
+#### React props passing:
+```jsx
+<SidebarItem 
+  icon={PieChart} 
+  label="Dashboard" 
+  isActive={true} 
+  isDarkMode={isDarkMode} 
+/>
+```
+
+#### Svelte equivalent:
+```svelte
+<SidebarItem 
+  icon={PieChart} 
+  label="Dashboard" 
+  isActive={true} 
+  {isDarkMode} 
+/>
+```
+
+### Practical Example: Admin Dashboard Components
+
+We successfully implemented a component-based architecture for our admin dashboard with the following components:
 
 ## Part 2: Upgrading to Svelte 5 Runes
 
@@ -312,17 +432,77 @@ Notice that with Svelte 5 runes, we prefix the variable name with `$` directly, 
 </script>
 ```
 
-### Practical Example: Admin Login Page
+### Practical Example: Admin Dashboard Components
 
-We successfully upgraded our admin login page to use Svelte 5 runes with the following steps:
+1. **Card**: A reusable card component with named slots for actions and content
+2. **SidebarItem**: Navigation items with consistent styling and icon support
+3. **StatCard**: Standardized statistics display with icons and change indicators
+4. **ContentItem**: Consistent content item display with title, site, and date
+5. **ActivityItem**: Standardized activity feed items
+6. **StatusItem**: System status indicators with operational status styling
+
+This component-based approach provided several benefits:
+- Improved code organization and maintainability
+- Consistent styling across the dashboard
+- Easier implementation of new features
+- Reduced duplication of code
+- Better separation of concerns
+
+### Step 13: Handling Dark Mode
+
+#### React dark mode implementation:
+```jsx
+const [isDarkMode, setIsDarkMode] = useState(false);
+
+// In JSX
+<div className={`app ${isDarkMode ? 'dark bg-gray-950 text-gray-100' : 'bg-gray-100 text-gray-900'}`}>
+  {/* Content */}
+</div>
+```
+
+#### Svelte equivalent:
+```svelte
+<script>
+  let isDarkMode = false; // or with runes: let $isDarkMode = false;
+</script>
+
+<div class={`app ${isDarkMode ? 'dark bg-gray-950 text-gray-100' : 'bg-gray-100 text-gray-900'}`}>
+  <!-- Content -->
+</div>
+```
+
+### Step 14: Handling Internationalization
+
+#### React i18n approach:
+```jsx
+const [selectedLanguage, setSelectedLanguage] = useState('en');
+
+// In JSX
+<h1>{selectedLanguage === 'en' ? 'Dashboard' : 'Painel'}</h1>
+```
+
+#### Svelte equivalent:
+```svelte
+<script>
+  let selectedLanguage = 'en'; // or with runes: let $selectedLanguage = 'en';
+</script>
+
+<h1>{selectedLanguage === 'en' ? 'Dashboard' : 'Painel'}</h1>
+```
+
+### Practical Example: Admin Dashboard with Svelte 5 Runes
+
+We successfully upgraded our admin dashboard to use Svelte 5 runes with the following steps:
 
 1. Converted standard reactive variables to `$state` variables by prefixing them with `$`
 2. Updated all references to these variables in the template to use the `$` prefix
 3. Updated event handlers to use the `$` prefix when accessing or modifying state
 4. Ensured all conditional rendering and class bindings use the `$` prefix for state variables
+5. Maintained the component-based architecture with props passed using the `$` prefix
 
 This approach provides several benefits:
 - More explicit reactivity model
 - Better TypeScript support
 - Consistent reactivity across components and modules
 - Improved performance through more granular updates
+- Cleaner component interfaces
