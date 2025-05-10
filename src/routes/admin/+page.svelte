@@ -226,34 +226,6 @@
         />
       </div>
       
-      <!-- System Status Section -->
-      <div class="grid grid-cols-1 gap-6 mb-6">
-        <Card title={selectedLanguage === 'en' ? 'System Status' : 'Status do Sistema'} {isDarkMode}>
-          <div class={`mb-4 p-4 rounded-md ${isDarkMode ? 'bg-green-900/30 border border-green-800' : 'bg-green-100 border border-green-200'}`}>
-            <p class={`text-sm ${isDarkMode ? 'text-green-400' : 'text-green-800'}`}>
-              {selectedLanguage === 'en' ? 'All systems operational. CeLeste CMS v0.1' : 'Todos os sistemas operacionais. CeLeste CMS v0.1'}
-            </p>
-          </div>
-          
-          <div class="space-y-4">
-            <StatusItem 
-              name={selectedLanguage === 'en' ? 'Database' : 'Banco de Dados'} 
-              status="operational" 
-            />
-            
-            <StatusItem 
-              name={selectedLanguage === 'en' ? 'Media Storage' : 'Armazenamento de Mídia'} 
-              status="operational" 
-            />
-            
-            <StatusItem 
-              name={selectedLanguage === 'en' ? 'API Services' : 'Serviços de API'} 
-              status="operational" 
-            />
-          </div>
-        </Card>
-      </div>
-      
       <!-- Posts and Activity Sections -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         <!-- Recent Posts -->
@@ -315,6 +287,34 @@
           <a href="/admin/activity" class="text-indigo-600 dark:text-indigo-400 text-sm hover:underline block mt-4">
             {selectedLanguage === 'en' ? 'View all' : 'Ver todos'}
           </a>
+        </Card>
+      </div>
+      
+      <!-- System Status Section -->
+      <div class="grid grid-cols-1 gap-6 mb-6">
+        <Card title={selectedLanguage === 'en' ? 'System Status' : 'Status do Sistema'} {isDarkMode}>
+          <div class={`mb-4 p-4 rounded-md ${isDarkMode ? 'bg-green-900/30 border border-green-800' : 'bg-green-100 border border-green-200'}`}>
+            <p class={`text-sm ${isDarkMode ? 'text-green-400' : 'text-green-800'}`}>
+              {selectedLanguage === 'en' ? 'All systems operational. CeLeste CMS v0.1' : 'Todos os sistemas operacionais. CeLeste CMS v0.1'}
+            </p>
+          </div>
+          
+          <div class="space-y-4">
+            <StatusItem 
+              name={selectedLanguage === 'en' ? 'Database' : 'Banco de Dados'} 
+              status="operational" 
+            />
+            
+            <StatusItem 
+              name={selectedLanguage === 'en' ? 'Media Storage' : 'Armazenamento de Mídia'} 
+              status="operational" 
+            />
+            
+            <StatusItem 
+              name={selectedLanguage === 'en' ? 'API Services' : 'Serviços de API'} 
+              status="operational" 
+            />
+          </div>
         </Card>
       </div>
     </main>
