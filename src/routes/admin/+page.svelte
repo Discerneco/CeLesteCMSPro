@@ -45,7 +45,7 @@
 
 <div class={`h-screen flex flex-col ${isDarkMode ? 'dark bg-gray-950 text-gray-100' : 'bg-gray-100 text-gray-900'}`}>
   <!-- Header -->
-  <header class={`${isDarkMode ? 'bg-gray-900' : 'bg-white'} border-b p-4 flex items-center justify-between sticky top-0 z-10`}>
+  <header class={`${isDarkMode ? 'bg-gray-900 border-gray-700' : 'bg-white border-gray-200'} border-b p-4 flex items-center justify-between sticky top-0 z-10`}>
     <div class="flex items-center">
       <button 
         on:click={toggleSidebar} 
@@ -88,7 +88,7 @@
   <div class="flex flex-1 overflow-hidden">
     <!-- Sidebar -->
     {#if isSidebarOpen}
-      <aside class={`w-64 ${isDarkMode ? 'bg-gray-900' : 'bg-white'} border-r overflow-y-auto`}>
+      <aside class={`w-64 ${isDarkMode ? 'bg-gray-900 border-gray-700' : 'bg-white border-gray-200'} border-r overflow-y-auto`}>
         <div class="p-4">
           <nav class="space-y-1">
             <a
