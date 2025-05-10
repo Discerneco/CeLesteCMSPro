@@ -235,7 +235,7 @@
           className="md:col-span-2"
         >
           <svelte:fragment slot="actions">
-            <a href="/admin/posts/new" class="px-3 py-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md text-xs font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+            <a href="/admin/posts/new" class="text-sm px-2 py-1 rounded-md border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800">
               {selectedLanguage === 'en' ? 'Add Post' : 'Adicionar Post'}
             </a>
           </svelte:fragment>
