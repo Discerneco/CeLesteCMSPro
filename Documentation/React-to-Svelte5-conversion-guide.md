@@ -173,4 +173,156 @@ We successfully converted a React admin login page to Svelte with the following 
 
 ## Part 2: Upgrading to Svelte 5 Runes
 
-*This section will be completed after implementing Svelte 5 runes in our components.*
+Svelte 5 introduces a new reactivity model using runes, which are compiler instructions that start with a `$` prefix. This section documents the process of upgrading standard Svelte components to use Svelte 5 runes.
+
+### Step 1: Understanding Runes
+
+Runes are special functions that start with a `$` prefix and are recognized by the Svelte compiler:
+
+- `$state`: Creates reactive state variables
+- `$derived`: Creates computed values that update when dependencies change
+- `$effect`: Runs side effects when dependencies change
+- `$props`: Declares component props
+- `$bindable`: Makes props bindable from parent components
+
+Runes are not imported - they are part of the Svelte language itself.
+
+### Step 2: Converting Standard Variables to `$state`
+
+#### Svelte standard reactivity:
+```svelte
+<script>
+  let email = '';
+  let password = '';
+  let showPassword = false;
+</script>
+```
+
+#### Svelte 5 runes equivalent:
+```svelte
+<script>
+  let $email = '';
+  let $password = '';
+  let $showPassword = false;
+</script>
+```
+
+Notice that with Svelte 5 runes, we prefix the variable name with `$` directly, rather than wrapping the initial value with `$state()`.
+
+### Step 3: Converting Event Handlers
+
+#### Svelte standard event handlers:
+```svelte
+<script>
+  let showPassword = false;
+  
+  function togglePasswordVisibility() {
+    showPassword = !showPassword;
+  }
+</script>
+```
+
+#### Svelte 5 runes equivalent:
+```svelte
+<script>
+  let $showPassword = false;
+  
+  function togglePasswordVisibility() {
+    $showPassword = !$showPassword;
+  }
+</script>
+```
+
+### Step 4: Converting Computed Values
+
+#### Svelte standard computed values:
+```svelte
+<script>
+  let count = 0;
+  $: double = count * 2;
+</script>
+```
+
+#### Svelte 5 runes equivalent:
+```svelte
+<script>
+  let $count = 0;
+  let $double = $derived($count * 2);
+</script>
+```
+
+### Step 5: Converting Side Effects
+
+#### Svelte standard side effects:
+```svelte
+<script>
+  let count = 0;
+  
+  $: {
+    if (count > 10) {
+      alert('Count is too high!');
+    }
+  }
+</script>
+```
+
+#### Svelte 5 runes equivalent:
+```svelte
+<script>
+  let $count = 0;
+  
+  $effect(() => {
+    if ($count > 10) {
+      alert('Count is too high!');
+    }
+  });
+</script>
+```
+
+### Step 6: Converting Props
+
+#### Svelte standard props:
+```svelte
+<script>
+  export let username = '';
+  export let isAdmin = false;
+</script>
+```
+
+#### Svelte 5 runes equivalent:
+```svelte
+<script>
+  let { username = '', isAdmin = false } = $props();
+</script>
+```
+
+### Step 7: Making Props Bindable
+
+#### Svelte standard bindable props:
+```svelte
+<script>
+  export let value = '';
+</script>
+```
+
+#### Svelte 5 runes equivalent:
+```svelte
+<script>
+  let { value = $bindable('') } = $props();
+</script>
+```
+
+### Practical Example: Admin Login Page
+
+We successfully upgraded our admin login page to use Svelte 5 runes with the following steps:
+
+1. Converted standard reactive variables to `$state` variables by prefixing them with `$`
+2. Updated all references to these variables in the template to use the `$` prefix
+3. Updated event handlers to use the `$` prefix when accessing or modifying state
+4. Ensured all conditional rendering and class bindings use the `$` prefix for state variables
+
+This approach provides several benefits:
+- More explicit reactivity model
+- Better TypeScript support
+- Consistent reactivity across components and modules
+- Improved performance through more granular updates

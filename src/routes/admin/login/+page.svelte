@@ -1,13 +1,13 @@
 <script lang="ts">
   import { Eye, EyeOff, AlertCircle, Sun, Moon } from '@lucide/svelte';
 
-  // Basic Svelte state
-  let email = '';
-  let password = '';
-  let rememberMe = false;
-  let showPassword = false;
-  let error = '';
-  let isDarkMode = false;
+  // Svelte 5 runes for state management
+  let email = $state('');
+  let password = $state('');
+  let rememberMe = $state(false);
+  let showPassword = $state(false);
+  let error = $state('');
+  let isDarkMode = $state(false);
 
   function toggleTheme() {
     isDarkMode = !isDarkMode;
@@ -37,7 +37,7 @@
   <!-- Header with Theme Toggle -->
   <header class={`w-full p-4 flex justify-end ${isDarkMode ? 'bg-gray-900' : 'bg-white'} shadow-sm`}>
     <button 
-      on:click={toggleTheme}
+      onclick={toggleTheme}
       class={`p-2 rounded-md ${isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-100'}`}
       aria-label="Toggle theme"
     >
@@ -62,7 +62,7 @@
           <span>{error}</span>
         </div>
       {/if}
-      <form on:submit|preventDefault={handleSubmit}>
+      <form onsubmit={(e) => { e.preventDefault(); handleSubmit(e); }}>
         <!-- Email Field -->
         <div class="mb-6">
           <label for="email" class="block text-sm font-medium mb-1">Email</label>
@@ -89,7 +89,7 @@
             />
             <button
               type="button"
-              on:click={togglePasswordVisibility}
+              onclick={togglePasswordVisibility}
               class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500"
               aria-label={showPassword ? 'Hide password' : 'Show password'}
             >
@@ -112,7 +112,7 @@
             />
             <label for="remember-me" class="ml-2 text-sm">Remember me</label>
           </div>
-          <a href="#" class="text-sm text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">Forgot password?</a>
+          <a href="/admin/forgot-password" class="text-sm text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">Forgot password?</a>
         </div>
         <!-- Submit Button -->
         <button
