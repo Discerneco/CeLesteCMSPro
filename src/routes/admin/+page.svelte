@@ -120,7 +120,7 @@
               class={`flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}
             >
               <MessageSquare class="h-5 w-5" />
-              <span class="text-sm font-medium">{selectedLanguage === 'en' ? 'Posts' : 'Postagens'}</span>
+              <span class="text-sm font-medium">{selectedLanguage === 'en' ? 'Posts' : 'Posts'}</span>
             </a>
             
             <a
@@ -215,7 +215,7 @@
           </div>
           <div class="mt-4">
             <h3 class="text-2xl font-bold">48</h3>
-            <p class="text-sm text-gray-500 dark:text-gray-400">{selectedLanguage === 'en' ? 'Posts' : 'Postagens'}</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">{selectedLanguage === 'en' ? 'Posts' : 'Posts'}</p>
           </div>
         </div>
         
@@ -293,7 +293,7 @@
         <!-- Recent Posts -->
         <div class={`rounded-lg border ${isDarkMode ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'} overflow-hidden md:col-span-2`}>
           <div class={`p-4 flex justify-between items-center border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-            <h3 class="font-medium">{selectedLanguage === 'en' ? 'Recent Posts' : 'Postagens Recentes'}</h3>
+            <h3 class="font-medium">{selectedLanguage === 'en' ? 'Recent Posts' : 'Posts Recentes'}</h3>
             <a href="#" class="text-sm text-indigo-600 dark:text-indigo-400 hover:underline">
               {selectedLanguage === 'en' ? 'View all' : 'Ver todos'}
             </a>
