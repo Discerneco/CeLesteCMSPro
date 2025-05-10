@@ -25,10 +25,18 @@
     Database
   } from '@lucide/svelte';
 
-  // Basic state management
-  let isDarkMode = false;
-  let isSidebarOpen = true;
-  let selectedLanguage = 'en';
+  // Import reusable components
+  import Card from '$lib/components/Card.svelte';
+  import ActivityItem from '$lib/components/ActivityItem.svelte';
+  import ContentItem from '$lib/components/ContentItem.svelte';
+  import SidebarItem from '$lib/components/SidebarItem.svelte';
+  import StatCard from '$lib/components/StatCard.svelte';
+  import StatusItem from '$lib/components/StatusItem.svelte';
+
+  // Basic state management with Svelte 5 runes
+  let isDarkMode = $state(false);
+  let isSidebarOpen = $state(true);
+  let selectedLanguage = $state('en');
   
   function toggleTheme() {
     isDarkMode = !isDarkMode;
@@ -48,7 +56,7 @@
   <header class={`${isDarkMode ? 'bg-gray-900 border-gray-700' : 'bg-white border-gray-200'} border-b p-4 flex items-center justify-between sticky top-0 z-10`}>
     <div class="flex items-center">
       <button 
-        on:click={toggleSidebar} 
+        onclick={toggleSidebar} 
         class={`p-2 rounded-md ${isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-100'} mr-2`}
       >
         <Menu class="h-5 w-5" />
@@ -58,14 +66,14 @@
     
     <div class="flex items-center gap-4">
       <button 
-        on:click={toggleLanguage}
+        onclick={toggleLanguage}
         class={`px-3 py-1 rounded-md text-sm font-medium ${isDarkMode ? 'bg-gray-800' : 'bg-gray-100'}`}
       >
         {selectedLanguage === 'en' ? 'EN' : 'PT'}
       </button>
       
       <button 
-        on:click={toggleTheme} 
+        onclick={toggleTheme} 
         class={`p-2 rounded-md ${isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-100'}`}
       >
         {#if isDarkMode}
@@ -91,96 +99,88 @@
       <aside class={`w-64 ${isDarkMode ? 'bg-gray-900 border-gray-700' : 'bg-white border-gray-200'} border-r overflow-y-auto`}>
         <div class="p-4">
           <nav class="space-y-1">
-            <a
-              href="/admin"
-              class={`flex items-center gap-3 px-3 py-2 rounded-md bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-200`}
-            >
-              <PieChart class="h-5 w-5" />
-              <span class="text-sm font-medium">{selectedLanguage === 'en' ? 'Dashboard' : 'Painel'}</span>
-            </a>
+            <SidebarItem 
+              icon={PieChart} 
+              label={selectedLanguage === 'en' ? 'Dashboard' : 'Painel'} 
+              href="/admin" 
+              isActive={true} 
+              {isDarkMode} 
+            />
             
-            <a
-              href="/admin/sites"
-              class={`flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}
-            >
-              <Globe class="h-5 w-5" />
-              <span class="text-sm font-medium">Sites</span>
-            </a>
+            <SidebarItem 
+              icon={Globe} 
+              label="Sites" 
+              href="/admin/sites" 
+              {isDarkMode} 
+            />
             
-            <a
-              href="/admin/templates"
-              class={`flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}
-            >
-              <Layout class="h-5 w-5" />
-              <span class="text-sm font-medium">Templates</span>
-            </a>
+            <SidebarItem 
+              icon={Layout} 
+              label="Templates" 
+              href="/admin/templates" 
+              {isDarkMode} 
+            />
             
-            <a
-              href="/admin/posts"
-              class={`flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}
-            >
-              <MessageSquare class="h-5 w-5" />
-              <span class="text-sm font-medium">{selectedLanguage === 'en' ? 'Posts' : 'Posts'}</span>
-            </a>
+            <SidebarItem 
+              icon={MessageSquare} 
+              label={selectedLanguage === 'en' ? 'Posts' : 'Posts'} 
+              href="/admin/posts" 
+              {isDarkMode} 
+            />
             
-            <a
-              href="/admin/pages"
-              class={`flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}
-            >
-              <FileText class="h-5 w-5" />
-              <span class="text-sm font-medium">{selectedLanguage === 'en' ? 'Pages' : 'Páginas'}</span>
-            </a>
+            <SidebarItem 
+              icon={FileText} 
+              label={selectedLanguage === 'en' ? 'Pages' : 'Páginas'} 
+              href="/admin/pages" 
+              {isDarkMode} 
+            />
             
-            <a
-              href="/admin/media"
-              class={`flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}
-            >
-              <UploadCloud class="h-5 w-5" />
-              <span class="text-sm font-medium">{selectedLanguage === 'en' ? 'Media' : 'Mídia'}</span>
-            </a>
+            <SidebarItem 
+              icon={UploadCloud} 
+              label={selectedLanguage === 'en' ? 'Media' : 'Mídia'} 
+              href="/admin/media" 
+              {isDarkMode} 
+            />
             
-            <a
-              href="/admin/users"
-              class={`flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}
-            >
-              <Users class="h-5 w-5" />
-              <span class="text-sm font-medium">{selectedLanguage === 'en' ? 'Users' : 'Usuários'}</span>
-            </a>
+            <SidebarItem 
+              icon={Users} 
+              label={selectedLanguage === 'en' ? 'Users' : 'Usuários'} 
+              href="/admin/users" 
+              {isDarkMode} 
+            />
             
-            <a
-              href="/admin/plugins"
-              class={`flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}
-            >
-              <Database class="h-5 w-5" />
-              <span class="text-sm font-medium">Plugins</span>
-            </a>
+            <SidebarItem 
+              icon={Database} 
+              label="Plugins" 
+              href="/admin/plugins" 
+              {isDarkMode} 
+            />
             
-            <a
-              href="/admin/settings"
-              class={`flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}
-            >
-              <Settings class="h-5 w-5" />
-              <span class="text-sm font-medium">{selectedLanguage === 'en' ? 'Settings' : 'Configurações'}</span>
-            </a>
+            <SidebarItem 
+              icon={Settings} 
+              label={selectedLanguage === 'en' ? 'Settings' : 'Configurações'} 
+              href="/admin/settings" 
+              {isDarkMode} 
+            />
           </nav>
         </div>
         
         <div class={`border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} p-4 mt-auto`}>
-          <a
-            href="/admin/help"
-            class={`flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}
-          >
-            <HelpCircle class="h-5 w-5" />
-            <span class="text-sm font-medium">{selectedLanguage === 'en' ? 'Help' : 'Ajuda'}</span>
-          </a>
-          
-          <a
-            href="/admin/logout"
-            class={`flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}
-          >
-            <LogOut class="h-5 w-5" />
-            <span class="text-sm font-medium">{selectedLanguage === 'en' ? 'Logout' : 'Sair'}</span>
-          </a>
+          <nav class="space-y-1">
+            <SidebarItem 
+              icon={HelpCircle} 
+              label={selectedLanguage === 'en' ? 'Help' : 'Ajuda'} 
+              href="/admin/help" 
+              {isDarkMode} 
+            />
+            
+            <SidebarItem 
+              icon={LogOut} 
+              label={selectedLanguage === 'en' ? 'Logout' : 'Sair'} 
+              href="/admin/logout" 
+              {isDarkMode} 
+            />
+          </nav>
         </div>
       </aside>
     {/if}
@@ -193,184 +193,129 @@
       <!-- Stats Row -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <!-- Stats Cards -->
-        <div class={`rounded-lg border ${isDarkMode ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'} p-6`}>
-          <div class="flex items-center justify-between">
-            <Globe class="h-8 w-8 text-indigo-600" />
-            <span class={`text-xs font-medium px-2.5 py-0.5 rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200`}>
-              +1
-            </span>
-          </div>
-          <div class="mt-4">
-            <h3 class="text-2xl font-bold">3</h3>
-            <p class="text-sm text-gray-500 dark:text-gray-400">{selectedLanguage === 'en' ? 'Active Sites' : 'Sites Ativos'}</p>
-          </div>
-        </div>
+        <StatCard 
+          icon={Globe} 
+          title={selectedLanguage === 'en' ? 'Active Sites' : 'Sites Ativos'} 
+          value="3" 
+          change="+1" 
+          {isDarkMode} 
+        />
         
-        <div class={`rounded-lg border ${isDarkMode ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'} p-6`}>
-          <div class="flex items-center justify-between">
-            <MessageSquare class="h-8 w-8 text-green-600" />
-            <span class={`text-xs font-medium px-2.5 py-0.5 rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200`}>
-              +12
-            </span>
-          </div>
-          <div class="mt-4">
-            <h3 class="text-2xl font-bold">48</h3>
-            <p class="text-sm text-gray-500 dark:text-gray-400">{selectedLanguage === 'en' ? 'Posts' : 'Posts'}</p>
-          </div>
-        </div>
+        <StatCard 
+          icon={MessageSquare} 
+          title={selectedLanguage === 'en' ? 'Posts' : 'Posts'} 
+          value="48" 
+          change="+12" 
+          {isDarkMode} 
+        />
         
-        <div class={`rounded-lg border ${isDarkMode ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'} p-6`}>
-          <div class="flex items-center justify-between">
-            <Users class="h-8 w-8 text-amber-600" />
-            <span class={`text-xs font-medium px-2.5 py-0.5 rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200`}>
-              +3
-            </span>
-          </div>
-          <div class="mt-4">
-            <h3 class="text-2xl font-bold">16</h3>
-            <p class="text-sm text-gray-500 dark:text-gray-400">{selectedLanguage === 'en' ? 'Users' : 'Usuários'}</p>
-          </div>
-        </div>
+        <StatCard 
+          icon={Users} 
+          title={selectedLanguage === 'en' ? 'Users' : 'Usuários'} 
+          value="16" 
+          change="+3" 
+          {isDarkMode} 
+        />
         
-        <div class={`rounded-lg border ${isDarkMode ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'} p-6`}>
-          <div class="flex items-center justify-between">
-            <UploadCloud class="h-8 w-8 text-purple-600" />
-            <span class={`text-xs font-medium px-2.5 py-0.5 rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200`}>
-              +28
-            </span>
-          </div>
-          <div class="mt-4">
-            <h3 class="text-2xl font-bold">164</h3>
-            <p class="text-sm text-gray-500 dark:text-gray-400">{selectedLanguage === 'en' ? 'Media Files' : 'Arquivos de Mídia'}</p>
-          </div>
-        </div>
+        <StatCard 
+          icon={UploadCloud} 
+          title={selectedLanguage === 'en' ? 'Media Files' : 'Arquivos de Mídia'} 
+          value="164" 
+          change="+28" 
+          {isDarkMode} 
+        />
       </div>
       
       <!-- System Status Section -->
       <div class="grid grid-cols-1 gap-6 mb-6">
-        <div class={`rounded-lg border ${isDarkMode ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'} overflow-hidden`}>
-          <div class={`py-3 px-6 flex justify-between items-center border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-            <h3 class="text-lg font-medium">{selectedLanguage === 'en' ? 'System Status' : 'Status do Sistema'}</h3>
+        <Card title={selectedLanguage === 'en' ? 'System Status' : 'Status do Sistema'} {isDarkMode}>
+          <div class={`mb-4 p-4 rounded-md ${isDarkMode ? 'bg-green-900/30 border border-green-800' : 'bg-green-100 border border-green-200'}`}>
+            <p class={`text-sm ${isDarkMode ? 'text-green-400' : 'text-green-800'}`}>
+              {selectedLanguage === 'en' ? 'All systems operational. CeLeste CMS v0.1' : 'Todos os sistemas operacionais. CeLeste CMS v0.1'}
+            </p>
           </div>
-          <div class="pt-5 px-6 pb-4">
-            <div class={`mb-4 p-4 rounded-md ${isDarkMode ? 'bg-green-900/30 border border-green-800' : 'bg-green-100 border border-green-200'}`}>
-              <p class={`text-sm ${isDarkMode ? 'text-green-400' : 'text-green-800'}`}>
-                {selectedLanguage === 'en' ? 'All systems operational. CeLeste CMS v0.1' : 'Todos os sistemas operacionais. CeLeste CMS v0.1'}
-              </p>
-            </div>
+          
+          <div class="space-y-4">
+            <StatusItem 
+              name={selectedLanguage === 'en' ? 'Database' : 'Banco de Dados'} 
+              status="operational" 
+            />
             
-            <div class="space-y-4">
-              <div class="flex items-center justify-between">
-                <span class="font-medium text-sm">{selectedLanguage === 'en' ? 'Database' : 'Banco de Dados'}</span>
-                <span class={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200`}>
-                  <span class="w-2 h-2 mr-1.5 rounded-full bg-green-400"></span>
-                  {selectedLanguage === 'en' ? 'Operational' : 'Operacional'}
-                </span>
-              </div>
-              
-              <div class="flex items-center justify-between">
-                <span class="font-medium text-sm">{selectedLanguage === 'en' ? 'Media Storage' : 'Armazenamento de Mídia'}</span>
-                <span class={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200`}>
-                  <span class="w-2 h-2 mr-1.5 rounded-full bg-green-400"></span>
-                  {selectedLanguage === 'en' ? 'Operational' : 'Operacional'}
-                </span>
-              </div>
-              
-              <div class="flex items-center justify-between">
-                <span class="font-medium text-sm">{selectedLanguage === 'en' ? 'API Services' : 'Serviços de API'}</span>
-                <span class={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200`}>
-                  <span class="w-2 h-2 mr-1.5 rounded-full bg-green-400"></span>
-                  {selectedLanguage === 'en' ? 'Operational' : 'Operacional'}
-                </span>
-              </div>
-            </div>
+            <StatusItem 
+              name={selectedLanguage === 'en' ? 'Media Storage' : 'Armazenamento de Mídia'} 
+              status="operational" 
+            />
+            
+            <StatusItem 
+              name={selectedLanguage === 'en' ? 'API Services' : 'Serviços de API'} 
+              status="operational" 
+            />
           </div>
-        </div>
+        </Card>
       </div>
       
       <!-- Posts and Activity Sections -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         <!-- Recent Posts -->
-        <div class={`rounded-lg border ${isDarkMode ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'} overflow-hidden md:col-span-2`}>
-          <div class={`py-3 px-6 flex justify-between items-center border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-            <h3 class="text-lg font-medium">{selectedLanguage === 'en' ? 'Recent Posts' : 'Posts Recentes'}</h3>
+        <Card 
+          title={selectedLanguage === 'en' ? 'Recent Posts' : 'Posts Recentes'} 
+          {isDarkMode} 
+          className="md:col-span-2"
+        >
+          <svelte:fragment slot="actions">
             <a href="/admin/posts/new" class="px-3 py-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md text-xs font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
               {selectedLanguage === 'en' ? 'Add Post' : 'Adicionar Post'}
             </a>
-          </div>
-          <div class="pt-5 px-6 pb-4">
-            <!-- Post Items -->
-            <div class={`pb-4 mb-4 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-              <div class="flex justify-between items-center">
-                <div>
-                  <p class="font-medium text-base">Venue selection finalized for the reunion</p>
-                  <p class="text-indigo-600 dark:text-indigo-400 text-sm mt-1">Temple Reunion</p>
-                  <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">14/04/2025</p>
-                </div>
-                <div class="text-gray-400 dark:text-gray-500">
-                  <Eye class="h-5 w-5" />
-                </div>
-              </div>
-            </div>
-            
-            <div class={`pb-4 mb-4 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-              <div class="flex justify-between items-center">
-                <div>
-                  <p class="font-medium text-base">Community Blog Launch</p>
-                  <p class="text-indigo-600 dark:text-indigo-400 text-sm mt-1">Community Blog</p>
-                  <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">09/04/2025</p>
-                </div>
-                <div class="text-gray-400 dark:text-gray-500">
-                  <Eye class="h-5 w-5" />
-                </div>
-              </div>
-            </div>
-            
-            <div class="pb-4 mb-4">
-              <div class="flex justify-between items-center">
-                <div>
-                  <p class="font-medium text-base">New Portfolio Project</p>
-                  <p class="text-indigo-600 dark:text-indigo-400 text-sm mt-1">Portfolio Site</p>
-                  <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">04/04/2025</p>
-                </div>
-                <div class="text-gray-400 dark:text-gray-500">
-                  <Eye class="h-5 w-5" />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+          </svelte:fragment>
+          <ContentItem 
+            title="Venue selection finalized for the reunion" 
+            site="Temple Reunion" 
+            date="14/04/2025" 
+            {isDarkMode} 
+          />
+          
+          <ContentItem 
+            title="Community Blog Launch" 
+            site="Community Blog" 
+            date="09/04/2025" 
+            {isDarkMode} 
+          />
+          
+          <ContentItem 
+            title="New Portfolio Project" 
+            site="Portfolio Site" 
+            date="04/04/2025" 
+            {isDarkMode} 
+          />
+        </Card>
         
         <!-- Recent Activity -->
-        <div class={`rounded-lg border ${isDarkMode ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'} overflow-hidden`}>
-          <div class={`py-3 px-6 flex justify-between items-center border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-            <h3 class="text-lg font-medium">{selectedLanguage === 'en' ? 'Recent Activity' : 'Atividade Recente'}</h3>
-          </div>
-          <div class="pt-5 px-6 pb-4">
-            <!-- Activity Items -->
-            <div class={`pb-4 mb-4 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-              <p class="text-indigo-600 dark:text-indigo-400 text-sm font-medium">{selectedLanguage === 'en' ? 'User Login' : 'Login de Usuário'}</p>
-              <p class="font-medium text-base mt-1">Maria Silva</p>
-              <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">15/04/2025</p>
-            </div>
-            
-            <div class={`pb-4 mb-4 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-              <p class="text-indigo-600 dark:text-indigo-400 text-sm font-medium">{selectedLanguage === 'en' ? 'Post Published' : 'Post Publicado'}</p>
-              <p class="font-medium text-base mt-1">News Article</p>
-              <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">14/04/2025</p>
-            </div>
-            
-            <div class="pb-4 mb-4">
-              <p class="text-indigo-600 dark:text-indigo-400 text-sm font-medium">{selectedLanguage === 'en' ? 'New User' : 'Novo Usuário'}</p>
-              <p class="font-medium text-base mt-1">Carlos Mendes</p>
-              <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">14/04/2025</p>
-            </div>
-            
-            <a href="/admin/activity" class="text-indigo-600 dark:text-indigo-400 text-sm hover:underline block">
-              {selectedLanguage === 'en' ? 'View all' : 'Ver todos'}
-            </a>
-          </div>
-        </div>
+        <Card title={selectedLanguage === 'en' ? 'Recent Activity' : 'Atividade Recente'} {isDarkMode}>
+          <ActivityItem 
+            type={selectedLanguage === 'en' ? 'User Login' : 'Login de Usuário'} 
+            name="Maria Silva" 
+            date="15/04/2025" 
+            {isDarkMode} 
+          />
+          
+          <ActivityItem 
+            type={selectedLanguage === 'en' ? 'Post Published' : 'Post Publicado'} 
+            name="News Article" 
+            date="14/04/2025" 
+            {isDarkMode} 
+          />
+          
+          <ActivityItem 
+            type={selectedLanguage === 'en' ? 'New User' : 'Novo Usuário'} 
+            name="Carlos Mendes" 
+            date="14/04/2025" 
+            {isDarkMode} 
+          />
+          
+          <a href="/admin/activity" class="text-indigo-600 dark:text-indigo-400 text-sm hover:underline block mt-4">
+            {selectedLanguage === 'en' ? 'View all' : 'Ver todos'}
+          </a>
+        </Card>
       </div>
     </main>
   </div>
