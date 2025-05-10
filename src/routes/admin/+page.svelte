@@ -298,21 +298,21 @@
               {selectedLanguage === 'en' ? 'View all' : 'Ver todos'}
             </a>
           </div>
-          <div class="p-4 space-y-6">
+          <div class="p-4">
             <!-- Post Items -->
-            <div>
+            <div class={`pb-4 mb-4 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
               <p class="font-medium">Summer Event Page</p>
               <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">templereunion.org</p>
               <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Today, 10:30 AM</p>
             </div>
             
-            <div>
+            <div class={`pb-4 mb-4 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
               <p class="font-medium">About Us</p>
               <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">discerneco.com</p>
               <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Yesterday, 3:45 PM</p>
             </div>
             
-            <div>
+            <div class="pb-4 mb-4">
               <p class="font-medium">Contact Information</p>
               <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">templereunion.org</p>
               <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">May 10, 2025</p>
@@ -325,27 +325,27 @@
           <div class={`p-4 flex justify-between items-center border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
             <h3 class="font-medium">{selectedLanguage === 'en' ? 'Recent Activity' : 'Atividade Recente'}</h3>
           </div>
-          <div class="p-4 space-y-6">
+          <div class="p-4">
             <!-- Activity Items -->
-            <div>
+            <div class={`pb-4 mb-4 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
               <p class="text-indigo-600 dark:text-indigo-400 text-sm font-medium">{selectedLanguage === 'en' ? 'User Login' : 'Login de Usuário'}</p>
               <p class="font-medium mt-1">Maria Silva</p>
               <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">15/04/2025</p>
             </div>
             
-            <div>
+            <div class={`pb-4 mb-4 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
               <p class="text-indigo-600 dark:text-indigo-400 text-sm font-medium">{selectedLanguage === 'en' ? 'Post Published' : 'Post Publicado'}</p>
               <p class="font-medium mt-1">News Article</p>
               <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">14/04/2025</p>
             </div>
             
-            <div>
+            <div class="pb-4 mb-4">
               <p class="text-indigo-600 dark:text-indigo-400 text-sm font-medium">{selectedLanguage === 'en' ? 'New User' : 'Novo Usuário'}</p>
               <p class="font-medium mt-1">Carlos Mendes</p>
               <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">14/04/2025</p>
             </div>
             
-            <a href="/admin/activity" class="text-indigo-600 dark:text-indigo-400 text-sm hover:underline">
+            <a href="/admin/activity" class="text-indigo-600 dark:text-indigo-400 text-sm hover:underline block">
               {selectedLanguage === 'en' ? 'View all' : 'Ver todos'}
             </a>
           </div>
