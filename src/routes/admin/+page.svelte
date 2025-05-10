@@ -294,34 +294,28 @@
         <div class={`rounded-lg border ${isDarkMode ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'} overflow-hidden md:col-span-2`}>
           <div class={`p-4 flex justify-between items-center border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
             <h3 class="font-medium">{selectedLanguage === 'en' ? 'Recent Posts' : 'Posts Recentes'}</h3>
-            <a href="#" class="text-sm text-indigo-600 dark:text-indigo-400 hover:underline">
+            <a href="/admin/posts" class="text-sm text-indigo-600 dark:text-indigo-400 hover:underline">
               {selectedLanguage === 'en' ? 'View all' : 'Ver todos'}
             </a>
           </div>
-          <div class="p-4 space-y-3">
+          <div class="p-4 space-y-6">
             <!-- Post Items -->
-            <div class={`p-3 rounded-md ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'} mb-2`}>
-              <h4 class="font-medium">Summer Event Page</h4>
-              <div class="flex justify-between mt-1">
-                <p class="text-xs text-gray-500 dark:text-gray-400">templereunion.org</p>
-                <p class="text-xs text-gray-500 dark:text-gray-400">Today, 10:30 AM</p>
-              </div>
+            <div>
+              <p class="font-medium">Summer Event Page</p>
+              <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">templereunion.org</p>
+              <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Today, 10:30 AM</p>
             </div>
             
-            <div class={`p-3 rounded-md ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'} mb-2`}>
-              <h4 class="font-medium">About Us</h4>
-              <div class="flex justify-between mt-1">
-                <p class="text-xs text-gray-500 dark:text-gray-400">discerneco.com</p>
-                <p class="text-xs text-gray-500 dark:text-gray-400">Yesterday, 3:45 PM</p>
-              </div>
+            <div>
+              <p class="font-medium">About Us</p>
+              <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">discerneco.com</p>
+              <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Yesterday, 3:45 PM</p>
             </div>
             
-            <div class={`p-3 rounded-md ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'} mb-2`}>
-              <h4 class="font-medium">Contact Information</h4>
-              <div class="flex justify-between mt-1">
-                <p class="text-xs text-gray-500 dark:text-gray-400">templereunion.org</p>
-                <p class="text-xs text-gray-500 dark:text-gray-400">May 10, 2025</p>
-              </div>
+            <div>
+              <p class="font-medium">Contact Information</p>
+              <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">templereunion.org</p>
+              <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">May 10, 2025</p>
             </div>
           </div>
         </div>
@@ -331,43 +325,29 @@
           <div class={`p-4 flex justify-between items-center border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
             <h3 class="font-medium">{selectedLanguage === 'en' ? 'Recent Activity' : 'Atividade Recente'}</h3>
           </div>
-          <div class="p-4 space-y-2">
+          <div class="p-4 space-y-6">
             <!-- Activity Items -->
-            <div class={`p-3 rounded-md ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'} mb-2`}>
-              <div class="flex items-center">
-                <div class="w-8 h-8 rounded-full flex items-center justify-center bg-blue-100 text-blue-600 mr-3">
-                  <Eye class="h-4 w-4" />
-                </div>
-                <div>
-                  <p class="text-sm font-medium">Post updated</p>
-                  <p class="text-xs text-gray-500 dark:text-gray-400">Today, 10:30 AM</p>
-                </div>
-              </div>
+            <div>
+              <p class="text-indigo-600 dark:text-indigo-400 text-sm font-medium">{selectedLanguage === 'en' ? 'User Login' : 'Login de Usuário'}</p>
+              <p class="font-medium mt-1">Maria Silva</p>
+              <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">15/04/2025</p>
             </div>
             
-            <div class={`p-3 rounded-md ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'} mb-2`}>
-              <div class="flex items-center">
-                <div class="w-8 h-8 rounded-full flex items-center justify-center bg-green-100 text-green-600 mr-3">
-                  <FileText class="h-4 w-4" />
-                </div>
-                <div>
-                  <p class="text-sm font-medium">New page created</p>
-                  <p class="text-xs text-gray-500 dark:text-gray-400">Yesterday, 3:45 PM</p>
-                </div>
-              </div>
+            <div>
+              <p class="text-indigo-600 dark:text-indigo-400 text-sm font-medium">{selectedLanguage === 'en' ? 'Post Published' : 'Post Publicado'}</p>
+              <p class="font-medium mt-1">News Article</p>
+              <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">14/04/2025</p>
             </div>
             
-            <div class={`p-3 rounded-md ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'} mb-2`}>
-              <div class="flex items-center">
-                <div class="w-8 h-8 rounded-full flex items-center justify-center bg-amber-100 text-amber-600 mr-3">
-                  <Settings class="h-4 w-4" />
-                </div>
-                <div>
-                  <p class="text-sm font-medium">Settings changed</p>
-                  <p class="text-xs text-gray-500 dark:text-gray-400">May 10, 2025</p>
-                </div>
-              </div>
+            <div>
+              <p class="text-indigo-600 dark:text-indigo-400 text-sm font-medium">{selectedLanguage === 'en' ? 'New User' : 'Novo Usuário'}</p>
+              <p class="font-medium mt-1">Carlos Mendes</p>
+              <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">14/04/2025</p>
             </div>
+            
+            <a href="/admin/activity" class="text-indigo-600 dark:text-indigo-400 text-sm hover:underline">
+              {selectedLanguage === 'en' ? 'View all' : 'Ver todos'}
+            </a>
           </div>
         </div>
       </div>
