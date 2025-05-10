@@ -249,7 +249,7 @@
       <!-- System Status Section -->
       <div class="grid grid-cols-1 gap-6 mb-6">
         <div class={`rounded-lg border ${isDarkMode ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'} overflow-hidden`}>
-          <div class="p-4 flex justify-between items-center border-b border-gray-200 dark:border-gray-800">
+          <div class={`p-4 flex justify-between items-center border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
             <h3 class="font-medium">{selectedLanguage === 'en' ? 'System Status' : 'Status do Sistema'}</h3>
           </div>
           <div class="p-4">
@@ -292,7 +292,7 @@
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         <!-- Recent Content -->
         <div class={`rounded-lg border ${isDarkMode ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'} overflow-hidden md:col-span-2`}>
-          <div class="p-4 flex justify-between items-center border-b border-gray-200 dark:border-gray-800">
+          <div class={`p-4 flex justify-between items-center border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
             <h3 class="font-medium">{selectedLanguage === 'en' ? 'Recent Content' : 'Conteúdo Recente'}</h3>
             <a href="#" class="text-sm text-indigo-600 dark:text-indigo-400 hover:underline">
               {selectedLanguage === 'en' ? 'View all' : 'Ver todos'}
@@ -328,7 +328,7 @@
         
         <!-- Recent Activity -->
         <div class={`rounded-lg border ${isDarkMode ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'} overflow-hidden`}>
-          <div class="p-4 flex justify-between items-center border-b border-gray-200 dark:border-gray-800">
+          <div class={`p-4 flex justify-between items-center border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
             <h3 class="font-medium">{selectedLanguage === 'en' ? 'Recent Activity' : 'Atividade Recente'}</h3>
           </div>
           <div class="p-4 space-y-2">
