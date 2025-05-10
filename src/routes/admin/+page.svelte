@@ -294,29 +294,54 @@
         <div class={`rounded-lg border ${isDarkMode ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'} overflow-hidden md:col-span-2`}>
           <div class={`p-4 flex justify-between items-center border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
             <h3 class="font-medium">{selectedLanguage === 'en' ? 'Recent Posts' : 'Posts Recentes'}</h3>
-            <a href="/admin/posts" class="text-sm text-indigo-600 dark:text-indigo-400 hover:underline">
-              {selectedLanguage === 'en' ? 'View all' : 'Ver todos'}
+            <a href="/admin/posts/new" class="px-3 py-1.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+              {selectedLanguage === 'en' ? 'Add Post' : 'Adicionar Post'}
             </a>
           </div>
           <div class="p-4">
             <!-- Post Items -->
             <div class={`pb-4 mb-4 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-              <p class="font-medium">Summer Event Page</p>
-              <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">templereunion.org</p>
-              <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Today, 10:30 AM</p>
+              <div class="flex justify-between items-start">
+                <div>
+                  <p class="font-medium text-base">Venue selection finalized for the reunion</p>
+                  <p class="text-indigo-600 dark:text-indigo-400 text-sm mt-1">Temple Reunion</p>
+                  <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">14/04/2025</p>
+                </div>
+                <div class="text-gray-400 dark:text-gray-500">
+                  <Eye class="h-5 w-5" />
+                </div>
+              </div>
             </div>
             
             <div class={`pb-4 mb-4 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-              <p class="font-medium">About Us</p>
-              <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">discerneco.com</p>
-              <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Yesterday, 3:45 PM</p>
+              <div class="flex justify-between items-start">
+                <div>
+                  <p class="font-medium text-base">Community Blog Launch</p>
+                  <p class="text-indigo-600 dark:text-indigo-400 text-sm mt-1">Community Blog</p>
+                  <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">09/04/2025</p>
+                </div>
+                <div class="text-gray-400 dark:text-gray-500">
+                  <Eye class="h-5 w-5" />
+                </div>
+              </div>
             </div>
             
             <div class="pb-4 mb-4">
-              <p class="font-medium">Contact Information</p>
-              <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">templereunion.org</p>
-              <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">May 10, 2025</p>
+              <div class="flex justify-between items-start">
+                <div>
+                  <p class="font-medium text-base">New Portfolio Project</p>
+                  <p class="text-indigo-600 dark:text-indigo-400 text-sm mt-1">Portfolio Site</p>
+                  <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">04/04/2025</p>
+                </div>
+                <div class="text-gray-400 dark:text-gray-500">
+                  <Eye class="h-5 w-5" />
+                </div>
+              </div>
             </div>
+            
+            <a href="/admin/posts" class="text-indigo-600 dark:text-indigo-400 text-sm hover:underline block">
+              {selectedLanguage === 'en' ? 'View all' : 'Ver todos'}
+            </a>
           </div>
         </div>
         
