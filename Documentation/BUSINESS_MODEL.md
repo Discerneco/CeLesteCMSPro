@@ -26,12 +26,15 @@ Form builders
 Membership systems
 Subscription management
 
-3. Hosting Provider License ($299/year)
+3. Hosting Provider License ($499/year)
 
-White-label solution for hosting companies
-Control panel integration
-Automatic updates
-Custom branding
+- Unlimited sites hosted by the provider
+- Includes all pro features, apps, and plugins for all hosted sites
+- White-label solution for hosting companies
+- Control panel integration
+- Automatic updates
+- Custom branding
+- Priority support
 
 4. SaaS Platform (Future)
 
@@ -39,6 +42,16 @@ Managed hosting option
 One-click setup
 Premium support
 Integrated CDN
+
+
+5. Pro License ($10 one-time, per site)
+
+- 1 license is valid for 1 site (domain or project instance)
+- Unlocks all Pro features for that site
+- Enables installation and use of premium apps and plugins
+- Allows commercial use (SMBs, freelancers, client work)
+- No recurring fees
+- Each additional site requires a separate Pro License
 
 Business Model Comparison
 Let's look at how this compares to successful open source CMS platforms:
