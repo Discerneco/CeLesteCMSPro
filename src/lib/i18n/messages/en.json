@@ -1,0 +1,59 @@
+{
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "confirm": "Confirm",
+    "search": "Search"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome to CeLeste CMS administration.",
+    "stats": {
+      "activeSites": "Active Sites",
+      "posts": "Posts",
+      "users": "Users",
+      "mediaFiles": "Media Files"
+    },
+    "systemStatus": "System Status",
+    "recentActivity": "Recent Activity",
+    "quickActions": "Quick Actions",
+    "createNewSite": "Create New Site",
+    "createNewPost": "Create New Post",
+    "uploadMedia": "Upload Media",
+    "manageUsers": "Manage Users"
+  },
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "sites": "Sites",
+    "templates": "Templates",
+    "posts": "Posts",
+    "pages": "Pages",
+    "media": "Media",
+    "users": "Users",
+    "plugins": "Plugins",
+    "settings": "Settings",
+    "help": "Help",
+    "logout": "Logout"
+  },
+  "login": {
+    "title": "Admin Login",
+    "email": "Email",
+    "password": "Password",
+    "rememberMe": "Remember me",
+    "forgotPassword": "Forgot password?",
+    "loginButton": "Login",
+    "invalidCredentials": "Invalid email or password"
+  },
+  "settings": {
+    "title": "Settings",
+    "appearance": "Appearance",
+    "language": "Language",
+    "darkMode": "Dark Mode",
+    "notifications": "Notifications"
+  }
+}

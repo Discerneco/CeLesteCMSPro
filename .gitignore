@@ -38,6 +38,11 @@ pnpm-debug.log*
 # Drizzle
 .drizzle/
 
+# Paraglide
+# Ignore auto-generated files but track message source files
+src/lib/i18n/generated/
+!src/lib/i18n/messages/
+
 # Storybook
 storybook-static/
 

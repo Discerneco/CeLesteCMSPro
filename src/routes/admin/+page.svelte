@@ -32,11 +32,15 @@
   import SidebarItem from '$lib/components/SidebarItem.svelte';
   import StatCard from '$lib/components/StatCard.svelte';
   import StatusItem from '$lib/components/StatusItem.svelte';
+  import LanguageSwitcher from '$lib/components/LanguageSwitcher.svelte';
+  
+  // Import i18n
+  import { m, languageTag } from '$lib/i18n';
 
   // State management with Svelte 5 runes
   let isDarkMode = $state(false);
   let isSidebarOpen = $state(true);
-  let selectedLanguage = $state('en');
+  let currentLanguage = $state(languageTag);
   
   function handleThemeToggle() {
     isDarkMode = !isDarkMode;
@@ -44,10 +48,6 @@
   
   function handleSidebarToggle() {
     isSidebarOpen = !isSidebarOpen;
-  }
-  
-  function handleLanguageToggle() {
-    selectedLanguage = selectedLanguage === 'en' ? 'pt' : 'en';
   }
 </script>
 
@@ -65,12 +65,7 @@
     </div>
     
     <div class="flex items-center gap-4">
-      <button 
-        onclick={handleLanguageToggle}
-        class={`px-3 py-1 rounded-md text-sm font-medium ${isDarkMode ? 'bg-gray-800' : 'bg-gray-100'}`}
-      >
-        {selectedLanguage === 'en' ? 'EN' : 'PT'}
-      </button>
+      <LanguageSwitcher />
       
       <button 
         onclick={handleThemeToggle} 
@@ -101,7 +96,7 @@
           <nav class="space-y-1">
             <SidebarItem 
               icon={PieChart} 
-              label={selectedLanguage === 'en' ? 'Dashboard' : 'Painel'} 
+              label={m.sidebar.dashboard()} 
               href="/admin" 
               isActive={true} 
               isDarkMode={isDarkMode} 
@@ -109,56 +104,56 @@
             
             <SidebarItem 
               icon={Globe} 
-              label="Sites" 
+              label={m.sidebar.sites()} 
               href="/admin/sites" 
               isDarkMode={isDarkMode} 
             />
             
             <SidebarItem 
               icon={Layout} 
-              label="Templates" 
+              label={m.sidebar.templates()} 
               href="/admin/templates" 
               isDarkMode={isDarkMode} 
             />
             
             <SidebarItem 
               icon={MessageSquare} 
-              label={selectedLanguage === 'en' ? 'Posts' : 'Posts'} 
+              label={m.sidebar.posts()} 
               href="/admin/posts" 
               isDarkMode={isDarkMode} 
             />
             
             <SidebarItem 
               icon={FileText} 
-              label={selectedLanguage === 'en' ? 'Pages' : 'Páginas'} 
+              label={m.sidebar.pages()} 
               href="/admin/pages" 
               isDarkMode={isDarkMode} 
             />
             
             <SidebarItem 
               icon={UploadCloud} 
-              label={selectedLanguage === 'en' ? 'Media' : 'Mídia'} 
+              label={m.sidebar.media()} 
               href="/admin/media" 
               isDarkMode={isDarkMode} 
             />
             
             <SidebarItem 
               icon={Users} 
-              label={selectedLanguage === 'en' ? 'Users' : 'Usuários'} 
+              label={m.sidebar.users()} 
               href="/admin/users" 
               isDarkMode={isDarkMode} 
             />
             
             <SidebarItem 
               icon={Database} 
-              label="Plugins" 
+              label={m.sidebar.plugins()} 
               href="/admin/plugins" 
               isDarkMode={isDarkMode} 
             />
             
             <SidebarItem 
               icon={Settings} 
-              label={selectedLanguage === 'en' ? 'Settings' : 'Configurações'} 
+              label={m.sidebar.settings()} 
               href="/admin/settings" 
               isDarkMode={isDarkMode} 
             />
@@ -169,14 +164,14 @@
           <nav class="space-y-1">
             <SidebarItem 
               icon={HelpCircle} 
-              label={selectedLanguage === 'en' ? 'Help' : 'Ajuda'} 
+              label={m.sidebar.help()} 
               href="/admin/help" 
               isDarkMode={isDarkMode} 
             />
             
             <SidebarItem 
               icon={LogOut} 
-              label={selectedLanguage === 'en' ? 'Logout' : 'Sair'} 
+              label={m.sidebar.logout()} 
               href="/admin/logout" 
               isDarkMode={isDarkMode} 
             />
@@ -187,15 +182,15 @@
     
     <!-- Main Content -->
     <main class="flex-1 overflow-y-auto p-6">
-      <h2 class="text-2xl font-bold mb-6">{selectedLanguage === 'en' ? 'Dashboard' : 'Painel'}</h2>
-      <p class="text-gray-500 dark:text-gray-400 mb-8">{selectedLanguage === 'en' ? 'Welcome to CeLeste CMS administration.' : 'Bem-vindo à administração do CeLeste CMS.'}</p>
+      <h2 class="text-2xl font-bold mb-6">{m.dashboard.title()}</h2>
+      <p class="text-gray-500 dark:text-gray-400 mb-8">{m.dashboard.welcome()}</p>
       
       <!-- Stats Row -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <!-- Stats Cards -->
         <StatCard 
           icon={Globe} 
-          title={selectedLanguage === 'en' ? 'Active Sites' : 'Sites Ativos'} 
+          title={m.dashboard.stats.activeSites()} 
           value="3" 
           change="+1" 
           {isDarkMode} 
@@ -203,7 +198,7 @@
         
         <StatCard 
           icon={MessageSquare} 
-          title={selectedLanguage === 'en' ? 'Posts' : 'Posts'} 
+          title={m.dashboard.stats.posts()} 
           value="48" 
           change="+12" 
           {isDarkMode} 
@@ -211,7 +206,7 @@
         
         <StatCard 
           icon={Users} 
-          title={selectedLanguage === 'en' ? 'Users' : 'Usuários'} 
+          title={m.dashboard.stats.users()} 
           value="16" 
           change="+3" 
           {isDarkMode} 
@@ -219,7 +214,7 @@
         
         <StatCard 
           icon={UploadCloud} 
-          title={selectedLanguage === 'en' ? 'Media Files' : 'Arquivos de Mídia'} 
+          title={m.dashboard.stats.mediaFiles()} 
           value="164" 
           change="+28" 
           {isDarkMode} 
@@ -230,13 +225,13 @@
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         <!-- Recent Posts -->
         <Card 
-          title={selectedLanguage === 'en' ? 'Recent Posts' : 'Posts Recentes'} 
+          title="Recent Posts" 
           {isDarkMode} 
           className="md:col-span-2"
         >
           <svelte:fragment slot="actions">
             <a href="/admin/posts/new" class="text-sm px-2 py-1 rounded-md border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800">
-              {selectedLanguage === 'en' ? 'Add Post' : 'Adicionar Post'}
+              Add Post
             </a>
           </svelte:fragment>
           <ContentItem 
@@ -262,56 +257,56 @@
         </Card>
         
         <!-- Recent Activity -->
-        <Card title={selectedLanguage === 'en' ? 'Recent Activity' : 'Atividade Recente'} isDarkMode={isDarkMode}>
+        <Card title="Recent Activity" isDarkMode={isDarkMode}>
           <ActivityItem 
-            type={selectedLanguage === 'en' ? 'User Login' : 'Login de Usuário'} 
+            type="User Login" 
             name="Maria Silva" 
             date="15/04/2025" 
             {isDarkMode} 
           />
           
           <ActivityItem 
-            type={selectedLanguage === 'en' ? 'Post Published' : 'Post Publicado'} 
+            type="Post Published" 
             name="News Article" 
             date="14/04/2025" 
             {isDarkMode} 
           />
           
           <ActivityItem 
-            type={selectedLanguage === 'en' ? 'New User' : 'Novo Usuário'} 
+            type="New User" 
             name="Carlos Mendes" 
             date="14/04/2025" 
             {isDarkMode} 
           />
           
           <a href="/admin/activity" class="text-indigo-600 dark:text-indigo-400 text-sm hover:underline block mt-4">
-            {selectedLanguage === 'en' ? 'View all' : 'Ver todos'}
+            View all
           </a>
         </Card>
       </div>
       
       <!-- System Status Section -->
       <div class="grid grid-cols-1 gap-6 mb-6">
-        <Card title={selectedLanguage === 'en' ? 'System Status' : 'Status do Sistema'} isDarkMode={isDarkMode}>
+        <Card title={m.dashboard.systemStatus()} isDarkMode={isDarkMode}>
           <div class={`mb-4 p-4 rounded-md ${isDarkMode ? 'bg-green-900/30 border border-green-800' : 'bg-green-100 border border-green-200'}`}>
             <p class={`text-sm ${isDarkMode ? 'text-green-400' : 'text-green-800'}`}>
-              {selectedLanguage === 'en' ? 'All systems operational. CeLeste CMS v0.1' : 'Todos os sistemas operacionais. CeLeste CMS v0.1'}
+              All systems operational. CeLeste CMS v0.1
             </p>
           </div>
           
           <div class="space-y-4">
             <StatusItem 
-              name={selectedLanguage === 'en' ? 'Database' : 'Banco de Dados'} 
+              name="Database" 
               status="operational" 
             />
             
             <StatusItem 
-              name={selectedLanguage === 'en' ? 'Media Storage' : 'Armazenamento de Mídia'} 
+              name="Media Storage" 
               status="operational" 
             />
             
             <StatusItem 
-              name={selectedLanguage === 'en' ? 'API Services' : 'Serviços de API'} 
+              name="API Services" 
               status="operational" 
             />
           </div>

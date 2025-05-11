@@ -1,0 +1,5 @@
+{
+  "$schema": "https://cdn.jsdelivr.net/npm/@inlang/paraglide-js/schemas/paraglide-js-config.json",
+  "project": "./inlang.config.js",
+  "outdir": "./src/lib/paraglide"
+}

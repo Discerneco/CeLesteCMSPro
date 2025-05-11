@@ -1,0 +1,59 @@
+{
+  "common": {
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "delete": "Excluir",
+    "edit": "Editar",
+    "loading": "Carregando...",
+    "error": "Erro",
+    "success": "Sucesso",
+    "confirm": "Confirmar",
+    "search": "Pesquisar"
+  },
+  "dashboard": {
+    "title": "Painel",
+    "welcome": "Bem-vindo à administração do CeLeste CMS.",
+    "stats": {
+      "activeSites": "Sites Ativos",
+      "posts": "Posts",
+      "users": "Usuários",
+      "mediaFiles": "Arquivos de Mídia"
+    },
+    "systemStatus": "Status do Sistema",
+    "recentActivity": "Atividade Recente",
+    "quickActions": "Ações Rápidas",
+    "createNewSite": "Criar Novo Site",
+    "createNewPost": "Criar Novo Post",
+    "uploadMedia": "Enviar Mídia",
+    "manageUsers": "Gerenciar Usuários"
+  },
+  "sidebar": {
+    "dashboard": "Painel",
+    "sites": "Sites",
+    "templates": "Templates",
+    "posts": "Posts",
+    "pages": "Páginas",
+    "media": "Mídia",
+    "users": "Usuários",
+    "plugins": "Plugins",
+    "settings": "Configurações",
+    "help": "Ajuda",
+    "logout": "Sair"
+  },
+  "login": {
+    "title": "Login de Administrador",
+    "email": "Email",
+    "password": "Senha",
+    "rememberMe": "Lembrar-me",
+    "forgotPassword": "Esqueceu a senha?",
+    "loginButton": "Entrar",
+    "invalidCredentials": "Email ou senha inválidos"
+  },
+  "settings": {
+    "title": "Configurações",
+    "appearance": "Aparência",
+    "language": "Idioma",
+    "darkMode": "Modo Escuro",
+    "notifications": "Notificações"
+  }
+}
