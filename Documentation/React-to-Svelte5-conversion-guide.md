@@ -78,7 +78,17 @@ function handleSubmit(event: Event) {
 
 #### Svelte equivalent:
 ```svelte
+<!-- Svelte 4 syntax -->
 <button on:click={toggleTheme}>
+  {#if isDarkMode}
+    <Sun />
+  {:else}
+    <Moon />
+  {/if}
+</button>
+
+<!-- Svelte 5 syntax -->
+<button onclick={handleThemeToggle}>
   {#if isDarkMode}
     <Sun />
   {:else}
@@ -345,10 +355,10 @@ Notice that with Svelte 5 runes, we prefix the variable name with `$` directly, 
 #### Svelte 5 runes equivalent:
 ```svelte
 <script>
-  let $showPassword = false;
+  let showPassword = $state(false);
   
   function togglePasswordVisibility() {
-    $showPassword = !$showPassword;
+    showPassword = !showPassword;
   }
 </script>
 ```
@@ -366,8 +376,8 @@ Notice that with Svelte 5 runes, we prefix the variable name with `$` directly, 
 #### Svelte 5 runes equivalent:
 ```svelte
 <script>
-  let $count = 0;
-  let $double = $derived($count * 2);
+  let count = $state(0);
+  const double = $derived(count * 2);
 </script>
 ```
 
@@ -389,10 +399,10 @@ Notice that with Svelte 5 runes, we prefix the variable name with `$` directly, 
 #### Svelte 5 runes equivalent:
 ```svelte
 <script>
-  let $count = 0;
+  let count = $state(0);
   
   $effect(() => {
-    if ($count > 10) {
+    if (count > 10) {
       alert('Count is too high!');
     }
   });
@@ -484,7 +494,11 @@ const [selectedLanguage, setSelectedLanguage] = useState('en');
 #### Svelte equivalent:
 ```svelte
 <script>
-  let selectedLanguage = 'en'; // or with runes: let $selectedLanguage = 'en';
+  // Svelte 4
+  let selectedLanguage = 'en';
+  
+  // Svelte 5 with runes
+  let selectedLanguage = $state('en');
 </script>
 
 <h1>{selectedLanguage === 'en' ? 'Dashboard' : 'Painel'}</h1>
@@ -494,11 +508,45 @@ const [selectedLanguage, setSelectedLanguage] = useState('en');
 
 We successfully upgraded our admin dashboard to use Svelte 5 runes with the following steps:
 
-1. Converted standard reactive variables to `$state` variables by prefixing them with `$`
-2. Updated all references to these variables in the template to use the `$` prefix
-3. Updated event handlers to use the `$` prefix when accessing or modifying state
-4. Ensured all conditional rendering and class bindings use the `$` prefix for state variables
-5. Maintained the component-based architecture with props passed using the `$` prefix
+1. Converted standard reactive variables to use the `$state` rune:
+```svelte
+// Before (Svelte 4)
+let isDarkMode = false;
+
+// After (Svelte 5)
+let isDarkMode = $state(false);
+```
+
+2. Removed the `$` prefix when accessing state variables in the template:
+```svelte
+// Before (incorrect Svelte 5 usage)
+<div class={`container ${$isDarkMode ? 'dark' : 'light'}`}>
+
+// After (correct Svelte 5 usage)
+<div class={`container ${isDarkMode ? 'dark' : 'light'}`}>
+```
+
+3. Updated event handlers to use descriptive names and the new event syntax:
+```svelte
+// Before (Svelte 4)
+<button on:click={toggleTheme}>Toggle Theme</button>
+
+// After (Svelte 5)
+<button onclick={handleThemeToggle}>Toggle Theme</button>
+```
+
+4. Used more descriptive function names for event handlers:
+```svelte
+// Before
+function toggleTheme() {
+  isDarkMode = !isDarkMode;
+}
+
+// After
+function handleThemeToggle() {
+  isDarkMode = !isDarkMode;
+}
+```
 
 This approach provides several benefits:
 - More explicit reactivity model
@@ -506,3 +554,4 @@ This approach provides several benefits:
 - Consistent reactivity across components and modules
 - Improved performance through more granular updates
 - Cleaner component interfaces
+- More descriptive function names for better code readability
