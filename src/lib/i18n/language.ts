@@ -14,18 +14,27 @@ export const languageNames: Record<string, string> = {
 
 // Get initial language from localStorage or default to source language
 const getInitialLanguage = (): string => {
-  if (browser) {
-    const storedLanguage = localStorage.getItem('language');
-    if (storedLanguage && availableLanguageTags.includes(storedLanguage)) {
-      return storedLanguage;
-    }
-    
-    // Try to detect browser language
+  // For server-side rendering, always use the source language
+  if (!browser) {
+    return sourceLanguageTag;
+  }
+  
+  // Check localStorage first
+  const storedLanguage = localStorage.getItem('language');
+  if (storedLanguage && availableLanguageTags.includes(storedLanguage)) {
+    return storedLanguage;
+  }
+  
+  // Try to detect browser language
+  try {
     const browserLang = navigator.language.split('-')[0];
     if (availableLanguageTags.includes(browserLang)) {
       return browserLang;
     }
+  } catch (e) {
+    console.error('Error detecting browser language:', e);
   }
+  
   return sourceLanguageTag;
 };
 
