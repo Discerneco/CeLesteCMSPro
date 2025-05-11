@@ -35,7 +35,7 @@
   import LanguageSwitcher from '$lib/components/LanguageSwitcher.svelte';
   
   // Import i18n
-  import { m, languageTag } from '$lib/i18n';
+  import { messages, languageTag } from '$lib/i18n';
 
   // State management with Svelte 5 runes
   let isDarkMode = $state(false);
@@ -96,7 +96,7 @@
           <nav class="space-y-1">
             <SidebarItem 
               icon={PieChart} 
-              label={m.sidebar.dashboard()} 
+              label={$messages.sidebar.dashboard} 
               href="/admin" 
               isActive={true} 
               isDarkMode={isDarkMode} 
@@ -104,56 +104,56 @@
             
             <SidebarItem 
               icon={Globe} 
-              label={m.sidebar.sites()} 
+              label={$messages.sidebar.sites} 
               href="/admin/sites" 
               isDarkMode={isDarkMode} 
             />
             
             <SidebarItem 
               icon={Layout} 
-              label={m.sidebar.templates()} 
+              label={$messages.sidebar.templates} 
               href="/admin/templates" 
               isDarkMode={isDarkMode} 
             />
             
             <SidebarItem 
               icon={MessageSquare} 
-              label={m.sidebar.posts()} 
+              label={$messages.sidebar.posts} 
               href="/admin/posts" 
               isDarkMode={isDarkMode} 
             />
             
             <SidebarItem 
               icon={FileText} 
-              label={m.sidebar.pages()} 
+              label={$messages.sidebar.pages} 
               href="/admin/pages" 
               isDarkMode={isDarkMode} 
             />
             
             <SidebarItem 
               icon={UploadCloud} 
-              label={m.sidebar.media()} 
+              label={$messages.sidebar.media} 
               href="/admin/media" 
               isDarkMode={isDarkMode} 
             />
             
             <SidebarItem 
               icon={Users} 
-              label={m.sidebar.users()} 
+              label={$messages.sidebar.users} 
               href="/admin/users" 
               isDarkMode={isDarkMode} 
             />
             
             <SidebarItem 
               icon={Database} 
-              label={m.sidebar.plugins()} 
+              label={$messages.sidebar.plugins} 
               href="/admin/plugins" 
               isDarkMode={isDarkMode} 
             />
             
             <SidebarItem 
               icon={Settings} 
-              label={m.sidebar.settings()} 
+              label={$messages.sidebar.settings} 
               href="/admin/settings" 
               isDarkMode={isDarkMode} 
             />
@@ -164,14 +164,14 @@
           <nav class="space-y-1">
             <SidebarItem 
               icon={HelpCircle} 
-              label={m.sidebar.help()} 
+              label={$messages.sidebar.help} 
               href="/admin/help" 
               isDarkMode={isDarkMode} 
             />
             
             <SidebarItem 
               icon={LogOut} 
-              label={m.sidebar.logout()} 
+              label={$messages.sidebar.logout} 
               href="/admin/logout" 
               isDarkMode={isDarkMode} 
             />
@@ -182,15 +182,15 @@
     
     <!-- Main Content -->
     <main class="flex-1 overflow-y-auto p-6">
-      <h2 class="text-2xl font-bold mb-6">{m.dashboard.title()}</h2>
-      <p class="text-gray-500 dark:text-gray-400 mb-8">{m.dashboard.welcome()}</p>
+      <h2 class="text-2xl font-bold mb-6">{$messages.dashboard.title}</h2>
+      <p class="text-gray-500 dark:text-gray-400 mb-8">{$messages.dashboard.welcome}</p>
       
       <!-- Stats Row -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <!-- Stats Cards -->
         <StatCard 
           icon={Globe} 
-          title={m.dashboard.stats.activeSites()} 
+          title={$messages.dashboard.stats.activeSites} 
           value="3" 
           change="+1" 
           {isDarkMode} 
@@ -198,7 +198,7 @@
         
         <StatCard 
           icon={MessageSquare} 
-          title={m.dashboard.stats.posts()} 
+          title={$messages.dashboard.stats.posts} 
           value="48" 
           change="+12" 
           {isDarkMode} 
@@ -206,7 +206,7 @@
         
         <StatCard 
           icon={Users} 
-          title={m.dashboard.stats.users()} 
+          title={$messages.dashboard.stats.users} 
           value="16" 
           change="+3" 
           {isDarkMode} 
@@ -214,7 +214,7 @@
         
         <StatCard 
           icon={UploadCloud} 
-          title={m.dashboard.stats.mediaFiles()} 
+          title={$messages.dashboard.stats.mediaFiles} 
           value="164" 
           change="+28" 
           {isDarkMode} 
@@ -287,7 +287,7 @@
       
       <!-- System Status Section -->
       <div class="grid grid-cols-1 gap-6 mb-6">
-        <Card title={m.dashboard.systemStatus()} isDarkMode={isDarkMode}>
+        <Card title={$messages.dashboard.systemStatus} isDarkMode={isDarkMode}>
           <div class={`mb-4 p-4 rounded-md ${isDarkMode ? 'bg-green-900/30 border border-green-800' : 'bg-green-100 border border-green-200'}`}>
             <p class={`text-sm ${isDarkMode ? 'text-green-400' : 'text-green-800'}`}>
               All systems operational. CeLeste CMS v0.1

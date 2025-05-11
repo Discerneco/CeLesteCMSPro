@@ -2,7 +2,6 @@
 <script lang="ts">
   import { Globe } from '@lucide/svelte';
   import { languageStore, setLanguage, availableLanguageTags, languageNames } from '$lib/i18n/language';
-  import { m } from '$lib/i18n';
   
   // Use Svelte 5 runes
   let currentLanguage = $state('');
