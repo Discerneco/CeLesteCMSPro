@@ -1,6 +1,8 @@
 <script lang="ts">
-  import { Eye, EyeOff, AlertCircle, Sun, Moon } from '@lucide/svelte';
+  import { Eye, EyeOff, AlertCircle, Sun, Moon, Loader2 } from '@lucide/svelte';
   import AuthCard from '$lib/components/AuthCard.svelte';
+  import { auth } from '$lib/stores/auth.svelte';
+  import { goto } from '$app/navigation';
 
   // Svelte 5 runes for state management
   let email = $state('');
@@ -9,16 +11,19 @@
   let showPassword = $state(false);
   let error = $state('');
   let isDarkMode = $state(false);
+  let isLoading = $state(false);
 
   function toggleTheme() {
     isDarkMode = !isDarkMode;
+    document.documentElement.classList.toggle('dark', isDarkMode);
+    localStorage.setItem('darkMode', isDarkMode ? 'true' : 'false');
   }
 
   function togglePasswordVisibility() {
     showPassword = !showPassword;
   }
 
-  function handleSubmit(event: Event) {
+  async function handleSubmit(event: Event) {
     event.preventDefault();
     if (!email || !password) {
       error = 'Please enter both email and password';
@@ -29,9 +34,35 @@
       error = 'Please enter a valid email address';
       return;
     }
+    
     error = '';
-    alert('Login attempt with: ' + email);
+    isLoading = true;
+    
+    try {
+      const result = await auth.login(email, password);
+      
+      if (result.success) {
+        // Redirect to admin dashboard
+        goto('/admin');
+      } else {
+        error = result.message || 'Invalid credentials';
+      }
+    } catch (e) {
+      error = 'An error occurred during login';
+      console.error(e);
+    } finally {
+      isLoading = false;
+    }
   }
+  
+  // Initialize dark mode from localStorage on mount
+  $effect(() => {
+    if (typeof window !== 'undefined') {
+      const savedDarkMode = localStorage.getItem('darkMode') === 'true';
+      isDarkMode = savedDarkMode;
+      document.documentElement.classList.toggle('dark', isDarkMode);
+    }
+  });
 </script>
 
 <div class={`min-h-screen flex flex-col ${isDarkMode ? 'dark bg-gray-950 text-gray-100' : 'bg-gray-100 text-gray-900'}`}>
@@ -115,9 +146,17 @@
         <!-- Submit Button -->
         <button
           type="submit"
-          class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          disabled={isLoading}
+          class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-70 disabled:cursor-not-allowed relative"
         >
-          Sign In
+          {#if isLoading}
+            <span class="absolute inset-0 flex items-center justify-center">
+              <Loader2 class="h-5 w-5 animate-spin" />
+            </span>
+            <span class="opacity-0">Sign In</span>
+          {:else}
+            Sign In
+          {/if}
         </button>
       </form>
     </AuthCard>

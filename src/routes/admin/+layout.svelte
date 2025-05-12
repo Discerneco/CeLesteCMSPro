@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { auth } from '$lib/stores/auth';
+  import { auth } from '$lib/stores/auth.svelte';
   import { onMount } from 'svelte';
   
   // Import data from server
