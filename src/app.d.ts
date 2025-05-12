@@ -3,10 +3,21 @@
 declare global {
 	namespace App {
 		// interface Error {}
-		// interface Locals {}
+		interface Locals {
+			user?: {
+				id?: string;
+				role?: string;
+				isAuthenticated: boolean;
+			};
+		}
 		// interface PageData {}
 		// interface PageState {}
-		// interface Platform {}
+		interface Platform {
+			env: {
+				DB: D1Database;
+				[key: string]: unknown;
+			};
+		}
 	}
 }
 

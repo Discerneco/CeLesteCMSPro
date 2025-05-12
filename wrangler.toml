@@ -1,0 +1,20 @@
+# CeLesteCMS Pro Cloudflare Configuration
+name = "celestecms-pro"
+compatibility_date = "2025-05-12"
+
+# Configure Cloudflare Pages
+[site]
+bucket = ".svelte-kit/cloudflare"
+
+# Configure Cloudflare D1 Database
+# After creating your D1 database with `wrangler d1 create celestecms-db`,
+# replace the placeholder below with your actual database_id
+# [[d1_databases]]
+# binding = "DB"
+# database_name = "celestecms-db"
+# database_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+
+# Environment Variables
+[vars]
+# Public variables can be defined here
+# Private variables should be set in the Cloudflare Dashboard or using wrangler
