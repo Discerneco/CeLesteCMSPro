@@ -1,8 +1,7 @@
 import type { Handle } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
 import { paraglideMiddleware } from '$lib/paraglide/server';
-import { svelteKitHandler } from 'better-auth/svelte-kit';
-import { createAuth } from '$lib/server/auth';
+import { verifyToken } from '$lib/server/auth';
 
 // Paraglide middleware for internationalization
 const handleParaglide: Handle = ({ event, resolve }) =>
@@ -14,52 +13,32 @@ const handleParaglide: Handle = ({ event, resolve }) =>
 		});
 	});
 
-// Better Auth middleware
+// Authentication middleware
 const handleAuth: Handle = async ({ event, resolve }) => {
-  try {
-    // Check if platform is available
-    if (!event.platform) {
-      console.warn('Platform not available, falling back to default auth');
-      event.locals.user = { isAuthenticated: false };
-      return resolve(event);
+  // Get auth token from cookies
+  const authToken = event.cookies.get('auth_token');
+  
+  if (authToken) {
+    const userData = await verifyToken(authToken);
+    
+    if (userData) {
+      // Add user data to locals for access in load functions
+      event.locals.user = {
+        id: userData.userId,
+        role: userData.role,
+        isAuthenticated: true
+      };
     }
-    
-    // Initialize Better Auth with the platform
-    const auth = createAuth(event.platform);
-    
-    // Use Better Auth's SvelteKit handler with a wrapper to transform user format
-    const wrappedResolve = async (innerEvent: any) => {
-      // Better Auth will set user in event.locals.user
-      // Transform it to our expected format before passing to the next middleware
-      const result = await resolve(innerEvent);
-      
-      if (innerEvent.locals.user) {
-        const authUser = innerEvent.locals.user;
-        innerEvent.locals.user = {
-          id: authUser.id,
-          email: authUser.email,
-          name: authUser.name || '',
-          role: authUser.role || 'user',
-          isAuthenticated: true
-        };
-      } else {
-        innerEvent.locals.user = { isAuthenticated: false };
-      }
-      
-      return result;
-    };
-    
-    return svelteKitHandler({ 
-      event, 
-      resolve: wrappedResolve, 
-      auth
-    });
-  } catch (error) {
-    console.error('Auth error:', error);
-    // Fallback to default user state if auth fails
-    event.locals.user = { isAuthenticated: false };
-    return resolve(event);
   }
+  
+  // Default user state if no valid token
+  if (!event.locals.user) {
+    event.locals.user = {
+      isAuthenticated: false
+    };
+  }
+  
+  return resolve(event);
 };
 
 // Protect admin routes
