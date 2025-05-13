@@ -50,6 +50,7 @@
 		"@lucide/svelte": "^0.509.0",
 		"@noble/hashes": "^1.8.0",
 		"@paralleldrive/cuid2": "^2.2.2",
+		"better-auth": "^1.2.7",
 		"drizzle-orm": "^0.43.1"
 	}
 }
