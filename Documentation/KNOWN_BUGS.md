@@ -17,16 +17,6 @@ This document tracks known bugs, issues, and limitations in CeLesteCMS Pro that 
 
 ## Backend Issues
 
-### Svelte 5 Runes Usage
-
-1. **Runes Outside of Svelte Files**
-   - **Description**: Svelte 5 runes (`$state`, `$derived`, etc.) can only be used in `.svelte` files or files with the `.svelte.js`/`.svelte.ts` extension.
-   - **Affected Component**: Previously in `src/lib/stores/auth.ts`
-   - **Current Behavior**: Using runes in regular `.ts` files causes the error `rune_outside_svelte`
-   - **Solution**: Moved the auth store to `src/lib/stores/auth.svelte.ts` and updated imports
-   - **Status**: Fixed in commit on 2025-05-12
-   - **Note**: Remember to use `.svelte.ts` extension for any non-component files that need to use runes
-
 *No other known backend issues at this time.*
 
 ## Performance Issues

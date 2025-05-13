@@ -230,7 +230,7 @@
           className="md:col-span-2"
         >
           <svelte:fragment slot="actions">
-            <a href="/admin/posts/new" class="text-sm px-2 py-1 rounded-md border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800">
+            <a href="/admin/posts/new" class="text-sm px-2 py-1 rounded-md border border-gray-200 dark:border-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-800 dark:hover:text-gray-100">
               Add Post
             </a>
           </svelte:fragment>

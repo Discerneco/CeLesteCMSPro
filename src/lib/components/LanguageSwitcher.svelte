@@ -50,7 +50,7 @@
 
 <div class="relative language-switcher">
   <button 
-    class="flex items-center gap-2 px-3 py-1 rounded-md text-sm font-medium bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+    class="flex items-center gap-2 px-3 py-1 rounded-md text-sm font-medium text-gray-900 dark:text-gray-200 bg-gray-100 dark:bg-blue-900 hover:bg-gray-200 dark:hover:bg-blue-800 transition-colors"
     aria-label="Switch language"
     onclick={toggleDropdown}
   >
@@ -59,10 +59,10 @@
   </button>
   
   {#if isOpen}
-    <div class="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-800 rounded-md shadow-lg overflow-hidden z-20 border border-gray-200 dark:border-gray-700">
+    <div class="absolute right-0 mt-2 w-40 bg-white dark:bg-blue-900 text-gray-900 dark:text-gray-200 rounded-md shadow-lg overflow-hidden z-20 border border-gray-200 dark:border-blue-800">
       {#each availableLanguageTags as lang}
         <button
-          class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 {lang === currentLanguage ? 'bg-gray-100 dark:bg-gray-700' : ''}"
+          class="w-full text-left px-4 py-2 text-sm text-gray-900 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-blue-800 {lang === currentLanguage ? 'bg-gray-100 dark:bg-blue-800' : ''}"
           onclick={() => switchLanguage(lang)}
         >
           {lang in languageNames ? languageNames[lang as keyof typeof languageNames] : lang}

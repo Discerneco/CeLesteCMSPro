@@ -44,9 +44,12 @@
 		"vite": "^6.3.5"
 	},
 	"dependencies": {
+		"@cfworker/jwt": "^7.0.4",
 		"@inlang/paraglide-js": "^2.0.12",
 		"@libsql/client": "^0.15.4",
 		"@lucide/svelte": "^0.509.0",
+		"@noble/hashes": "^1.8.0",
+		"@paralleldrive/cuid2": "^2.2.2",
 		"drizzle-orm": "^0.43.1"
 	}
 }
