@@ -2,7 +2,20 @@
 
 This document tracks major implementation milestones and significant features added to CeLesteCMS Pro.
 
-## 2025-05-15
+## Version 0.0.3 (2025-05-15)
+
+- Database schema implementation milestone achieved
+- Versioning strategy defined in Documentation/Development/VERSIONING.md
+- TypeScript interfaces for database models defined
+- Relations between all tables established
+- CUID2 configured for unique ID generation
+
+## Version 0.0.2 (2025-05-15)
+
+- TailwindCSS v4 configured with DaisyUI components and custom themes
+- Core packages installed and version compatibility confirmed
+
+## Version 0.0.1 (2025-05-15)
 
 - Project reset with previous implementation moved to Archive folder
 - Documentation folder reorganized into logical categories
@@ -19,12 +32,5 @@ This document tracks major implementation milestones and significant features ad
   - Drizzle ORM for database
   - Paraglide.js for internationalization
   - SvelteKit adapter for deployment
-- TailwindCSS v4 configured with DaisyUI components and custom themes
-- Database schema implemented with Drizzle ORM:
-  - User authentication tables (users, sessions)
-  - Content management (posts, content types, categories, tags)
-  - Media management with metadata
-  - Settings storage
-  - SQLite configured for local development with D1 compatibility
 - Pnpm installed and configured as default package manager
 
