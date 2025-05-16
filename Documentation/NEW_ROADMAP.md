@@ -1,0 +1,95 @@
+# CeLesteCMS Pro Unified Roadmap
+
+This roadmap merges the high-level, outcome-driven approach of the new roadmap suggestion with the actionable detail of Development.md. It is structured to ensure a focused MVP delivery, prevent scope creep, and provide a clear path for future enhancements.
+
+---
+
+## PHASE 1: MVP (Minimum Viable Product)
+**Goal:** Deliver a performant, static-generated blog with an admin UI, basic authentication, and essential content management. No dynamic/cloud frontend, advanced plugins, or agency features in MVP.
+
+### Core Deliverables
+- Static Site Generation (SSG) for all blog posts (SvelteKit adapter-static)
+- Admin UI (SvelteKit 5, TailwindCSS v4, dark mode)
+- Basic authentication (Better Auth integration)
+- Content management: schemas, markdown editor, REST API
+- Basic SEO: unique meta tags, sitemap.xml
+- Minimal client-side hydration (only for interactivity, e.g. comments)
+- **Database:**
+  - Local development: SQLite (chosen for compatibility with Cloudflare D1) for fast, simple local/dev runs
+  - Production: Cloudflare D1 for deployment
+  - This ensures seamless development and deployment, as both environments use a similar SQL interface.
+- **Deployment:** Output is always to Cloudflare Pages (CL Pages) for both preview and production
+- Initial plugin/extension foundation (but not full system)
+
+### MVP Task Tracking
+- All MVP tasks are tracked in `Development.md` (see that file for up-to-date progress and checklists)
+
+### Explicitly Out of Scope for MVP
+- Dynamic SSR/cloud frontend
+- Advanced plugin system (marketplace, lifecycle, extension points)
+- Agency/multi-site features
+- Advanced SEO (Open Graph, structured data, RSS)
+- Rich text/WYSIWYG editing
+- Granular roles/permissions
+- SaaS/white-label/multi-tenant features
+- One-click deployment tools, CI/CD, analytics
+
+---
+
+## PHASE 2: Post-MVP & Agency Features
+**Goal:** Expand CMS capabilities based on user feedback and real-world needs. Add features for agencies, teams, and advanced users.
+
+### Major Features
+- Multi-site management
+- Team collaboration, roles & permissions
+- Advanced plugin/extension system (marketplace, lifecycle, component extension)
+- Enhanced content editing (WYSIWYG, page builder, real-time preview)
+- Advanced SEO (Open Graph, Schema.org, RSS/Atom feeds)
+- Application marketplace foundation
+- Dynamic application routing
+- Application component library
+- Developer SDK and documentation
+
+---
+
+## PHASE 3: Cloud/SSR & Hosting Provider Integration
+**Goal:** Enable dynamic, scalable deployments and integrations with hosting providers.
+
+### Major Features
+- Cloud/SSR frontend option (dynamic content updates, on-demand revalidation)
+- White-labeling capabilities
+- Control panel integrations
+- Automated deployment tools (one-click, env config, CI/CD)
+- Multi-tenant application support
+- Cloudflare D1 advanced features, asset optimization
+- Monitoring and analytics integration
+- Application scaling capabilities
+
+---
+
+## Guiding Principles
+- **Strict MVP focus:** No features beyond the MVP list until after launch.
+- **User feedback:** Post-MVP priorities are set by real-world usage and feedback.
+- **Agile iteration:** Each phase is planned in detail only after the previous phase is stable.
+- **Modern stack:** SvelteKit 5, TailwindCSS v4, Drizzle ORM, Cloudflare D1/Pages, Better Auth.
+
+---
+
+## Appendix: Quick Reference Table
+
+| Feature/Goal              | MVP (Phase 1) | Post-MVP (Phase 2) | Cloud/SSR (Phase 3) |
+|--------------------------|:-------------:|:------------------:|:-------------------:|
+| SSG Blog                 |      ✅       |         —          |         —           |
+| Admin UI (SvelteKit)     |      ✅       |         ✅         |         ✅           |
+| Auth System              |      ✅       |         ✅         |         ✅           |
+| Plugin System            |   Foundation  |     Full System    |         ✅           |
+| Advanced SEO             |      —        |         ✅         |         ✅           |
+| Agency/Multi-site        |      —        |         ✅         |         ✅           |
+| Cloud/SSR Frontend       |      —        |         —          |         ✅           |
+| Cloudflare/D1            |      ✅       |         ✅         |         ✅           |
+| User Feedback-Driven     |      —        |         ✅         |         ✅           |
+| One-click Deploy/CI/CD   |      —        |         —          |         ✅           |
+
+---
+
+This roadmap is designed to keep the MVP lean and shippable, while providing a clear, actionable path for future growth and advanced features.
