@@ -1,48 +1,29 @@
-# SvelteKit build output
-.svelte-kit/
-build/
-.output/
-.cloudflare/
+node_modules
 
-# Node modules
-node_modules/
+# Output
+.output
+.vercel
+.netlify
+.wrangler
+/.svelte-kit
+/build
 
-# Environment variables
+# OS
+.DS_Store
+Thumbs.db
+
+# Env
 .env
 .env.*
 !.env.example
+!.env.test
 
-# Cloudflare
-.wrangler/
-.dev.vars
+# Vite
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
 
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-.DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-
-# Drizzle
-.drizzle/
+# SQLite
+*.db
 
 # Paraglide
-src/lib/i18n/messages/
-
-# Storybook
-storybook-static/
-
-# Vitest coverage
-coverage/
+src/lib/paraglide

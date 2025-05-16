@@ -12,3 +12,10 @@ This document tracks major implementation milestones and significant features ad
   - Drizzle ORM (SQLite for dev, D1 for production)
   - Cloudflare Pages and Workers
   - Paraglide.js for internationalization
+- SvelteKit project initialized with:
+  - SvelteKit minimal template
+  - TypeScript support
+  - Prettier and ESLint for code quality
+  - Drizzle ORM for database
+  - Paraglide.js for internationalization
+  - SvelteKit adapter for deployment
