@@ -19,3 +19,12 @@ This document tracks major implementation milestones and significant features ad
   - Drizzle ORM for database
   - Paraglide.js for internationalization
   - SvelteKit adapter for deployment
+- TailwindCSS v4 configured with DaisyUI components and custom themes
+- Database schema implemented with Drizzle ORM:
+  - User authentication tables (users, sessions)
+  - Content management (posts, content types, categories, tags)
+  - Media management with metadata
+  - Settings storage
+  - SQLite configured for local development with D1 compatibility
+- Pnpm installed and configured as default package manager
+
