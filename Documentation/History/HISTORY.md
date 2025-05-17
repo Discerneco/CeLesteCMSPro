@@ -2,6 +2,17 @@
 
 This document tracks major implementation milestones and significant features added to CeLesteCMS Pro.
 
+## Version 0.0.4 (2025-05-16)
+
+- Database implementation fully tested and verified
+- API test endpoint created at /api/test-db to validate database operations
+- SQLite database successfully configured with D1 compatibility
+- New documentation files added:
+  - Documentation/Architecture/Plugins.md
+  - Documentation/Architecture/HeadlessAPI/Plugins/RSS Feeds
+  - Documentation/Development/AI Automation Add-On (CeLesteCMS Pro Exclusive).md
+  - Documentation/Development/AI Automation Add-On Tech preview
+
 ## Version 0.0.3 (2025-05-15)
 
 - Database schema implementation milestone achieved
