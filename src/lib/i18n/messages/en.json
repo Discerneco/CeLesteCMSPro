@@ -1,0 +1,49 @@
+{
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "login": "Login",
+    "signup": "Sign Up",
+    "forgotPassword": "Forgot Password?"
+  },
+  "auth": {
+    "emailLabel": "Email",
+    "passwordLabel": "Password",
+    "rememberMe": "Remember me",
+    "loginButton": "Sign In",
+    "signupButton": "Sign Up",
+    "loginTitle": "CeLeste CMS",
+    "loginSubtitle": "Admin Dashboard Login",
+    "loginFooter": "This is a protected area. Only authorized CMS administrators can access.",
+    "invalidCredentials": "Invalid email or password",
+    "emailRequired": "Please enter your email address",
+    "passwordRequired": "Please enter your password",
+    "invalidEmail": "Please enter a valid email address"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome to CeLeste CMS administration.",
+    "stats": {
+      "activeSites": "Active Sites",
+      "posts": "Posts",
+      "users": "Users",
+      "mediaFiles": "Media Files"
+    },
+    "systemStatus": "System Status"
+  },
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "sites": "Sites",
+    "templates": "Templates",
+    "posts": "Posts",
+    "pages": "Pages",
+    "media": "Media",
+    "users": "Users",
+    "plugins": "Plugins",
+    "settings": "Settings",
+    "help": "Help",
+    "logout": "Logout"
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "common": {
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "delete": "Excluir",
+    "edit": "Editar",
+    "login": "Entrar",
+    "signup": "Cadastrar",
+    "forgotPassword": "Esqueceu a senha?"
+  },
+  "auth": {
+    "emailLabel": "Email",
+    "passwordLabel": "Senha",
+    "rememberMe": "Lembrar-me",
+    "loginButton": "Entrar",
+    "signupButton": "Cadastrar",
+    "loginTitle": "CeLeste CMS",
+    "loginSubtitle": "Login do Painel Administrativo",
+    "loginFooter": "Esta é uma área protegida. Apenas administradores autorizados do CMS podem acessar.",
+    "invalidCredentials": "Email ou senha inválidos",
+    "emailRequired": "Por favor, insira seu endereço de email",
+    "passwordRequired": "Por favor, insira sua senha",
+    "invalidEmail": "Por favor, insira um endereço de email válido"
+  },
+  "dashboard": {
+    "title": "Painel",
+    "welcome": "Bem-vindo à administração do CeLeste CMS.",
+    "stats": {
+      "activeSites": "Sites Ativos",
+      "posts": "Posts",
+      "users": "Usuários",
+      "mediaFiles": "Arquivos de Mídia"
+    },
+    "systemStatus": "Status do Sistema"
+  },
+  "sidebar": {
+    "dashboard": "Painel",
+    "sites": "Sites",
+    "templates": "Templates",
+    "posts": "Posts",
+    "pages": "Páginas",
+    "media": "Mídia",
+    "users": "Usuários",
+    "plugins": "Plugins",
+    "settings": "Configurações",
+    "help": "Ajuda",
+    "logout": "Sair"
+  }
+}
