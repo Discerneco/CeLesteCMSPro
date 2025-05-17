@@ -4,6 +4,12 @@ This document outlines the available and planned plugins for CeLesteCMS Pro.
 
 ## Core Plugins
 
+### Blog
+
+- **Comentaries**: create and manage blog comentaries
+
+- **RSS feed**: generate RSS feed for blog posts
+
 ### Task Management
 
 - **Tasks App**: Manage individual tasks with deadlines, priorities, and assignments
