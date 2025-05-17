@@ -2,6 +2,19 @@
 
 This document tracks major implementation milestones and significant features added to CeLesteCMS Pro.
 
+## Version 0.0.5 (2025-05-17)
+
+- UI components restored from Archive for baseline implementation
+- Login page and authentication framework implemented
+- Admin dashboard layout established
+- Component library created in src/lib/components including:
+  - AuthCard, Card, StatCard components
+  - SidebarItem, ActivityItem, ContentItem components
+  - StatusItem and LanguageSwitcher components
+- Internationalization framework implemented with English and Portuguese support
+- Tailwind CSS configured with custom color palette
+- Dark mode support implemented in all components
+
 ## Version 0.0.4 (2025-05-16)
 
 - Database implementation fully tested and verified
