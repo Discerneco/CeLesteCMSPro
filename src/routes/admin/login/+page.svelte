@@ -5,6 +5,8 @@
   import { goto } from '$app/navigation';
 
   // Svelte 5 runes for state management
+  import { onMount } from 'svelte';
+  
   let email = $state('');
   let password = $state('');
   let rememberMe = $state(false);
@@ -56,12 +58,10 @@
   }
   
   // Initialize dark mode from localStorage on mount
-  $effect(() => {
-    if (typeof window !== 'undefined') {
-      const savedDarkMode = localStorage.getItem('darkMode') === 'true';
-      isDarkMode = savedDarkMode;
-      document.documentElement.classList.toggle('dark', isDarkMode);
-    }
+  onMount(() => {
+    const savedDarkMode = localStorage.getItem('darkMode') === 'true';
+    isDarkMode = savedDarkMode;
+    document.documentElement.classList.toggle('dark', savedDarkMode);
   });
 </script>
 
@@ -88,7 +88,7 @@
       subtitle="Admin Dashboard Login" 
       errorMessage={error ? error : ''}
       footerText="This is a protected area. Only authorized CMS administrators can access."
-      {isDarkMode} 
+      isDarkMode={isDarkMode} 
       className="w-full max-w-md shadow-lg"
     >
       <form onsubmit={(e) => { e.preventDefault(); handleSubmit(e); }}>
@@ -98,7 +98,8 @@
           <input
             id="email"
             type="email"
-            bind:value={email}
+            value={email}
+            oninput={(e) => email = e.currentTarget.value}
             class={`w-full px-3 py-2 rounded-md border ${isDarkMode ? 'bg-gray-800 border-gray-700 focus:border-indigo-500' : 'bg-white border-gray-300 focus:border-indigo-500'} focus:outline-none focus:ring-1 focus:ring-indigo-500`}
             placeholder="your@email.com"
             required
@@ -111,7 +112,8 @@
             <input
               id="password"
               type={showPassword ? 'text' : 'password'}
-              bind:value={password}
+              value={password}
+              oninput={(e) => password = e.currentTarget.value}
               class={`w-full px-3 py-2 rounded-md border ${isDarkMode ? 'bg-gray-800 border-gray-700 focus:border-indigo-500' : 'bg-white border-gray-300 focus:border-indigo-500'} focus:outline-none focus:ring-1 focus:ring-indigo-500`}
               placeholder="••••••••"
               required
@@ -136,7 +138,8 @@
             <input
               id="remember-me"
               type="checkbox"
-              bind:checked={rememberMe}
+              checked={rememberMe}
+              onchange={(e) => rememberMe = e.currentTarget.checked}
               class="h-4 w-4 rounded text-indigo-600 focus:ring-indigo-500 dark:bg-gray-700"
             />
             <label for="remember-me" class="ml-2 text-sm">Remember me</label>

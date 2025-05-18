@@ -1,6 +1,49 @@
 # React to Svelte 5 Conversion Guide
 
-## Part 1: Converting React to Svelte
+## Part 1: Understanding Svelte 5 Runes
+
+Svelte 5 introduces a revolutionary approach to reactivity called "runes." Understanding runes is essential for modern Svelte development.
+
+### What Are Runes?
+
+Runes are special annotations that start with `$` and provide reactive capabilities. They are processed at compile time to create the necessary reactive code.
+
+### Key Runes in Svelte 5
+
+1. **`$state`** - Declares a reactive variable
+   ```js
+   let count = $state(0); // Creates a reactive state variable
+   ```
+
+2. **`$derived`** - Computes a value from other state
+   ```js
+   let doubled = $derived(count * 2); // Automatically updates when count changes
+   ```
+
+3. **`$effect`** - Runs code when dependencies change
+   ```js
+   $effect(() => {
+     console.log(`Count is now ${count}`);
+   });
+   ```
+
+### Svelte 5 Runes vs. Traditional Approaches
+
+| Feature | React | Svelte 4 | Svelte 5 Runes |
+|---------|-------|----------|----------------|
+| State | `useState()` | `let count = 0` | `let count = $state(0)` |
+| Derived Values | `useMemo()` | `$: doubled = count * 2` | `let doubled = $derived(count * 2)` |
+| Side Effects | `useEffect()` | `$: { console.log(count); }` | `$effect(() => { console.log(count); })` |
+| Event Handlers | `onClick={handleClick}` | `on:click={handleClick}` | `onclick={handleClick}` |
+
+### Benefits of Runes
+
+- Improved readability with explicit reactive declarations
+- Better TypeScript integration
+- More consistent and predictable behavior
+- Cleaner, more JavaScript-like code
+
+## Part 2: Converting React to Svelte
 
 This guide documents the process of converting React components to Svelte, based on our experience implementing the admin login page for CeLesteCMS Pro.
 
@@ -37,7 +80,13 @@ const [email, setEmail] = useState('');
 const [showPassword, setShowPassword] = useState(false);
 ```
 
-#### Svelte equivalent:
+#### Svelte 5 equivalent (with runes):
+```svelte
+let email = $state('');
+let showPassword = $state(false);
+```
+
+#### Legacy Svelte equivalent (pre-runes):
 ```svelte
 let email = '';
 let showPassword = false;
@@ -55,7 +104,22 @@ const handleSubmit = (e) => {
 };
 ```
 
-#### Svelte equivalent:
+#### Svelte 5 equivalent (with runes):
+```svelte
+function togglePasswordVisibility() {
+  showPassword = !showPassword; // Direct assignment works with $state variables
+}
+
+function handleSubmit(event: Event) {
+  event.preventDefault();
+  // Update state directly
+  email = ''; // Reset email field
+  error = message || 'An error occurred'; // Set error message
+  isLoading = false; // Update loading state
+}
+```
+
+#### Legacy Svelte equivalent (pre-runes):
 ```svelte
 function togglePasswordVisibility() {
   showPassword = !showPassword;
@@ -78,7 +142,7 @@ function handleSubmit(event: Event) {
 
 #### Svelte equivalent:
 ```svelte
-<!-- Svelte 4 syntax -->
+<!-- Svelte 4 syntax (using directives with colons) -->
 <button on:click={toggleTheme}>
   {#if isDarkMode}
     <Sun />
@@ -87,8 +151,8 @@ function handleSubmit(event: Event) {
   {/if}
 </button>
 
-<!-- Svelte 5 syntax -->
-<button onclick={handleThemeToggle}>
+<!-- Svelte 5 syntax (using properties without colons) -->
+<button onclick={toggleTheme}>
   {#if isDarkMode}
     <Sun />
   {:else}
@@ -108,7 +172,16 @@ function handleSubmit(event: Event) {
 />
 ```
 
-#### Svelte equivalent:
+#### Svelte 5 equivalent (with runes):
+```svelte
+<input 
+  type="email" 
+  value={email}
+  oninput={(e) => email = e.currentTarget.value}
+/>
+```
+
+#### Legacy Svelte equivalent (with bind:):
 ```svelte
 <input 
   type="email" 
@@ -148,6 +221,71 @@ function handleSubmit(event: Event) {
 #### Svelte equivalent:
 ```svelte
 <div class={`container ${isDarkMode ? 'dark' : 'light'}`}>
+```
+
+## Part 3: Best Practices for Svelte 5 Runes
+
+### Use `$state` for Reactive Variables
+
+Always use the `$state` rune when you need a reactive variable:
+
+```svelte
+let count = $state(0);
+let user = $state({ name: 'John', age: 30 });
+let items = $state([1, 2, 3]);
+```
+
+### Use Direct Assignment for Updates
+
+With Svelte 5 runes, you update state with direct assignment:
+
+```svelte
+// Correct approach
+count = count + 1;
+user = { ...user, age: user.age + 1 };
+items = [...items, 4];
+
+// Not needed in Svelte 5 runes (avoid this pattern):
+count.set(count() + 1);
+```
+
+### Use `$derived` for Computed Values
+
+For values that depend on other state:
+
+```svelte
+let count = $state(0);
+let doubled = $derived(count * 2);
+let isEven = $derived(count % 2 === 0);
+```
+
+### Use `$effect` for Side Effects
+
+For code that should run when state changes:
+
+```svelte
+let count = $state(0);
+
+$effect(() => {
+  console.log(`Count changed to ${count}`);
+  // Save to localStorage, update DOM, etc.
+});
+```
+
+### Use `onMount` for Client-Side Initialization
+
+For code that should run once when the component is mounted:
+
+```svelte
+import { onMount } from 'svelte';
+
+let data = $state([]);
+
+onMount(async () => {
+  // Client-side code only runs in the browser
+  const response = await fetch('/api/data');
+  data = await response.json();
+});
 ```
 
 ### Step 9: Converting Icon Libraries
