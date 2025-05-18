@@ -2,6 +2,16 @@
 
 This document tracks major implementation milestones and significant features added to CeLesteCMS Pro.
 
+## Version 0.0.6 (2025-05-18)
+
+- Login page UI completely redesigned using DaisyUI components
+- Updated login form with improved styling and modern appearance
+- Added CeLesteCMS logo to the login card
+- Updated form text and button labels for better UX
+- Changed form footer to include support contact information
+- Documented UI styling issues in KNOWN_BUGS.md for future refinement
+- Original login page backed up to Archive folder
+
 ## Version 0.0.5 (2025-05-17)
 
 - UI components restored from Archive for baseline implementation

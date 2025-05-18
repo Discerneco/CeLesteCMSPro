@@ -12,13 +12,13 @@
   let rememberMe = $state(false);
   let showPassword = $state(false);
   let error = $state('');
-  let isDarkMode = $state(false);
+  let theme = $state('light'); // Use theme instead of isDarkMode for DaisyUI
   let isLoading = $state(false);
 
   function toggleTheme() {
-    isDarkMode = !isDarkMode;
-    document.documentElement.classList.toggle('dark', isDarkMode);
-    localStorage.setItem('darkMode', isDarkMode ? 'true' : 'false');
+    theme = theme === 'light' ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
   }
 
   function togglePasswordVisibility() {
@@ -57,117 +57,140 @@
     }
   }
   
-  // Initialize dark mode from localStorage on mount
+  // Initialize theme from localStorage on mount
   onMount(() => {
-    const savedDarkMode = localStorage.getItem('darkMode') === 'true';
-    isDarkMode = savedDarkMode;
-    document.documentElement.classList.toggle('dark', savedDarkMode);
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    theme = savedTheme;
+    document.documentElement.setAttribute('data-theme', savedTheme);
   });
 </script>
 
-<div class="min-h-screen flex flex-col" data-theme={isDarkMode ? 'dark' : 'light'}>
+<div class="min-h-screen flex flex-col bg-base-200">
   <!-- Header with Theme Toggle -->
-  <header class="w-full p-4 flex justify-end bg-base-200 shadow-sm">
-    <button 
-      onclick={toggleTheme}
-      class="btn btn-ghost btn-circle"
-      aria-label="Toggle theme"
-    >
-      {#if isDarkMode}
-        <Sun class="h-5 w-5" />
-      {:else}
-        <Moon class="h-5 w-5" />
-      {/if}
-    </button>
-  </header>
+  <div class="navbar bg-base-100 shadow-sm">
+    <div class="flex-1">
+      <a href="/" class="btn btn-ghost text-xl">CeLeste CMS</a>
+    </div>
+    <div class="flex-none">
+      <button 
+        onclick={toggleTheme}
+        class="btn btn-circle btn-ghost"
+        aria-label="Toggle theme"
+      >
+        {#if theme === 'dark'}
+          <Sun class="h-5 w-5" />
+        {:else}
+          <Moon class="h-5 w-5" />
+        {/if}
+      </button>
+    </div>
+  </div>
 
   <!-- Main Content - Login Form -->
   <main class="flex-grow flex items-center justify-center p-4">
-    <AuthCard 
-      title="CeLeste CMS" 
-      subtitle="Admin Dashboard Login" 
-      errorMessage={error ? error : ''}
-      footerText="This is a protected area. Only authorized CMS administrators can access."
-      className="w-full max-w-md"
-    >
-      <form onsubmit={(e) => { e.preventDefault(); handleSubmit(e); }}>
-        <!-- Email Field -->
-        <div class="form-control mb-4">
-          <label for="email" class="label">
-            <span class="label-text">Email</span>
-          </label>
-          <input
-            id="email"
-            type="email"
-            value={email}
-            oninput={(e) => email = e.currentTarget.value}
-            class="input input-bordered w-full"
-            placeholder="your@email.com"
-            required
-          />
+    <div class="card w-full max-w-md bg-base-100 shadow-xl">
+      <div class="card-body">
+        <div class="flex flex-col items-center justify-center">
+          <img src="/logo.png" alt="CeLeste CMS Logo" class="w-24 h-24 mb-2" />
+          <h2 class="card-title text-2xl font-bold text-center">CeLesteCMS</h2>
+          <p class="text-center text-base-content/70 mb-6">Login to your account</p>
         </div>
-        <!-- Password Field with Toggle -->
-        <div class="form-control mb-4">
-          <label for="password" class="label">
-            <span class="label-text">Password</span>
-          </label>
-          <div class="relative">
+
+        {#if error}
+          <div class="alert alert-error mb-6">
+            <AlertCircle class="h-5 w-5" />
+            <span>{error}</span>
+          </div>
+        {/if}
+
+        <form onsubmit={(e) => { e.preventDefault(); handleSubmit(e); }}>
+          <!-- Email Field -->
+          <div class="form-control mb-4">
+            <label for="email" class="label">
+              <span class="label-text">Email</span>
+            </label>
             <input
-              id="password"
-              type={showPassword ? 'text' : 'password'}
-              value={password}
-              oninput={(e) => password = e.currentTarget.value}
-              class="input input-bordered w-full pr-10"
-              placeholder="••••••••"
+              id="email"
+              type="email"
+              value={email}
+              oninput={(e) => email = e.currentTarget.value}
+              class="input input-bordered w-full"
+              placeholder="your@email.com"
               required
             />
-            <button
-              type="button"
-              onclick={togglePasswordVisibility}
-              class="absolute right-2 top-1/2 transform -translate-y-1/2 btn btn-ghost btn-sm btn-circle"
-              aria-label={showPassword ? 'Hide password' : 'Show password'}
-            >
-              {#if showPassword}
-                <EyeOff class="h-4 w-4" />
-              {:else}
-                <Eye class="h-4 w-4" />
-              {/if}
-            </button>
           </div>
-        </div>
-        <!-- Remember Me & Forgot Password -->
-        <div class="flex items-center justify-between mb-6">
-          <div class="form-control">
-            <label class="label cursor-pointer">
-              <input 
-                type="checkbox" 
-                class="checkbox checkbox-sm checkbox-primary" 
-                checked={rememberMe}
-                onchange={(e) => rememberMe = e.currentTarget.checked}
-              />
-              <span class="label-text ml-2">Remember me</span>
+          
+          <!-- Password Field with Toggle -->
+          <div class="form-control mb-4">
+            <label for="password" class="label">
+              <span class="label-text">Password</span>
             </label>
+            <div class="relative">
+              <input
+                id="password"
+                type={showPassword ? 'text' : 'password'}
+                value={password}
+                oninput={(e) => password = e.currentTarget.value}
+                class="input input-bordered w-full pr-10"
+                placeholder="••••••••"
+                required
+              />
+              <button
+                type="button"
+                onclick={togglePasswordVisibility}
+                class="absolute right-2 top-1/2 transform -translate-y-1/2 text-base-content/70 btn btn-ghost btn-sm btn-circle"
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {#if showPassword}
+                  <EyeOff class="h-4 w-4" />
+                {:else}
+                  <Eye class="h-4 w-4" />
+                {/if}
+              </button>
+            </div>
           </div>
-          <a href="/admin/forgot-password" class="link link-primary text-sm">Forgot password?</a>
-        </div>
-        <!-- Submit Button -->
-        <button
-          type="submit"
-          disabled={isLoading}
-          class="btn btn-primary w-full"
-        >
-          {#if isLoading}
-            <span class="loading loading-spinner"></span>
-            <span class="opacity-0">Sign In</span>
-          {:else}
-            Sign In
-          {/if}
-        </button>
-      </form>
-    </AuthCard>
+          
+          <!-- Remember Me & Forgot Password -->
+          <div class="flex items-center justify-between mb-6">
+            <div class="form-control">
+              <label class="label cursor-pointer">
+                <input 
+                  type="checkbox" 
+                  class="checkbox checkbox-sm checkbox-primary" 
+                  checked={rememberMe}
+                  onchange={(e) => rememberMe = e.currentTarget.checked}
+                />
+                <span class="label-text ml-2">Remember me</span>
+              </label>
+            </div>
+            <a href="/admin/forgot-password" class="link link-primary text-sm">Forgot password?</a>
+          </div>
+          
+          <!-- Submit Button -->
+          <button
+            type="submit"
+            disabled={isLoading}
+            class="btn btn-primary w-full"
+          >
+            {#if isLoading}
+              <span class="loading loading-spinner"></span>
+              <span class="opacity-0">Log in</span>
+            {:else}
+              Log in
+            {/if}
+          </button>
+        </form>
+
+        <div class="divider mt-6 mb-4"></div>
+        <p class="text-xs text-center text-base-content/70">
+          Need help? Contact support@celestecms.com
+        </p>
+      </div>
+    </div>
   </main>
+  
   <!-- Footer -->
-  <footer class={`py-4 text-center text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+  <footer class="footer footer-center p-4 bg-base-200 text-base-content">
     <p>© 2025 CeLeste CMS. All rights reserved.</p>
   </footer>
 </div>
