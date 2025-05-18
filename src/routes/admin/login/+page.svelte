@@ -65,12 +65,12 @@
   });
 </script>
 
-<div class={`min-h-screen flex flex-col ${isDarkMode ? 'dark bg-gray-950 text-gray-100' : 'bg-gray-100 text-gray-900'}`}>
+<div class="min-h-screen flex flex-col" data-theme={isDarkMode ? 'dark' : 'light'}>
   <!-- Header with Theme Toggle -->
-  <header class={`w-full p-4 flex justify-end ${isDarkMode ? 'bg-gray-900' : 'bg-white'} shadow-sm`}>
+  <header class="w-full p-4 flex justify-end bg-base-200 shadow-sm">
     <button 
       onclick={toggleTheme}
-      class={`p-2 rounded-md ${isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-100'}`}
+      class="btn btn-ghost btn-circle"
       aria-label="Toggle theme"
     >
       {#if isDarkMode}
@@ -88,74 +88,76 @@
       subtitle="Admin Dashboard Login" 
       errorMessage={error ? error : ''}
       footerText="This is a protected area. Only authorized CMS administrators can access."
-      isDarkMode={isDarkMode} 
-      className="w-full max-w-md shadow-lg"
+      className="w-full max-w-md"
     >
       <form onsubmit={(e) => { e.preventDefault(); handleSubmit(e); }}>
         <!-- Email Field -->
-        <div class="mb-6">
-          <label for="email" class="block text-sm font-medium mb-1">Email</label>
+        <div class="form-control mb-4">
+          <label for="email" class="label">
+            <span class="label-text">Email</span>
+          </label>
           <input
             id="email"
             type="email"
             value={email}
             oninput={(e) => email = e.currentTarget.value}
-            class={`w-full px-3 py-2 rounded-md border ${isDarkMode ? 'bg-gray-800 border-gray-700 focus:border-indigo-500' : 'bg-white border-gray-300 focus:border-indigo-500'} focus:outline-none focus:ring-1 focus:ring-indigo-500`}
+            class="input input-bordered w-full"
             placeholder="your@email.com"
             required
           />
         </div>
         <!-- Password Field with Toggle -->
-        <div class="mb-6">
-          <label for="password" class="block text-sm font-medium mb-1">Password</label>
+        <div class="form-control mb-4">
+          <label for="password" class="label">
+            <span class="label-text">Password</span>
+          </label>
           <div class="relative">
             <input
               id="password"
               type={showPassword ? 'text' : 'password'}
               value={password}
               oninput={(e) => password = e.currentTarget.value}
-              class={`w-full px-3 py-2 rounded-md border ${isDarkMode ? 'bg-gray-800 border-gray-700 focus:border-indigo-500' : 'bg-white border-gray-300 focus:border-indigo-500'} focus:outline-none focus:ring-1 focus:ring-indigo-500`}
+              class="input input-bordered w-full pr-10"
               placeholder="••••••••"
               required
             />
             <button
               type="button"
               onclick={togglePasswordVisibility}
-              class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500"
+              class="absolute right-2 top-1/2 transform -translate-y-1/2 btn btn-ghost btn-sm btn-circle"
               aria-label={showPassword ? 'Hide password' : 'Show password'}
             >
               {#if showPassword}
-                <EyeOff class="h-5 w-5" />
+                <EyeOff class="h-4 w-4" />
               {:else}
-                <Eye class="h-5 w-5" />
+                <Eye class="h-4 w-4" />
               {/if}
             </button>
           </div>
         </div>
         <!-- Remember Me & Forgot Password -->
         <div class="flex items-center justify-between mb-6">
-          <div class="flex items-center">
-            <input
-              id="remember-me"
-              type="checkbox"
-              checked={rememberMe}
-              onchange={(e) => rememberMe = e.currentTarget.checked}
-              class="h-4 w-4 rounded text-indigo-600 focus:ring-indigo-500 dark:bg-gray-700"
-            />
-            <label for="remember-me" class="ml-2 text-sm">Remember me</label>
+          <div class="form-control">
+            <label class="label cursor-pointer">
+              <input 
+                type="checkbox" 
+                class="checkbox checkbox-sm checkbox-primary" 
+                checked={rememberMe}
+                onchange={(e) => rememberMe = e.currentTarget.checked}
+              />
+              <span class="label-text ml-2">Remember me</span>
+            </label>
           </div>
-          <a href="/admin/forgot-password" class="text-sm text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">Forgot password?</a>
+          <a href="/admin/forgot-password" class="link link-primary text-sm">Forgot password?</a>
         </div>
         <!-- Submit Button -->
         <button
           type="submit"
           disabled={isLoading}
-          class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-70 disabled:cursor-not-allowed relative"
+          class="btn btn-primary w-full"
         >
           {#if isLoading}
-            <span class="absolute inset-0 flex items-center justify-center">
-              <Loader2 class="h-5 w-5 animate-spin" />
-            </span>
+            <span class="loading loading-spinner"></span>
             <span class="opacity-0">Sign In</span>
           {:else}
             Sign In

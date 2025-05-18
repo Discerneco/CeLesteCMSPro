@@ -1,44 +1,46 @@
 <script>
   // Using Svelte 5 runes syntax
+  import { AlertCircle } from '@lucide/svelte';
+  
   let { 
     title = '', 
     subtitle = '', 
-    isDarkMode = false, 
     errorMessage = '',
     footerText = '',
-    className = '' 
+    className = '',
+    children
   } = $props();
 </script>
 
-<div class={`rounded-lg shadow-lg overflow-hidden ${isDarkMode ? 'bg-gray-900 text-gray-100' : 'bg-white text-gray-900'} ${className}`}>
-  <div class="px-8 pt-8 pb-6">
+<div class={`card bg-base-100 shadow-xl overflow-hidden ${className}`}>
+  <div class="card-body">
     {#if title}
       <div class="text-center mb-6">
-        <h1 class="text-2xl font-bold">{title}</h1>
+        <h2 class="card-title text-2xl font-bold justify-center">{title}</h2>
         {#if subtitle}
-          <p class={`mt-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>{subtitle}</p>
+          <p class="text-center text-base-content/70 mt-2">{subtitle}</p>
         {/if}
       </div>
     {/if}
     
     {#if errorMessage}
-      <div class="mb-6 p-3 bg-red-100 border border-red-200 text-red-700 rounded-md flex items-center dark:bg-red-900/30 dark:border-red-800 dark:text-red-400">
+      <div class="alert alert-error mb-6">
+        <AlertCircle class="h-5 w-5" />
         <span>{errorMessage}</span>
       </div>
     {/if}
     
     <!-- Main content -->
     <div class="auth-card-content">
-      <slot></slot>
+      {children}
     </div>
     
-    <!-- Footer with light gray border -->
+    <!-- Footer -->
     {#if footerText}
-      <div class="mt-8 pt-6 border-t text-center text-sm" class:border-gray-200={!isDarkMode} class:border-gray-800={isDarkMode}>
-        <p class={isDarkMode ? 'text-gray-400' : 'text-gray-500'}>
-          {footerText}
-        </p>
-      </div>
+      <div class="divider mt-6 mb-4"></div>
+      <p class="text-xs text-center text-base-content/70">
+        {footerText}
+      </p>
     {/if}
   </div>
 </div>

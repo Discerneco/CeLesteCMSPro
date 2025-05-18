@@ -5,7 +5,7 @@ trigger: always_on
 Use Svelte 5 runes
 Check online docs for Svelte 5 syntax and features
 Use TailwindCSS v4 for styling
-Use DaisyUI
+Use DaisyUI @web https://daisyui.com/llms.txt
 Use Drizzle ORM for database
 Use SQlite for dev with D1 compatibility
 Use Cloudflare D1 for database for production
