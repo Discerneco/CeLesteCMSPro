@@ -67,9 +67,9 @@
   });
 </script>
 
-<div class={`h-screen flex flex-col ${isDarkMode ? 'dark' : ''}`} data-theme={isDarkMode ? 'dark' : 'light'}>
+<div class={`h-screen flex flex-col bg-base-200 ${isDarkMode ? 'dark' : ''}`} data-theme={isDarkMode ? 'dark' : 'light'}>
   <!-- Header -->
-  <div class="navbar bg-base-200 sticky top-0 z-10 shadow-sm">
+  <div class="navbar bg-base-100 sticky top-0 z-10 shadow-sm">
     <div class="navbar-start">
       <button 
         onclick={handleSidebarToggle} 
