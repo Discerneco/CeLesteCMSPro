@@ -209,48 +209,56 @@
       
       <!-- Stats Row -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <!-- Stats Cards using DaisyUI stats component -->
-        <div class="stats shadow bg-base-100">
-          <div class="stat">
-            <div class="stat-figure text-primary">
-              <Globe class="h-6 w-6" />
+        <!-- Stats Cards using DaisyUI card component -->
+        <div class="card bg-base-100 shadow-sm">
+          <div class="card-body p-6">
+            <div class="flex items-center justify-between">
+              <Globe class="text-primary h-8 w-8" />
+              <span class={`badge rounded-full px-3 py-1 font-medium ${isDarkMode ? 'bg-green-900/30 text-green-400' : 'bg-green-100 text-green-600'}`}>+1</span>
             </div>
-            <div class="stat-title">{$messages.dashboard.stats.activeSites}</div>
-            <div class="stat-value">3</div>
-            <div class="stat-desc text-success">+1</div>
+            <div class="mt-4">
+              <h3 class="text-2xl font-bold">3</h3>
+              <p class="text-sm text-base-content/60">{$messages.dashboard.stats.activeSites}</p>
+            </div>
           </div>
         </div>
         
-        <div class="stats shadow bg-base-100">
-          <div class="stat">
-            <div class="stat-figure text-primary">
-              <MessageSquare class="h-6 w-6" />
+        <div class="card bg-base-100 shadow-sm">
+          <div class="card-body p-6">
+            <div class="flex items-center justify-between">
+              <MessageSquare class="text-primary h-8 w-8" />
+              <span class={`badge rounded-full px-3 py-1 font-medium ${isDarkMode ? 'bg-green-900/30 text-green-400' : 'bg-green-100 text-green-600'}`}>+12</span>
             </div>
-            <div class="stat-title">{$messages.dashboard.stats.posts}</div>
-            <div class="stat-value">48</div>
-            <div class="stat-desc text-success">+12</div>
+            <div class="mt-4">
+              <h3 class="text-2xl font-bold">48</h3>
+              <p class="text-sm text-base-content/60">{$messages.dashboard.stats.posts}</p>
+            </div>
           </div>
         </div>
         
-        <div class="stats shadow bg-base-100">
-          <div class="stat">
-            <div class="stat-figure text-primary">
-              <Users class="h-6 w-6" />
+        <div class="card bg-base-100 shadow-sm">
+          <div class="card-body p-6">
+            <div class="flex items-center justify-between">
+              <Users class="text-primary h-8 w-8" />
+              <span class={`badge rounded-full px-3 py-1 font-medium ${isDarkMode ? 'bg-green-900/30 text-green-400' : 'bg-green-100 text-green-600'}`}>+3</span>
             </div>
-            <div class="stat-title">{$messages.dashboard.stats.users}</div>
-            <div class="stat-value">16</div>
-            <div class="stat-desc text-success">+3</div>
+            <div class="mt-4">
+              <h3 class="text-2xl font-bold">16</h3>
+              <p class="text-sm text-base-content/60">{$messages.dashboard.stats.users}</p>
+            </div>
           </div>
         </div>
         
-        <div class="stats shadow bg-base-100">
-          <div class="stat">
-            <div class="stat-figure text-primary">
-              <UploadCloud class="h-6 w-6" />
+        <div class="card bg-base-100 shadow-sm">
+          <div class="card-body p-6">
+            <div class="flex items-center justify-between">
+              <UploadCloud class="text-primary h-8 w-8" />
+              <span class={`badge rounded-full px-3 py-1 font-medium ${isDarkMode ? 'bg-green-900/30 text-green-400' : 'bg-green-100 text-green-600'}`}>+28</span>
             </div>
-            <div class="stat-title">{$messages.dashboard.stats.mediaFiles}</div>
-            <div class="stat-value">164</div>
-            <div class="stat-desc text-success">+28</div>
+            <div class="mt-4">
+              <h3 class="text-2xl font-bold">164</h3>
+              <p class="text-sm text-base-content/60">{$messages.dashboard.stats.mediaFiles}</p>
+            </div>
           </div>
         </div>
       </div>
