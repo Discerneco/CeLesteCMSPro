@@ -33,7 +33,17 @@
 			"users": "Users",
 			"mediaFiles": "Media Files"
 		},
-		"systemStatus": "System Status"
+		"systemStatus": "System Status",
+		"recentPosts": "Recent Posts",
+		"recentActivity": "Recent Activity",
+		"addPost": "Add Post",
+		"viewAll": "View all",
+		"systemOperational": "All systems operational. CeLeste CMS v0.1",
+		"database": "Database",
+		"api": "API",
+		"storage": "Storage",
+		"webServer": "Web Server",
+		"operational": "Operational"
 	},
 	"sidebar": {
 		"dashboard": "Dashboard",
@@ -46,6 +56,11 @@
 		"plugins": "Plugins",
 		"settings": "Settings",
 		"help": "Help",
+		"logout": "Logout"
+	},
+	"userMenu": {
+		"profile": "Profile",
+		"settings": "Settings",
 		"logout": "Logout"
 	}
 }
