@@ -101,9 +101,9 @@
           </div>
         </div>
         <ul tabindex="0" class="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52">
-          <li><a href="/admin/profile">Profile</a></li>
-          <li><a href="/admin/settings">Settings</a></li>
-          <li><button onclick={handleLogout} class="w-full text-left px-4 py-2 hover:bg-base-200">Logout</button></li>
+          <li><a href="/admin/profile">{$messages.userMenu.profile}</a></li>
+          <li><a href="/admin/settings">{$messages.userMenu.settings}</a></li>
+          <li><button onclick={handleLogout} class="w-full text-left px-4 py-2 hover:bg-base-200">{$messages.userMenu.logout}</button></li>
         </ul>
       </div>
     </div>

@@ -55,5 +55,10 @@
     "settings": "Configurações",
     "help": "Ajuda",
     "logout": "Sair"
+  },
+  "userMenu": {
+    "profile": "Perfil",
+    "settings": "Configurações",
+    "logout": "Sair"
   }
 }

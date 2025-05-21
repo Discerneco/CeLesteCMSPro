@@ -55,5 +55,10 @@
     "settings": "Settings",
     "help": "Help",
     "logout": "Logout"
+  },
+  "userMenu": {
+    "profile": "Profile",
+    "settings": "Settings",
+    "logout": "Logout"
   }
 }
