@@ -31,7 +31,17 @@
       "users": "Usuários",
       "mediaFiles": "Arquivos de Mídia"
     },
-    "systemStatus": "Status do Sistema"
+    "recentPosts": "Posts Recentes",
+    "recentActivity": "Atividade Recente",
+    "addPost": "Adicionar Post",
+    "viewAll": "Ver todos",
+    "systemStatus": "Status do Sistema",
+    "systemOperational": "Todos os sistemas operacionais. CeLeste CMS v0.1",
+    "database": "Banco de Dados",
+    "api": "API",
+    "storage": "Armazenamento",
+    "webServer": "Servidor Web",
+    "operational": "Operacional"
   },
   "sidebar": {
     "dashboard": "Painel",

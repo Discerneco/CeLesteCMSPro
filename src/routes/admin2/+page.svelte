@@ -269,8 +269,8 @@
         <div class="card bg-base-100 shadow-md md:col-span-2">
           <div class="card-body">
             <div class="flex justify-between items-center">
-              <h2 class="card-title">Recent Posts</h2>
-              <a href="/admin/posts/new" class="btn btn-sm btn-outline btn-primary">Add Post</a>
+              <h2 class="card-title">{$messages.dashboard.recentPosts}</h2>
+              <a href="/admin/posts/new" class="btn btn-sm btn-outline btn-primary">{$messages.dashboard.addPost}</a>
             </div>
             
             <div class="divider my-2"></div>
@@ -315,7 +315,7 @@
         <!-- Recent Activity -->
         <div class="card bg-base-100 shadow-md">
           <div class="card-body">
-            <h2 class="card-title">Recent Activity</h2>
+            <h2 class="card-title">{$messages.dashboard.recentActivity}</h2>
             
             <div class="divider my-2"></div>
             
@@ -340,7 +340,7 @@
             </div>
             
             <div class="card-actions justify-end mt-4">
-              <a href="/admin/activity" class="link link-primary">View all</a>
+              <a href="/admin/activity" class="link link-primary">{$messages.dashboard.viewAll}</a>
             </div>
           </div>
         </div>
@@ -353,46 +353,46 @@
             <h2 class="card-title">{$messages.dashboard.systemStatus}</h2>
             
             <div class={`p-4 rounded-lg mb-4 ${isDarkMode ? 'bg-green-900/30 text-green-700' : 'bg-green-100 text-green-800'}`}>
-              <span>All systems operational. CeLeste CMS v0.1</span>
+              <span>{$messages.dashboard.systemOperational}</span>
             </div>
             
             <div class="space-y-3">
               <div class="flex items-center justify-between">
-                <span>Database</span>
+                <span>{$messages.dashboard.database}</span>
                 <div class="flex items-center gap-2">
                   <span class={`badge font-medium gap-2 ${isDarkMode ? 'bg-green-900/30 text-green-400' : 'bg-green-100 text-green-600'}`}>
                     <div aria-label="success" class="status status-success"></div>
-                    Operational
+                    {$messages.dashboard.operational}
                   </span>
                 </div>
               </div>
               
               <div class="flex items-center justify-between">
-                <span>API</span>
+                <span>{$messages.dashboard.api}</span>
                 <div class="flex items-center gap-2">
                   <span class={`badge font-medium gap-2 ${isDarkMode ? 'bg-green-900/30 text-green-400' : 'bg-green-100 text-green-600'}`}>
                     <div aria-label="success" class="status status-success"></div>
-                    Operational
+                    {$messages.dashboard.operational}
                   </span>
                 </div>
               </div>
               
               <div class="flex items-center justify-between">
-                <span>Storage</span>
+                <span>{$messages.dashboard.storage}</span>
                 <div class="flex items-center gap-2">
                   <span class={`badge font-medium gap-2 ${isDarkMode ? 'bg-green-900/30 text-green-400' : 'bg-green-100 text-green-600'}`}>
                     <div aria-label="success" class="status status-success"></div>
-                    Operational
+                    {$messages.dashboard.operational}
                   </span>
                 </div>
               </div>
               
               <div class="flex items-center justify-between">
-                <span>Web Server</span>
+                <span>{$messages.dashboard.webServer}</span>
                 <div class="flex items-center gap-2">
                   <span class={`badge font-medium gap-2 ${isDarkMode ? 'bg-green-900/30 text-green-400' : 'bg-green-100 text-green-600'}`}>
                     <div aria-label="success" class="status status-success"></div>
-                    Operational
+                    {$messages.dashboard.operational}
                   </span>
                 </div>
               </div>
