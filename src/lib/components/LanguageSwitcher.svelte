@@ -5,7 +5,6 @@
   
   // Use Svelte 5 runes
   let currentLanguage = $state('');
-  let detailsElement = $state<HTMLDetailsElement | null>(null);
   
   // Subscribe to the language store
   $effect(() => {
@@ -20,23 +19,16 @@
   
   function switchLanguage(lang: string) {
     setLanguage(lang);
-    
-    // Close the dropdown
-    if (detailsElement) {
-      detailsElement.open = false;
-    }
+    // No need to manually close the dropdown, DaisyUI handles it
   }
 </script>
 
-<details 
-  bind:this={detailsElement}
-  class="dropdown dropdown-end"
->
-  <summary class="btn btn-sm bg-base-200 border-base-300 hover:bg-base-300 m-1 flex items-center gap-2">
+<div class="dropdown dropdown-end">
+  <button tabindex="0" class="btn btn-sm bg-base-200 border-base-300 hover:bg-base-300 m-1 flex items-center gap-2">
     <Globe class="h-4 w-4" />
     <span>{currentLanguage in languageNames ? languageNames[currentLanguage as keyof typeof languageNames] : currentLanguage}</span>
-  </summary>
-  <ul class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
+  </button>
+  <ul tabindex="0" role="menu" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
     {#each availableLanguageTags as lang}
       <li>
         <button 
@@ -48,4 +40,4 @@
       </li>
     {/each}
   </ul>
-</details>
+</div>
