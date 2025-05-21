@@ -2,6 +2,22 @@
 
 This document tracks major implementation milestones and significant features added to CeLesteCMS Pro.
 
+## Version 0.0.7 (2025-05-20)
+
+- Admin dashboard UI enhanced with DaisyUI components:
+  - Stat cards converted to DaisyUI card components with improved layout
+  - Recent Posts section redesigned with consistent styling and "Add Post" button
+  - Recent Activity section reformatted with improved visual hierarchy
+  - System Status section updated with DaisyUI status indicators and badges
+  - All sections now properly support dark mode with consistent styling
+- Fixed dropdown behavior:
+  - Language switcher dropdown now properly closes when a language is selected
+  - Avatar menu dropdown behavior aligned with DaisyUI best practices
+- Enhanced internationalization support:
+  - Added translations for all admin dashboard UI elements
+  - User profile menu fully localized for both English and Portuguese
+  - Status indicators and system messages properly internationalized
+
 ## Version 0.0.6 (2025-05-18)
 
 - Login page UI completely redesigned using DaisyUI components
