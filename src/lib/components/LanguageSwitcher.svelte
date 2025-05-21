@@ -5,7 +5,7 @@
   
   // Use Svelte 5 runes
   let currentLanguage = $state('');
-  let isOpen = $state(false);
+  let detailsElement = $state<HTMLDetailsElement | null>(null);
   
   // Subscribe to the language store
   $effect(() => {
@@ -20,54 +20,32 @@
   
   function switchLanguage(lang: string) {
     setLanguage(lang);
-    isOpen = false;
-  }
-  
-  function toggleDropdown() {
-    isOpen = !isOpen;
-  }
-  
-  // Close dropdown when clicking outside
-  function handleClickOutside(event: MouseEvent) {
-    const target = event.target as HTMLElement;
-    if (isOpen && target && !target.closest('.language-switcher')) {
-      isOpen = false;
-    }
-  }
-  
-  $effect(() => {
-    if (isOpen) {
-      document.addEventListener('click', handleClickOutside);
-    } else {
-      document.removeEventListener('click', handleClickOutside);
-    }
     
-    return () => {
-      document.removeEventListener('click', handleClickOutside);
-    };
-  });
+    // Close the dropdown
+    if (detailsElement) {
+      detailsElement.open = false;
+    }
+  }
 </script>
 
-<div class="relative language-switcher">
-  <button 
-    class="flex items-center gap-2 px-3 py-1 rounded-md text-sm font-medium text-gray-900 dark:text-gray-200 bg-gray-100 dark:bg-blue-900 hover:bg-gray-200 dark:hover:bg-blue-800 transition-colors"
-    aria-label="Switch language"
-    onclick={toggleDropdown}
-  >
+<details 
+  bind:this={detailsElement}
+  class="dropdown dropdown-end"
+>
+  <summary class="btn btn-sm bg-base-200 border-base-300 hover:bg-base-300 m-1 flex items-center gap-2">
     <Globe class="h-4 w-4" />
     <span>{currentLanguage in languageNames ? languageNames[currentLanguage as keyof typeof languageNames] : currentLanguage}</span>
-  </button>
-  
-  {#if isOpen}
-    <div class="absolute right-0 mt-2 w-40 bg-white dark:bg-blue-900 text-gray-900 dark:text-gray-200 rounded-md shadow-lg overflow-hidden z-20 border border-gray-200 dark:border-blue-800">
-      {#each availableLanguageTags as lang}
-        <button
-          class="w-full text-left px-4 py-2 text-sm text-gray-900 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-blue-800 {lang === currentLanguage ? 'bg-gray-100 dark:bg-blue-800' : ''}"
+  </summary>
+  <ul class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
+    {#each availableLanguageTags as lang}
+      <li>
+        <button 
+          class="{lang === currentLanguage ? 'active' : ''}"
           onclick={() => switchLanguage(lang)}
         >
           {lang in languageNames ? languageNames[lang as keyof typeof languageNames] : lang}
         </button>
-      {/each}
-    </div>
-  {/if}
-</div>
+      </li>
+    {/each}
+  </ul>
+</details>
