@@ -19,7 +19,11 @@
   
   function switchLanguage(lang: string) {
     setLanguage(lang);
-    // No need to manually close the dropdown, DaisyUI handles it
+    
+    // Close the dropdown by removing focus from the currently focused element
+    if (document.activeElement && 'blur' in document.activeElement) {
+      (document.activeElement as HTMLElement).blur();
+    }
   }
 </script>
 
