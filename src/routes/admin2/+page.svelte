@@ -95,15 +95,15 @@
       </button>
       
       <div class="dropdown dropdown-end">
-        <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar placeholder">
-          <div class="bg-primary text-primary-content rounded-full w-8">
-            <span>A</span>
+        <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
+          <div class="bg-primary text-primary-content rounded-full w-8 h-8 grid place-content-center">
+            A
           </div>
         </div>
         <ul tabindex="0" class="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52">
           <li><a href="/admin/profile">Profile</a></li>
           <li><a href="/admin/settings">Settings</a></li>
-          <li><a onclick={handleLogout}>Logout</a></li>
+          <li><button onclick={handleLogout} class="w-full text-left px-4 py-2 hover:bg-base-200">Logout</button></li>
         </ul>
       </div>
     </div>
