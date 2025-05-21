@@ -348,33 +348,53 @@
       
       <!-- System Status Section -->
       <div class="grid grid-cols-1 gap-6 mb-6">
-        <div class="card bg-base-100 shadow-xl">
+        <div class="card bg-base-100 shadow-md">
           <div class="card-body">
             <h2 class="card-title">{$messages.dashboard.systemStatus}</h2>
             
-            <div class="alert alert-success shadow-lg mb-4">
+            <div class={`p-4 rounded-lg mb-4 ${isDarkMode ? 'bg-green-900/30 text-green-700' : 'bg-green-100 text-green-800'}`}>
               <span>All systems operational. CeLeste CMS v0.1</span>
             </div>
             
-            <div class="space-y-2">
-              <div class="flex items-center gap-2">
-                <div class="badge badge-success badge-sm"></div>
+            <div class="space-y-3">
+              <div class="flex items-center justify-between">
                 <span>Database</span>
+                <div class="flex items-center gap-2">
+                  <span class={`badge font-medium gap-2 ${isDarkMode ? 'bg-green-900/30 text-green-400' : 'bg-green-100 text-green-600'}`}>
+                    <div aria-label="success" class="status status-success"></div>
+                    Operational
+                  </span>
+                </div>
               </div>
               
-              <div class="flex items-center gap-2">
-                <div class="badge badge-success badge-sm"></div>
+              <div class="flex items-center justify-between">
                 <span>API</span>
+                <div class="flex items-center gap-2">
+                  <span class={`badge font-medium gap-2 ${isDarkMode ? 'bg-green-900/30 text-green-400' : 'bg-green-100 text-green-600'}`}>
+                    <div aria-label="success" class="status status-success"></div>
+                    Operational
+                  </span>
+                </div>
               </div>
               
-              <div class="flex items-center gap-2">
-                <div class="badge badge-success badge-sm"></div>
+              <div class="flex items-center justify-between">
                 <span>Storage</span>
+                <div class="flex items-center gap-2">
+                  <span class={`badge font-medium gap-2 ${isDarkMode ? 'bg-green-900/30 text-green-400' : 'bg-green-100 text-green-600'}`}>
+                    <div aria-label="success" class="status status-success"></div>
+                    Operational
+                  </span>
+                </div>
               </div>
               
-              <div class="flex items-center gap-2">
-                <div class="badge badge-success badge-sm"></div>
+              <div class="flex items-center justify-between">
                 <span>Web Server</span>
+                <div class="flex items-center gap-2">
+                  <span class={`badge font-medium gap-2 ${isDarkMode ? 'bg-green-900/30 text-green-400' : 'bg-green-100 text-green-600'}`}>
+                    <div aria-label="success" class="status status-success"></div>
+                    Operational
+                  </span>
+                </div>
               </div>
             </div>
           </div>
