@@ -266,7 +266,7 @@
       <!-- Posts and Activity Sections -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         <!-- Recent Posts -->
-        <div class="card bg-base-100 shadow-xl md:col-span-2">
+        <div class="card bg-base-100 shadow-md md:col-span-2">
           <div class="card-body">
             <div class="flex justify-between items-center">
               <h2 class="card-title">Recent Posts</h2>
@@ -279,60 +279,63 @@
               <div class="flex justify-between items-center">
                 <div>
                   <h3 class="font-medium">Venue selection finalized for the reunion</h3>
-                  <p class="text-sm text-base-content/70">Temple Reunion</p>
+                  <p class="text-sm text-primary">Temple Reunion</p>
+                  <p class="text-xs text-base-content/50 mt-1">14/04/2025</p>
                 </div>
-                <span class="text-sm text-base-content/70">14/04/2025</span>
+                <button class="btn btn-ghost btn-sm">
+                  <Eye class="h-4 w-4 text-primary" />
+                </button>
               </div>
               
               <div class="flex justify-between items-center">
                 <div>
                   <h3 class="font-medium">Community Blog Launch</h3>
-                  <p class="text-sm text-base-content/70">Community Blog</p>
+                  <p class="text-sm text-primary">Community Blog</p>
+                  <p class="text-xs text-base-content/50 mt-1">09/04/2025</p>
                 </div>
-                <span class="text-sm text-base-content/70">09/04/2025</span>
+                <button class="btn btn-ghost btn-sm">
+                  <Eye class="h-4 w-4 text-primary" />
+                </button>
               </div>
               
               <div class="flex justify-between items-center">
                 <div>
                   <h3 class="font-medium">New Portfolio Project</h3>
-                  <p class="text-sm text-base-content/70">Portfolio Site</p>
+                  <p class="text-sm text-primary">Portfolio Site</p>
+                  <p class="text-xs text-base-content/50 mt-1">04/04/2025</p>
                 </div>
-                <span class="text-sm text-base-content/70">04/04/2025</span>
+                <button class="btn btn-ghost btn-sm">
+                  <Eye class="h-4 w-4 text-primary" />
+                </button>
               </div>
             </div>
           </div>
         </div>
         
         <!-- Recent Activity -->
-        <div class="card bg-base-100 shadow-xl">
+        <div class="card bg-base-100 shadow-md">
           <div class="card-body">
             <h2 class="card-title">Recent Activity</h2>
             
             <div class="divider my-2"></div>
             
             <div class="space-y-4">
-              <div class="flex justify-between items-center">
-                <div>
-                  <h3 class="font-medium">User Login</h3>
-                  <p class="text-sm text-base-content/70">Maria Silva</p>
-                </div>
-                <span class="text-sm text-base-content/70">15/04/2025</span>
+              <div>
+                <p class="text-xs text-primary font-medium">User Login</p>
+                <h3 class="font-medium">Maria Silva</h3>
+                <p class="text-xs text-base-content/50 mt-1">15/04/2025</p>
               </div>
               
-              <div class="flex justify-between items-center">
-                <div>
-                  <h3 class="font-medium">Post Published</h3>
-                  <p class="text-sm text-base-content/70">News Article</p>
-                </div>
-                <span class="text-sm text-base-content/70">14/04/2025</span>
+              <div>
+                <p class="text-xs text-primary font-medium">Post Published</p>
+                <h3 class="font-medium">News Article</h3>
+                <p class="text-xs text-base-content/50 mt-1">14/04/2025</p>
               </div>
               
-              <div class="flex justify-between items-center">
-                <div>
-                  <h3 class="font-medium">New User</h3>
-                  <p class="text-sm text-base-content/70">Carlos Mendes</p>
-                </div>
-                <span class="text-sm text-base-content/70">14/04/2025</span>
+              <div>
+                <p class="text-xs text-primary font-medium">New User</p>
+                <h3 class="font-medium">Carlos Mendes</h3>
+                <p class="text-xs text-base-content/50 mt-1">14/04/2025</p>
               </div>
             </div>
             
