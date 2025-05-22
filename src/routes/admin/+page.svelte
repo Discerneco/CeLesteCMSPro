@@ -113,10 +113,10 @@
     <!-- Sidebar -->
     {#if isSidebarOpen}
       <aside class="w-64 bg-base-100 border-r border-base-300 overflow-y-auto">
-        <div class="p-4">
+        <div class="p-2">
           <ul class="menu menu-md bg-base-100 w-full">
             <li>
-              <a href="/admin" class="active">
+              <a href="/admin" class="active bg-primary text-primary-content hover:bg-primary-focus">
                 <PieChart class="h-5 w-5" />
                 {$messages.sidebar.dashboard}
               </a>
