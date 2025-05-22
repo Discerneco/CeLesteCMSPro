@@ -2,6 +2,21 @@
 
 This document tracks changes made to CeLesteCMS Pro during each development session.
 
+## Session: 2025-05-21
+
+### Added
+- Added distinctive background color to active sidebar menu items for better navigation
+- Added 4px spacing between sidebar menu items for improved readability
+
+### Changed
+- Archived original admin implementation and replaced it with improved DaisyUI-based dashboard
+- Updated Next Steps documentation with implementation strategy for database, authentication, and content pages
+
+### Planned Next Steps
+- Implement database connection with Drizzle ORM and SQLite/D1
+- Develop authentication system with proper session management
+- Create content management pages (posts, users, media)
+
 ## Session: 2025-05-20
 
 ### Added

@@ -2,6 +2,17 @@
 
 This document tracks major implementation milestones and significant features added to CeLesteCMS Pro.
 
+## Version 0.0.8 (2025-05-21)
+
+- Admin interface improvements:
+  - Archived original admin implementation and replaced with improved DaisyUI-based dashboard
+  - Added distinctive background color to active sidebar menu items for better navigation
+  - Added 4px spacing between sidebar menu items for improved readability
+- Development roadmap updated:
+  - Added implementation strategy to Next Steps documentation
+  - Prioritized database, authentication, and content pages development
+  - Established clear sequence for future implementation tasks
+
 ## Version 0.0.7 (2025-05-20)
 
 - Admin dashboard UI enhanced with DaisyUI components:
