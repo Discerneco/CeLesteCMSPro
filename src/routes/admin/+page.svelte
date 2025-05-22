@@ -114,7 +114,15 @@
     {#if isSidebarOpen}
       <aside class="w-64 bg-base-100 border-r border-base-300 overflow-y-auto">
         <div class="p-2">
-          <ul class="menu menu-md bg-base-100 w-full">
+          <style>
+            .sidebar-menu li {
+              margin-bottom: 4px;
+            }
+            .sidebar-menu li:last-child {
+              margin-bottom: 0;
+            }
+          </style>
+          <ul class="menu menu-md bg-base-100 w-full sidebar-menu">
             <li>
               <a href="/admin" class="active bg-primary text-primary-content hover:bg-primary-focus">
                 <PieChart class="h-5 w-5" />
@@ -183,7 +191,7 @@
         <div class="divider"></div>
         
         <div class="p-4 mt-auto">
-          <ul class="menu menu-md bg-base-100 w-full">
+          <ul class="menu menu-md bg-base-100 w-full sidebar-menu">
             <li>
               <a href="/admin/help">
                 <HelpCircle class="h-5 w-5" />
