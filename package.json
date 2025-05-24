@@ -54,6 +54,7 @@
 		"@libsql/client": "^0.15.6",
 		"@lucide/svelte": "^0.511.0",
 		"@paralleldrive/cuid2": "^2.2.2",
+		"better-auth": "^1.2.8",
 		"better-sqlite3": "^11.10.0",
 		"dotenv": "^16.5.0",
 		"drizzle-orm": "^0.43.1"
@@ -61,6 +62,7 @@
 	"pnpm": {
 		"onlyBuiltDependencies": [
 			"@tailwindcss/oxide",
+			"better-sqlite3",
 			"esbuild",
 			"sharp",
 			"workerd"

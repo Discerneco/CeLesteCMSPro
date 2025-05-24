@@ -1,5 +1,6 @@
 import type { Handle } from '@sveltejs/kit';
 import { paraglideMiddleware } from '$lib/paraglide/server';
+import { auth } from '$lib/server/auth';
 
 const handleParaglide: Handle = ({ event, resolve }) =>
 	paraglideMiddleware(event.request, ({ request, locale }) => {
@@ -10,4 +11,17 @@ const handleParaglide: Handle = ({ event, resolve }) =>
 		});
 	});
 
-export const handle: Handle = handleParaglide;
+const handleAuth: Handle = async ({ event, resolve }) => {
+	// Get session from Better Auth
+	const session = await auth.api.getSession({
+		headers: event.request.headers
+	});
+	
+	event.locals.session = session;
+	return resolve(event);
+};
+
+export const handle: Handle = async ({ event, resolve }) => {
+	// Chain the auth handler with the paraglide handler
+	return handleAuth({ event, resolve: (event) => handleParaglide({ event, resolve }) });
+};
