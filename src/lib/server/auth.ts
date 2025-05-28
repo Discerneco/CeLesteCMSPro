@@ -11,8 +11,20 @@ export const auth = betterAuth({
     requireEmailVerification: false
   },
   session: {
-    expiresIn: 60 * 60 * 24 * 7, // 7 days
-    updateAge: 60 * 60 * 24 // 1 day
+    expiresIn: 60 * 60 * 2, // 2 hours for testing (shorter to see difference)
+    updateAge: 60 * 30, // 30 minutes
+    cookieCache: {
+      enabled: true,
+      maxAge: 5 * 60 // 5 minutes cache
+    }
+  },
+  // Configure cookie behavior
+  advanced: {
+    defaultCookieAttributes: {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax'
+    }
   },
   trustedOrigins: ['http://localhost:5173'],
   secret: process.env.BETTER_AUTH_SECRET!,
