@@ -46,6 +46,9 @@
       const result = await auth.login(email, password, rememberMe);
       
       if (result.success) {
+        // Save remember me preference to localStorage
+        localStorage.setItem('rememberMe', rememberMe.toString());
+        
         // Redirect to admin dashboard
         goto('/admin');
       } else {
@@ -59,17 +62,16 @@
     }
   }
   
-  // Initialize theme and remembered email on mount
+  // Initialize theme and remember me preference on mount
   onMount(() => {
     const savedTheme = localStorage.getItem('theme') || 'light';
     theme = savedTheme;
     document.documentElement.setAttribute('data-theme', savedTheme);
     
-    // Load remembered email if exists
-    const rememberedEmail = localStorage.getItem('rememberedEmail');
-    if (rememberedEmail) {
-      email = rememberedEmail;
-      rememberMe = true; // If we have a remembered email, default rememberMe to true
+    // Load remember me preference if exists
+    const savedRememberMe = localStorage.getItem('rememberMe');
+    if (savedRememberMe === 'true') {
+      rememberMe = true;
     }
     
     // Initialize auth store
