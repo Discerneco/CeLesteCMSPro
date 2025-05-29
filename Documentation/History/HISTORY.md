@@ -2,6 +2,21 @@
 
 This document tracks major implementation milestones and significant features added to CeLesteCMS Pro.
 
+## Version 0.0.10 (2025-05-28)
+
+- Authentication System Improvements:
+  - Fixed remember me checkbox state persistence by implementing localStorage preference storage
+  - Updated Better Auth session configuration to use recommended defaults:
+    - Session expiration: 7 days (from 2 hours testing value)
+    - Update age: 1 day (from 30 minutes testing value)
+    - Cookie cache: Maintained at 5 minutes
+  - Remember me functionality now properly remembers user preference across browser sessions
+  - Email autofill handled securely by browser instead of localStorage storage
+- Development Status:
+  - Phase 1b (Authentication System): In progress 🔄
+  - Authentication UI connected to Better Auth with proper session management
+  - Ready for route protection and role-based access control implementation
+
 ## Version 0.0.9 (2025-05-23)
 
 - Database Foundation Phase Complete ✅:

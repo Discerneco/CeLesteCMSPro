@@ -2,6 +2,35 @@
 
 This document tracks changes made to CeLesteCMS Pro during each development session.
 
+## Session: 2025-05-28
+
+### Fixed
+- Fixed remember me checkbox state persistence in login form
+  - Removed legacy email storage from localStorage for security reasons
+  - Implemented proper remember me preference storage in localStorage
+  - Checkbox now correctly reflects user's previous preference on page load
+  - Browser autofill handles email field securely instead of localStorage
+
+### Changed
+- Updated Better Auth session configuration to use recommended defaults:
+  - `expiresIn`: Changed from 2 hours to 7 days (604800 seconds)
+  - `updateAge`: Changed from 30 minutes to 1 day (86400 seconds)
+  - Cookie cache maxAge maintained at 5 minutes
+- Login form now saves remember me preference to localStorage on successful login
+- onMount function updated to load remember me preference instead of stored email
+
+### Technical Details
+- Remember me sessions now last 7 days with daily refresh for active users
+- Sessions persist through browser restarts only when "remember me" is checked
+- Improved security by removing plain text email storage in localStorage
+- Browser's native autofill handles email field securely
+
+### Planned Next Steps
+- Implement route guards for protected admin pages
+- Add role-based access control (admin, editor, etc.)
+- Create user management functionality
+- Add password reset flow with email verification
+
 ## Session: 2025-05-23
 
 ### Added
