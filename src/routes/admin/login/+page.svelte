@@ -1,8 +1,10 @@
 <script lang="ts">
   import { Eye, EyeOff, AlertCircle, Sun, Moon, Loader2 } from '@lucide/svelte';
   import AuthCard from '$lib/components/AuthCard.svelte';
+  import LanguageSwitcher from '$lib/components/LanguageSwitcher.svelte';
   import { auth } from '$lib/stores/auth';
   import { goto } from '$app/navigation';
+  import * as m from '$lib/paraglide/messages';
 
   // Svelte 5 runes for state management
   import { onMount } from 'svelte';
@@ -28,12 +30,12 @@
   async function handleSubmit(event: Event) {
     event.preventDefault();
     if (!email || !password) {
-      error = 'Please enter both email and password';
+      error = m["auth.fillAllFields"]();
       return;
     }
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      error = 'Please enter a valid email address';
+      error = m["auth.invalidEmail"]();
       return;
     }
     
@@ -52,10 +54,10 @@
         // Redirect to admin dashboard
         goto('/admin');
       } else {
-        error = result.message || 'Invalid credentials';
+        error = result.message || m["auth.invalidCredentials"]();
       }
     } catch (e) {
-      error = 'An error occurred during login';
+      error = m["auth.loginError"]();
       console.error(e);
     } finally {
       isLoading = false;
@@ -81,33 +83,37 @@
 
 <div class="min-h-screen flex flex-col bg-base-200">
   <!-- Header with Theme Toggle -->
-  <div class="navbar bg-base-100 shadow-sm">
+  <div class="navbar bg-base-100 shadow-sm px-4 sm:px-8">
     <div class="flex-1">
-      <a href="/" class="btn btn-ghost text-xl">CeLeste CMS</a>
+      <span class="text-xl font-semibold">CeLeste CMS</span>
     </div>
     <div class="flex-none">
-      <button 
-        onclick={toggleTheme}
-        class="btn btn-circle btn-ghost"
-        aria-label="Toggle theme"
-      >
-        {#if theme === 'dark'}
-          <Sun class="h-5 w-5" />
-        {:else}
-          <Moon class="h-5 w-5" />
-        {/if}
-      </button>
+      <div class="flex items-center gap-2">
+        <LanguageSwitcher />
+        <button 
+          onclick={toggleTheme}
+          class="btn btn-circle btn-ghost"
+          aria-label={m["auth.toggleTheme"]()}
+        >
+          {#if theme === 'dark'}
+            <Sun class="h-5 w-5" />
+          {:else}
+            <Moon class="h-5 w-5" />
+          {/if}
+        </button>
+      </div>
     </div>
   </div>
 
   <!-- Main Content - Login Form -->
-  <main class="flex-grow flex items-center justify-center p-4">
-    <div class="card w-full max-w-md bg-base-100 shadow-xl">
+  <main class="flex-grow flex items-center justify-center px-4 sm:px-8 py-6">
+    <div class="w-full max-w-md">
+      <div class="card bg-base-100 shadow-xl">
       <div class="card-body">
         <div class="flex flex-col items-center justify-center">
           <img src="/logo.png" alt="CeLeste CMS Logo" class="w-24 h-24 mb-2" />
-          <h2 class="card-title text-2xl font-bold text-center">CeLesteCMS</h2>
-          <p class="text-center text-base-content/70 mb-6">Login to your account</p>
+          <h2 class="card-title text-2xl font-bold text-center">{m["auth.loginTitle"]()}</h2>
+          <p class="text-center text-base-content/70 mb-6">{m["auth.loginSubtitle"]()}</p>
         </div>
 
         {#if error}
@@ -121,7 +127,7 @@
           <!-- Email Field -->
           <div class="form-control mb-4">
             <label for="email" class="label">
-              <span class="label-text">Email</span>
+              <span class="label-text">{m["auth.emailLabel"]()}</span>
             </label>
             <input
               id="email"
@@ -137,7 +143,7 @@
           <!-- Password Field with Toggle -->
           <div class="form-control mb-4">
             <label for="password" class="label">
-              <span class="label-text">Password</span>
+              <span class="label-text">{m["auth.passwordLabel"]()}</span>
             </label>
             <div class="relative">
               <input
@@ -153,7 +159,7 @@
                 type="button"
                 onclick={togglePasswordVisibility}
                 class="absolute right-2 top-1/2 transform -translate-y-1/2 text-base-content/70 btn btn-ghost btn-sm btn-circle"
-                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                aria-label={showPassword ? m["auth.hidePassword"]() : m["auth.showPassword"]()}
               >
                 {#if showPassword}
                   <EyeOff class="h-4 w-4" />
@@ -174,10 +180,10 @@
                   checked={rememberMe}
                   onchange={(e) => rememberMe = e.currentTarget.checked}
                 />
-                <span class="label-text ml-2">Remember me</span>
+                <span class="label-text ml-2">{m["auth.rememberMe"]()}</span>
               </label>
             </div>
-            <a href="/admin/forgot-password" class="link link-primary text-sm">Forgot password?</a>
+            <a href="/admin/forgot-password" class="link link-primary text-sm">{m["common.forgotPassword"]()}</a>
           </div>
           
           <!-- Submit Button -->
@@ -188,9 +194,9 @@
           >
             {#if isLoading}
               <span class="loading loading-spinner"></span>
-              <span class="opacity-0">Log in</span>
+              <span class="opacity-0">{m["auth.loginButton"]()}</span>
             {:else}
-              Log in
+              {m["auth.loginButton"]()}
             {/if}
           </button>
         </form>
@@ -198,21 +204,22 @@
         <!-- Link to Signup -->
         <div class="text-center mt-6">
           <p class="text-sm text-base-content/70">
-            Don't have an account? 
-            <a href="/admin/signup" class="link link-primary font-medium">Sign up</a>
+            {m["auth.dontHaveAccount"]()} 
+            <a href="/admin/signup" class="link link-primary font-medium">{m["common.signup"]()}</a>
           </p>
         </div>
 
         <div class="divider mt-6 mb-4"></div>
         <p class="text-xs text-center text-base-content/70">
-          Need help? Contact support@celestecms.com
+          {m["auth.support"]()}
         </p>
+      </div>
       </div>
     </div>
   </main>
   
   <!-- Footer -->
-  <footer class="footer footer-center p-4 bg-base-200 text-base-content">
-    <p>© 2025 CeLeste CMS. All rights reserved.</p>
+  <footer class="footer footer-center px-4 sm:px-8 py-6 bg-base-200 text-base-content">
+    <p>{m["auth.copyright"]()}</p>
   </footer>
 </div>

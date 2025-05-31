@@ -26,6 +26,10 @@ This index provides an overview of all documentation available for CeLesteCMS Pr
 - **[UI Guide](Guides/UI_Guide.md)** - Component library and design system
 - **[Localization Guide](Guides/Localization_Guide.md)** - Internationalization setup
 
+### 📈 Marketing
+- **[Internationalization Competitive Advantages](Marketing/Internationalization_Competitive_Advantages.md)** - Market positioning and competitive analysis
+- **[Content Usage Guide](Marketing/Content_Usage_Guide.md)** - Marketing content applications and strategies
+
 ### 🚀 Deployment
 - **[Deployment Documentation](Deployment/)** - Production deployment guides
 
@@ -42,6 +46,7 @@ This index provides an overview of all documentation available for CeLesteCMS Pr
 
 ### ✅ Recently Updated (May 2025)
 - Security Checklist - Reorganized to eliminate redundancy
+- Marketing Documentation - New competitive advantage analysis and content usage guides
 
 ### 🔄 Needs Consolidation
 - Development.md and Development_v2.md - Multiple versions need merging

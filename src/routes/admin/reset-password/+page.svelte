@@ -3,30 +3,40 @@
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
   import { onMount } from 'svelte';
+  import { Sun, Moon } from '@lucide/svelte';
+  import LanguageSwitcher from '$lib/components/LanguageSwitcher.svelte';
+  import { messages } from '$lib/i18n';
   
   let isLoading = false;
   let password = '';
   let confirmPassword = '';
-  let passwordsMatch = true;
-  let passwordStrength = '';
   let error = '';
+  let theme = $state('light');
   
-  $: token = $page.url.searchParams.get('token');
-  $: message = $page.url.searchParams.get('message');
-  $: success = $page.url.searchParams.get('success') === 'true';
+  let token = $derived($page.url.searchParams.get('token'));
+  let message = $derived($page.url.searchParams.get('message'));
+  let success = $derived($page.url.searchParams.get('success') === 'true');
+  
+  function toggleTheme() {
+    theme = theme === 'light' ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+  }
 
-  // Redirect if no token
+  // Redirect if no token and initialize theme
   onMount(() => {
     if (!token) {
       goto('/admin/login');
     }
+    
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    theme = savedTheme;
+    document.documentElement.setAttribute('data-theme', savedTheme);
   });
 
-  // Password validation
-  $: {
-    passwordsMatch = password === confirmPassword;
-    passwordStrength = getPasswordStrength(password);
-  }
+  // Password validation using derived runes
+  let passwordsMatch = $derived(password === confirmPassword);
+  let passwordStrength = $derived(getPasswordStrength(password));
 
   function getPasswordStrength(pwd: string): string {
     if (pwd.length === 0) return '';
@@ -49,17 +59,17 @@
     error = '';
     
     if (!password) {
-      error = 'Password is required';
+      error = $messages.auth.passwordRequired;
       return false;
     }
     
     if (password.length < 8) {
-      error = 'Password must be at least 8 characters long';
+      error = $messages.auth.passwordTooShort;
       return false;
     }
     
     if (!passwordsMatch) {
-      error = 'Passwords do not match';
+      error = $messages.auth.passwordsDoNotMatch;
       return false;
     }
     
@@ -68,15 +78,40 @@
 </script>
 
 <svelte:head>
-  <title>Reset Password - CeLesteCMS Pro</title>
+  <title>{$messages.auth.resetPasswordTitle} - CeLesteCMS Pro</title>
 </svelte:head>
 
-<div class="min-h-screen flex items-center justify-center bg-base-200">
+<div class="min-h-screen flex flex-col bg-base-200">
+  <!-- Header with Theme Toggle -->
+  <div class="navbar bg-base-100 shadow-sm px-4 sm:px-8">
+    <div class="flex-1">
+      <span class="text-xl font-semibold">CeLeste CMS</span>
+    </div>
+    <div class="flex-none">
+      <div class="flex items-center gap-2">
+        <LanguageSwitcher />
+        <button 
+          onclick={toggleTheme}
+          class="btn btn-circle btn-ghost"
+          aria-label={$messages.auth.toggleTheme}
+        >
+          {#if theme === 'dark'}
+            <Sun class="h-5 w-5" />
+          {:else}
+            <Moon class="h-5 w-5" />
+          {/if}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <main class="flex-grow flex items-center justify-center px-4 sm:px-8 py-6">
   <div class="card w-96 bg-base-100 shadow-xl">
     <div class="card-body">
-      <h2 class="card-title justify-center">Set New Password</h2>
+      <h2 class="card-title justify-center">{$messages.auth.resetPasswordTitle}</h2>
       <p class="text-center text-sm opacity-70 mb-4">
-        Enter your new password below
+        {$messages.auth.resetPasswordSubtitle}
       </p>
       
       {#if success}
@@ -84,10 +119,10 @@
           <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          <span>Password reset successful! You can now sign in with your new password.</span>
+          <span>{$messages.auth.passwordResetSuccess}</span>
         </div>
         <div class="card-actions justify-center mt-4">
-          <a href="/admin/login" class="btn btn-primary">Go to Login</a>
+          <a href="/admin/login" class="btn btn-primary">{$messages.common.login}</a>
         </div>
       {:else if token}
         <form method="POST" use:enhance={() => {
@@ -103,7 +138,7 @@
           
           <div class="form-control">
             <label class="label" for="password">
-              <span class="label-text">New Password</span>
+              <span class="label-text">{$messages.auth.passwordLabel}</span>
             </label>
             <input
               id="password"
@@ -130,7 +165,7 @@
           
           <div class="form-control">
             <label class="label" for="confirmPassword">
-              <span class="label-text">Confirm New Password</span>
+              <span class="label-text">{$messages.auth.confirmPasswordLabel}</span>
             </label>
             <input
               id="confirmPassword"
@@ -147,7 +182,7 @@
             />
             {#if confirmPassword && !passwordsMatch}
               <div class="label">
-                <span class="label-text-alt text-error">Passwords do not match</span>
+                <span class="label-text-alt text-error">{$messages.auth.passwordsDoNotMatch}</span>
               </div>
             {/if}
           </div>
@@ -193,9 +228,9 @@
             >
               {#if isLoading}
                 <span class="loading loading-spinner"></span>
-                Updating Password...
+                {$messages.auth.setNewPassword}...
               {:else}
-                Update Password
+                {$messages.auth.setNewPassword}
               {/if}
             </button>
           </div>
@@ -203,7 +238,7 @@
         
         <div class="divider"></div>
         <div class="text-center">
-          <a href="/admin/login" class="link link-hover">Back to Login</a>
+          <a href="/admin/login" class="link link-hover">{$messages.auth.backToLogin}</a>
         </div>
       {:else}
         <div class="alert alert-error">
@@ -213,9 +248,15 @@
           <span>Invalid or missing reset token. Please request a new password reset.</span>
         </div>
         <div class="card-actions justify-center mt-4">
-          <a href="/admin/forgot-password" class="btn btn-primary">Request New Reset</a>
+          <a href="/admin/forgot-password" class="btn btn-primary">{$messages.auth.sendResetLink}</a>
         </div>
       {/if}
     </div>
   </div>
+  </main>
+  
+  <!-- Footer -->
+  <footer class="footer footer-center px-4 sm:px-8 py-6 bg-base-200 text-base-content">
+    <p>{$messages.auth.copyright}</p>
+  </footer>
 </div>
