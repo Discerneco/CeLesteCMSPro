@@ -69,8 +69,8 @@
     // Initialize language from localStorage
     const savedLanguage = localStorage.getItem('language');
     if (savedLanguage && ['en', 'pt-br'].includes(savedLanguage)) {
-      import('$lib/paraglide/runtime.js').then(({ setLanguageTag }) => {
-        setLanguageTag(savedLanguage as any);
+      import('$lib/paraglide/runtime.js').then(({ setLocale }) => {
+        setLocale(savedLanguage as any, { reload: false });
       });
     }
     
@@ -84,9 +84,6 @@
     if (savedRememberMe === 'true') {
       rememberMe = true;
     }
-    
-    // Initialize auth store
-    auth.init();
   });
 </script>
 

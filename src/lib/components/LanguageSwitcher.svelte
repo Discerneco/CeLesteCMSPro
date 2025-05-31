@@ -1,7 +1,6 @@
 <!-- src/lib/components/LanguageSwitcher.svelte -->
 <script lang="ts">
   import { Globe } from '@lucide/svelte';
-  // ✅ Updated imports for Paraglide 2.0
   import { setLocale, getLocale, locales } from '$lib/paraglide/runtime.js';
   
   // Language display names
@@ -10,26 +9,22 @@
     'pt-br': 'Português (BR)'
   } as const;
   
-  // ✅ Use Paraglide 2.0's getLocale function
+  // ✅ Simple state
   let currentLanguage = $state(getLocale());
   
-  // ✅ Update current language when locale changes
-  $effect(() => {
-    currentLanguage = getLocale();
-  });
-  
   function switchLanguage(lang: string) {
-    // ✅ Use setLocale instead of setLanguageTag
-    setLocale(lang as any);
-    
-    // Store in localStorage for persistence
-    if (typeof localStorage !== 'undefined') {
-      localStorage.setItem('language', lang);
-    }
-    
-    // Close the dropdown
-    if (document.activeElement && 'blur' in document.activeElement) {
-      (document.activeElement as HTMLElement).blur();
+    try {
+      // Store in localStorage first for persistence
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem('language', lang);
+      }
+      
+      // ✅ Use setLocale with default behavior (page reload)
+      // This is how Paraglide 2.0 is designed to work
+      setLocale(lang as any);
+      
+    } catch (error) {
+      console.error('❌ Language switch failed:', error);
     }
   }
 </script>
@@ -40,7 +35,6 @@
     <span>{currentLanguage in languageNames ? languageNames[currentLanguage as keyof typeof languageNames] : currentLanguage}</span>
   </button>
   <ul tabindex="0" role="menu" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
-    <!-- ✅ Use locales instead of availableLanguageTags -->
     {#each locales as lang}
       <li>
         <button 
@@ -48,6 +42,9 @@
           onclick={() => switchLanguage(lang)}
         >
           {lang in languageNames ? languageNames[lang as keyof typeof languageNames] : lang}
+          {#if lang === currentLanguage}
+            ✓
+          {/if}
         </button>
       </li>
     {/each}
