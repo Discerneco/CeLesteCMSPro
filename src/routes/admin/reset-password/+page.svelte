@@ -5,7 +5,7 @@
   import { onMount } from 'svelte';
   import { Sun, Moon } from '@lucide/svelte';
   import LanguageSwitcher from '$lib/components/LanguageSwitcher.svelte';
-  import { messages } from '$lib/i18n';
+  import * as m from '$lib/paraglide/messages';
   
   let isLoading = false;
   let password = '';
@@ -23,12 +23,21 @@
     localStorage.setItem('theme', theme);
   }
 
-  // Redirect if no token and initialize theme
+  // Redirect if no token and initialize theme and language
   onMount(() => {
     if (!token) {
       goto('/admin/login');
     }
     
+    // Initialize language from localStorage
+    const savedLanguage = localStorage.getItem('language');
+    if (savedLanguage && ['en', 'pt-br'].includes(savedLanguage)) {
+      import('$lib/paraglide/runtime.js').then(({ setLanguageTag }) => {
+        setLanguageTag(savedLanguage as any);
+      });
+    }
+    
+    // Initialize theme
     const savedTheme = localStorage.getItem('theme') || 'light';
     theme = savedTheme;
     document.documentElement.setAttribute('data-theme', savedTheme);
@@ -59,17 +68,17 @@
     error = '';
     
     if (!password) {
-      error = $messages.auth.passwordRequired;
+      error = m["auth.passwordRequired"]();
       return false;
     }
     
     if (password.length < 8) {
-      error = $messages.auth.passwordTooShort;
+      error = m["auth.passwordTooShort"]();
       return false;
     }
     
     if (!passwordsMatch) {
-      error = $messages.auth.passwordsDoNotMatch;
+      error = m["auth.passwordsDoNotMatch"]();
       return false;
     }
     
@@ -78,7 +87,7 @@
 </script>
 
 <svelte:head>
-  <title>{$messages.auth.resetPasswordTitle} - CeLesteCMS Pro</title>
+  <title>{m["auth.resetPasswordTitle"]()} - CeLesteCMS Pro</title>
 </svelte:head>
 
 <div class="min-h-screen flex flex-col bg-base-200">
@@ -93,7 +102,7 @@
         <button 
           onclick={toggleTheme}
           class="btn btn-circle btn-ghost"
-          aria-label={$messages.auth.toggleTheme}
+          aria-label={m["auth.toggleTheme"]()}
         >
           {#if theme === 'dark'}
             <Sun class="h-5 w-5" />
@@ -109,9 +118,9 @@
   <main class="flex-grow flex items-center justify-center px-4 sm:px-8 py-6">
   <div class="card w-96 bg-base-100 shadow-xl">
     <div class="card-body">
-      <h2 class="card-title justify-center">{$messages.auth.resetPasswordTitle}</h2>
+      <h2 class="card-title justify-center">{m["auth.resetPasswordTitle"]()}</h2>
       <p class="text-center text-sm opacity-70 mb-4">
-        {$messages.auth.resetPasswordSubtitle}
+        {m["auth.resetPasswordSubtitle"]()}
       </p>
       
       {#if success}
@@ -119,10 +128,10 @@
           <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          <span>{$messages.auth.passwordResetSuccess}</span>
+          <span>{m["auth.passwordResetSuccess"]()}</span>
         </div>
         <div class="card-actions justify-center mt-4">
-          <a href="/admin/login" class="btn btn-primary">{$messages.common.login}</a>
+          <a href="/admin/login" class="btn btn-primary">{m["common.login"]()}</a>
         </div>
       {:else if token}
         <form method="POST" use:enhance={() => {
@@ -138,7 +147,7 @@
           
           <div class="form-control">
             <label class="label" for="password">
-              <span class="label-text">{$messages.auth.passwordLabel}</span>
+              <span class="label-text">{m["auth.passwordLabel"]()}</span>
             </label>
             <input
               id="password"
@@ -165,7 +174,7 @@
           
           <div class="form-control">
             <label class="label" for="confirmPassword">
-              <span class="label-text">{$messages.auth.confirmPasswordLabel}</span>
+              <span class="label-text">{m["auth.confirmPasswordLabel"]()}</span>
             </label>
             <input
               id="confirmPassword"
@@ -182,7 +191,7 @@
             />
             {#if confirmPassword && !passwordsMatch}
               <div class="label">
-                <span class="label-text-alt text-error">{$messages.auth.passwordsDoNotMatch}</span>
+                <span class="label-text-alt text-error">{m["auth.passwordsDoNotMatch"]()}</span>
               </div>
             {/if}
           </div>
@@ -228,9 +237,9 @@
             >
               {#if isLoading}
                 <span class="loading loading-spinner"></span>
-                {$messages.auth.setNewPassword}...
+                {m["auth.setNewPassword"]()}...
               {:else}
-                {$messages.auth.setNewPassword}
+                {m["auth.setNewPassword"]()}
               {/if}
             </button>
           </div>
@@ -238,7 +247,7 @@
         
         <div class="divider"></div>
         <div class="text-center">
-          <a href="/admin/login" class="link link-hover">{$messages.auth.backToLogin}</a>
+          <a href="/admin/login" class="link link-hover">{m["auth.backToLogin"]()}</a>
         </div>
       {:else}
         <div class="alert alert-error">
@@ -248,7 +257,7 @@
           <span>Invalid or missing reset token. Please request a new password reset.</span>
         </div>
         <div class="card-actions justify-center mt-4">
-          <a href="/admin/forgot-password" class="btn btn-primary">{$messages.auth.sendResetLink}</a>
+          <a href="/admin/forgot-password" class="btn btn-primary">{m["auth.sendResetLink"]()}</a>
         </div>
       {/if}
     </div>
@@ -257,6 +266,6 @@
   
   <!-- Footer -->
   <footer class="footer footer-center px-4 sm:px-8 py-6 bg-base-200 text-base-content">
-    <p>{$messages.auth.copyright}</p>
+    <p>{m["auth.copyright"]()}</p>
   </footer>
 </div>

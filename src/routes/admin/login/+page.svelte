@@ -64,8 +64,17 @@
     }
   }
   
-  // Initialize theme and remember me preference on mount
+  // Initialize theme and language on mount
   onMount(() => {
+    // Initialize language from localStorage
+    const savedLanguage = localStorage.getItem('language');
+    if (savedLanguage && ['en', 'pt-br'].includes(savedLanguage)) {
+      import('$lib/paraglide/runtime.js').then(({ setLanguageTag }) => {
+        setLanguageTag(savedLanguage as any);
+      });
+    }
+    
+    // Initialize theme
     const savedTheme = localStorage.getItem('theme') || 'light';
     theme = savedTheme;
     document.documentElement.setAttribute('data-theme', savedTheme);

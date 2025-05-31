@@ -1,26 +1,33 @@
 <!-- src/lib/components/LanguageSwitcher.svelte -->
 <script lang="ts">
   import { Globe } from '@lucide/svelte';
-  import { languageStore, setLanguage, availableLanguageTags, languageNames } from '$lib/i18n/language';
+  // ✅ Updated imports for Paraglide 2.0
+  import { setLocale, getLocale, locales } from '$lib/paraglide/runtime.js';
   
-  // Use Svelte 5 runes
-  let currentLanguage = $state('');
+  // Language display names
+  const languageNames = {
+    'en': 'English',
+    'pt-br': 'Português (BR)'
+  } as const;
   
-  // Subscribe to the language store
+  // ✅ Use Paraglide 2.0's getLocale function
+  let currentLanguage = $state(getLocale());
+  
+  // ✅ Update current language when locale changes
   $effect(() => {
-    const unsubscribe = languageStore.subscribe(value => {
-      currentLanguage = value;
-    });
-    
-    return () => {
-      unsubscribe();
-    };
+    currentLanguage = getLocale();
   });
   
   function switchLanguage(lang: string) {
-    setLanguage(lang);
+    // ✅ Use setLocale instead of setLanguageTag
+    setLocale(lang as any);
     
-    // Close the dropdown by removing focus from the currently focused element
+    // Store in localStorage for persistence
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('language', lang);
+    }
+    
+    // Close the dropdown
     if (document.activeElement && 'blur' in document.activeElement) {
       (document.activeElement as HTMLElement).blur();
     }
@@ -33,7 +40,8 @@
     <span>{currentLanguage in languageNames ? languageNames[currentLanguage as keyof typeof languageNames] : currentLanguage}</span>
   </button>
   <ul tabindex="0" role="menu" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
-    {#each availableLanguageTags as lang}
+    <!-- ✅ Use locales instead of availableLanguageTags -->
+    {#each locales as lang}
       <li>
         <button 
           class="{lang === currentLanguage ? 'active' : ''}"
