@@ -18,6 +18,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Basic SEO features
 - Plugin foundation architecture
 
+## [0.0.12-alpha] - 2025-05-31
+
+### Fixed
+- **Paraglide 2.0 Compatibility** - Fixed TypeError: languageTag is not a function
+  - Updated LanguageSwitcher component to use new Paraglide 2.0 API
+  - Replaced deprecated `languageTag()` with `getLocale()`
+  - Replaced deprecated `setLanguageTag()` with `setLocale()`
+  - Replaced deprecated `availableLanguageTags` with `locales` array
+  - All localization now working correctly with Paraglide 2.0 + Svelte 5
+
+### Changed
+- **Login Button Text** - Updated from "Sign In" to "Login" in English messages
+- **Admin UI Consistency** - Improved visual consistency across all authentication pages:
+  - Standardized navbar layout across login, signup, forgot-password, and reset-password pages
+  - Added proper margins to navigation corners for better spacing
+  - Centered icons vertically in navbar for improved alignment
+  - Enhanced overall user experience with consistent design patterns
+
+### Added
+- **Utility Script** - Added `clear-cache.sh` for development workflow optimization
+
+### Developer Experience
+- Resolved Svelte 5 + Paraglide 2.0 integration issues
+- Improved development workflow with proper localization setup
+- Enhanced UI consistency reduces maintenance overhead
+
 ## [0.0.11-alpha] - 2025-05-30
 
 ### Added
@@ -256,7 +282,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Links
 
-[Unreleased]: https://github.com/Discerneco/CeLesteCMSPro/compare/v0.0.11-alpha...HEAD
+[Unreleased]: https://github.com/Discerneco/CeLesteCMSPro/compare/v0.0.12-alpha...HEAD
+[0.0.12-alpha]: https://github.com/Discerneco/CeLesteCMSPro/compare/v0.0.11-alpha...v0.0.12-alpha
 [0.0.11-alpha]: https://github.com/Discerneco/CeLesteCMSPro/compare/v0.0.10-alpha...v0.0.11-alpha
 [0.0.10-alpha]: https://github.com/Discerneco/CeLesteCMSPro/compare/v0.0.9-alpha...v0.0.10-alpha
 [0.0.9-alpha]: https://github.com/Discerneco/CeLesteCMSPro/compare/v0.0.8-alpha...v0.0.9-alpha
