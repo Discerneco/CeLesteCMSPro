@@ -19,7 +19,8 @@
 		"db:seed": "tsx src/lib/server/db/seed.ts",
 		"db:seed-standalone": "tsx src/lib/server/db/seed-standalone.ts",
 		"test:db": "tsx test-db-standalone.ts",
-		"db:cli": "tsx db-cli.ts"
+		"db:cli": "tsx db-cli.ts",
+		"test:email": "tsx test-email.ts"
 	},
 	"devDependencies": {
 		"@cloudflare/workers-types": "^4.20250522.0",
@@ -30,6 +31,7 @@
 		"@sveltejs/vite-plugin-svelte": "^5.0.3",
 		"@tailwindcss/typography": "^0.5.16",
 		"@tailwindcss/vite": "^4.1.7",
+		"@types/bcrypt": "^5.0.2",
 		"@types/better-sqlite3": "^7.6.13",
 		"@types/node": "^22.15.18",
 		"daisyui": "^5.0.35",
@@ -54,6 +56,7 @@
 		"@libsql/client": "^0.15.6",
 		"@lucide/svelte": "^0.511.0",
 		"@paralleldrive/cuid2": "^2.2.2",
+		"bcrypt": "^5.1.1",
 		"better-auth": "^1.2.8",
 		"better-sqlite3": "^11.10.0",
 		"dotenv": "^16.5.0",
@@ -62,6 +65,7 @@
 	"pnpm": {
 		"onlyBuiltDependencies": [
 			"@tailwindcss/oxide",
+			"bcrypt",
 			"better-sqlite3",
 			"esbuild",
 			"sharp",
