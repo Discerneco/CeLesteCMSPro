@@ -64,16 +64,8 @@
     }
   }
   
-  // Initialize theme and language on mount
+  // Initialize theme on mount (language is handled by hooks.client.ts now)
   onMount(() => {
-    // Initialize language from localStorage
-    const savedLanguage = localStorage.getItem('language');
-    if (savedLanguage && ['en', 'pt-br'].includes(savedLanguage)) {
-      import('$lib/paraglide/runtime.js').then(({ setLocale }) => {
-        setLocale(savedLanguage as any, { reload: false });
-      });
-    }
-    
     // Initialize theme
     const savedTheme = localStorage.getItem('theme') || 'light';
     theme = savedTheme;

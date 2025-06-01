@@ -1,575 +1,706 @@
-# Internationalization & Language Guide for CeLesteCMS Pro
+# Paraglide 2.0 Internationalization Guide for CeLesteCMS Pro
 
-This guide explains how to implement and use internationalization (i18n) in CeLesteCMS Pro using a hybrid approach with Svelte 5 runes and SvelteKit stores for optimal reactivity and compatibility.
+**⚠️ Updated for Paraglide 2.0 - Official Documentation**
+
+This guide explains how to implement and use internationalization (i18n) in CeLesteCMS Pro using **Paraglide 2.0** with SvelteKit and the strategy system for automatic language detection.
 
 ## Table of Contents
 
 1. [Overview](#overview)
-2. [Project Setup](#project-setup)
-3. [Configuration](#configuration)
-4. [Message Organization](#message-organization)
-5. [SvelteKit Integration](#sveltekit-integration)
-6. [Using Messages in Components](#using-messages-in-components)
-7. [Language Detection and Persistence](#language-detection-and-persistence)
-8. [Build Integration](#build-integration)
-9. [Best Practices](#best-practices)
-10. [Examples](#examples)
+2. [Paraglide 2.0 Architecture](#paraglide-20-architecture)
+3. [Project Setup](#project-setup)
+4. [Configuration](#configuration)
+5. [Strategy System](#strategy-system)
+6. [Message Organization](#message-organization)
+7. [SvelteKit Integration](#sveltekit-integration)
+8. [Using Messages in Components](#using-messages-in-components)
+9. [Language Switching](#language-switching)
+10. [Prerendering & SEO](#prerendering--seo)
+11. [Advanced Configuration](#advanced-configuration)
+12. [Best Practices](#best-practices)
+13. [Migration from 1.x](#migration-from-1x)
 
 ## Overview
 
-CeLesteCMS Pro uses a hybrid approach for internationalization that combines:
+CeLesteCMS Pro uses **Paraglide 2.0** - a modern, framework-agnostic i18n library that:
 
-- **Svelte 5 runes** for component-level reactivity
-- **Svelte stores** for cross-component state management
-- **JSON message files** for language content
-- Support for multiple languages (currently English and Brazilian Portuguese)
-- Full compatibility with Svelte 5
+- **Compiles translations** at build time for optimal performance
+- **Tree-shakes unused messages** automatically
+- **Provides full TypeScript safety** with auto-generated types
+- **Uses strategy system** for automatic language detection
+- **Works with Svelte 5 runes** out of the box
+- **Supports SSR, SSG, and CSR** seamlessly
+
+### Key 2.0 Changes
+
+- ✅ **No framework-specific adapters** - Universal Vite plugin
+- ✅ **Strategy-based language detection** - Automatic URL/cookie handling
+- ✅ **Simplified setup** - No ParaglideJS component needed
+- ✅ **Framework agnostic** - Same plugin works everywhere
+- ✅ **Better TypeScript** - Improved type generation
+
+## Paraglide 2.0 Architecture
+
+```
+┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
+│   Strategy      │───▶│   Paraglide      │───▶│   Components    │
+│   System        │    │   Runtime        │    │                 │
+├─────────────────┤    ├──────────────────┤    ├─────────────────┤
+│ 1. URL          │    │ • Message        │    │ • Auto-reactive │
+│ 2. Cookie       │    │   functions      │    │ • Type-safe     │
+│ 3. baseLocale   │    │ • Locale state   │    │ • Tree-shaken   │
+└─────────────────┘    │ • Localization   │    └─────────────────┘
+                       └──────────────────┘
+```
 
 ## Project Setup
 
-### Required Packages
+### Installation
 
-The following packages are already installed in CeLesteCMS Pro:
+CeLesteCMS Pro already has the correct packages:
 
 ```bash
+# Already installed in your project
 npm install @inlang/paraglide-js
 ```
 
-For development, you may also need:
+### Initialize Paraglide
 
 ```bash
-npm install -D @inlang/sdk
+# Run once to set up project structure
+npx @inlang/paraglide-js init
 ```
+
+This creates:
+- `project.inlang/settings.json` - Project configuration
+- `messages/{locale}.json` - Translation files
+- Updates `vite.config.ts` - Adds the plugin
 
 ## Configuration
 
-Create an `inlang.config.js` file in the project root:
+### Project Configuration
 
-```javascript
-// inlang.config.js
-import { defineConfig } from "@inlang/sdk"
+Your `project.inlang/settings.json` is correctly configured:
+
+```json
+{
+  "$schema": "https://inlang.com/schema/project-settings",
+  "modules": [
+    "https://cdn.jsdelivr.net/npm/@inlang/plugin-message-format@4/dist/index.js",
+    "https://cdn.jsdelivr.net/npm/@inlang/plugin-m-function-matcher@2/dist/index.js"
+  ],
+  "plugin.inlang.messageFormat": {
+    "pathPattern": "./messages/{locale}.json"
+  },
+  "baseLocale": "en",
+  "locales": ["en", "pt-br"]
+}
+```
+
+### Vite Configuration
+
+Your `vite.config.ts` is correctly configured for Paraglide 2.0:
+
+```typescript
+import { paraglideVitePlugin } from '@inlang/paraglide-js';
+import { sveltekit } from '@sveltejs/kit/vite';
+import { defineConfig } from 'vite';
 
 export default defineConfig({
-  sourceLanguageTag: "en",
-  languageTags: ["en", "pt-br"],
-  modules: [
-    // Plugin for message extraction
-    "https://cdn.jsdelivr.net/npm/@inlang/plugin-json@latest/dist/index.js",
-    // SvelteKit integration
-    "https://cdn.jsdelivr.net/npm/@inlang/sdk-js-adapter@latest/dist/index.js"
-  ],
-  // Where to store message files
-  pathPattern: "./src/lib/i18n/messages/{languageTag}.json"
-})
+  plugins: [
+    sveltekit(),
+    paraglideVitePlugin({
+      project: './project.inlang',
+      outdir: './src/lib/paraglide',
+      // 🎯 Strategy system - the heart of 2.0
+      strategy: ['url', 'cookie', 'baseLocale']
+    })
+  ]
+});
+```
+
+### App HTML Configuration
+
+Update `src/app.html` to use the correct placeholder:
+
+```html
+<!doctype html>
+<!-- ✅ Correct 2.0 placeholder -->
+<html lang="%lang%">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%sveltekit.assets%/favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    %sveltekit.head%
+  </head>
+  <body data-sveltekit-preload-data="hover">
+    <div style="display: contents">%sveltekit.body%</div>
+  </body>
+</html>
+```
+
+## Strategy System
+
+The strategy system is **the core of Paraglide 2.0**. It automatically determines the user's language in this order:
+
+### Strategy Order: `['url', 'cookie', 'baseLocale']`
+
+1. **URL Strategy** (`/pt-br/admin/login`)
+   - Checks URL path for language prefix
+   - If found, uses that language
+   - Automatically sets cookie for persistence
+
+2. **Cookie Strategy** (`locale=pt-br`)
+   - If no URL language, checks `locale` cookie
+   - Uses saved language preference
+   - Maintains consistency across navigation
+
+3. **Base Locale Strategy** (`en`)
+   - Final fallback to your base language
+   - Ensures app always has a valid locale
+
+### How It Works
+
+```typescript
+// User visits: /pt-br/admin/login
+// Strategy detects: "pt-br" from URL
+// Result: locale = "pt-br", cookie = "pt-br"
+
+// User navigates: /admin/dashboard (no language in URL)
+// Strategy detects: "pt-br" from cookie
+// Result: locale = "pt-br" (maintained)
+
+// New user visits: /admin/login (no URL, no cookie)
+// Strategy detects: falls back to "en"
+// Result: locale = "en"
 ```
 
 ## Message Organization
 
 ### Directory Structure
 
-Messages should be organized in JSON files:
-
 ```
-src/
-└── lib/
-    └── i18n/
-        ├── index.js        # Main export file
-        ├── language.js     # Language store
-        └── messages/
-            ├── en.json     # English messages
-            └── pt-br.json  # Brazilian Portuguese messages
+messages/
+├── en.json     # English (base locale)
+└── pt-br.json  # Brazilian Portuguese
+
+src/lib/paraglide/  # Generated by Paraglide
+├── messages/
+│   ├── en.js       # Compiled English functions
+│   └── pt-br.js    # Compiled Portuguese functions
+├── messages.js     # All message exports
+└── runtime.js      # Runtime functions
 ```
 
 ### Message Format
 
-Message files should use a structured JSON format:
+Messages use a structured JSON format with parameters:
 
 ```json
-// src/lib/i18n/messages/en.json
+// messages/en.json
 {
+  "auth": {
+    "loginTitle": "Sign In",
+    "loginSubtitle": "Welcome back to CeLeste CMS",
+    "emailLabel": "Email Address",
+    "passwordLabel": "Password",
+    "loginButton": "Sign In",
+    "forgotPassword": "Forgot password?",
+    "rememberMe": "Remember me",
+    "invalidCredentials": "Invalid email or password",
+    "welcomeUser": "Welcome back, {name}!"
+  },
+  "dashboard": {
+    "title": "Dashboard", 
+    "welcome": "Welcome to CeLeste CMS administration",
+    "stats": {
+      "users": "Users",
+      "posts": "Posts", 
+      "pages": "Pages"
+    }
+  },
   "common": {
     "save": "Save",
     "cancel": "Cancel",
     "delete": "Delete",
-    "edit": "Edit"
-  },
-  "dashboard": {
-    "title": "Dashboard",
-    "welcome": "Welcome to CeLeste CMS administration.",
-    "stats": {
-      "activeSites": "Active Sites",
-      "posts": "Posts",
-      "users": "Users",
-      "mediaFiles": "Media Files"
-    }
-  },
-  "sidebar": {
-    "dashboard": "Dashboard",
-    "sites": "Sites",
-    "templates": "Templates",
-    "posts": "Posts",
-    "pages": "Pages",
-    "media": "Media",
-    "users": "Users",
-    "plugins": "Plugins",
-    "settings": "Settings",
-    "help": "Help",
-    "logout": "Logout"
+    "loading": "Loading..."
   }
 }
 ```
 
 ```json
-// src/lib/i18n/messages/pt-br.json
+// messages/pt-br.json
 {
-  "common": {
-    "save": "Salvar",
-    "cancel": "Cancelar",
-    "delete": "Excluir",
-    "edit": "Editar"
+  "auth": {
+    "loginTitle": "Entrar",
+    "loginSubtitle": "Bem-vindo de volta ao CeLeste CMS",
+    "emailLabel": "Endereço de E-mail",
+    "passwordLabel": "Senha",
+    "loginButton": "Entrar",
+    "forgotPassword": "Esqueceu a senha?",
+    "rememberMe": "Lembrar de mim",
+    "invalidCredentials": "E-mail ou senha inválidos",
+    "welcomeUser": "Bem-vindo de volta, {name}!"
   },
   "dashboard": {
     "title": "Painel",
-    "welcome": "Bem-vindo à administração do CeLeste CMS.",
+    "welcome": "Bem-vindo à administração do CeLeste CMS",
     "stats": {
-      "activeSites": "Sites Ativos",
-      "posts": "Posts",
       "users": "Usuários",
-      "mediaFiles": "Arquivos de Mídia"
+      "posts": "Posts",
+      "pages": "Páginas"
     }
   },
-  "sidebar": {
-    "dashboard": "Painel",
-    "sites": "Sites",
-    "templates": "Templates",
-    "posts": "Posts",
-    "pages": "Páginas",
-    "media": "Mídia",
-    "users": "Usuários",
-    "plugins": "Plugins",
-    "settings": "Configurações",
-    "help": "Ajuda",
-    "logout": "Sair"
+  "common": {
+    "save": "Salvar",
+    "cancel": "Cancelar", 
+    "delete": "Excluir",
+    "loading": "Carregando..."
   }
 }
 ```
 
 ## SvelteKit Integration
 
-### Language Store
+### No Hooks Needed!
 
-Create a language store to manage the current language:
+**Paraglide 2.0 handles everything automatically**. No need for:
+- ❌ Custom hooks
+- ❌ ParaglideJS component
+- ❌ Manual store management
+- ❌ Language detection logic
 
-```javascript
-// src/lib/i18n/language.js
-import { browser } from '$app/environment';
-import { writable } from 'svelte/store';
-import { availableLanguageTags, sourceLanguageTag } from './generated/runtime';
+The strategy system manages all language detection and persistence.
 
-// Get initial language from localStorage or default to source language
-const getInitialLanguage = () => {
-  if (browser) {
-    const storedLanguage = localStorage.getItem('language');
-    if (storedLanguage && availableLanguageTags.includes(storedLanguage)) {
-      return storedLanguage;
-    }
-  }
-  return sourceLanguageTag;
-};
+### Optional: Custom Hooks (Advanced)
 
-// Create a writable store
-const languageStore = writable(getInitialLanguage());
-
-// Export a function to get the current language
-export const language = () => {
-  let currentLanguage;
-  languageStore.subscribe(value => {
-    currentLanguage = value;
-  })();
-  return currentLanguage;
-};
-
-// Export a function to set the language
-export const setLanguage = (newLanguage) => {
-  if (availableLanguageTags.includes(newLanguage)) {
-    languageStore.set(newLanguage);
-    if (browser) {
-      localStorage.setItem('language', newLanguage);
-    }
-  } else {
-    console.error(`Language ${newLanguage} is not available`);
-  }
-};
-
-// Export the store for reactive use
-export const languageTag = languageStore;
-```
-
-### Main Export File
-
-Create an index file to export a reactive messages store:
+Only add hooks if you need custom behavior:
 
 ```typescript
-// src/lib/i18n/index.ts
-import { derived } from 'svelte/store';
-import { languageStore } from './language';
-import en from './messages/en.json';
-import ptBr from './messages/pt-br.json';
+// src/hooks.server.ts (optional)
+import type { Handle } from '@sveltejs/kit';
 
-const messagesMap: Record<string, typeof en> = {
-  'en': en,
-  'pt-br': ptBr
+export const handle: Handle = async ({ event, resolve }) => {
+  // Your existing auth logic here
+  const session = await auth.api.getSession({
+    headers: event.request.headers
+  });
+  
+  event.locals.session = session;
+  
+  // Paraglide strategy handles language automatically
+  return resolve(event);
 };
-
-// Export a derived store that updates when the language changes
-export const messages = derived(languageStore, (lang: string) => messagesMap[lang] || messagesMap['en']);
-
-// Re-export language functions
-export * from './language';
-```
-
-### Server-Side Detection
-
-Add language detection in SvelteKit hooks:
-
-```javascript
-// src/hooks.server.js
-import { availableLanguageTags, sourceLanguageTag } from '$lib/i18n/generated/runtime';
-
-/** @type {import('@sveltejs/kit').Handle} */
-export async function handle({ event, resolve }) {
-  // Get preferred language from cookie or accept-language header
-  const preferredLanguage = event.cookies.get('language') || 
-    event.request.headers.get('accept-language')?.split(',')[0]?.split('-')[0] || 
-    sourceLanguageTag;
-  
-  // Set language if it's available, otherwise use source language
-  const language = availableLanguageTags.includes(preferredLanguage) 
-    ? preferredLanguage 
-    : sourceLanguageTag;
-  
-  // Make language available to load functions
-  event.locals.language = language;
-  
-  // Resolve the request
-  const response = await resolve(event);
-  
-  return response;
-}
 ```
 
 ## Using Messages in Components
 
-### With Svelte 5 Runes and Stores
+### Basic Usage
 
 ```svelte
-<script>
-  import { messages, languageTag, setLanguage } from '$lib/i18n';
+<!-- src/routes/admin/+page.svelte -->
+<script lang="ts">
+  // Import messages - type-safe and tree-shaken
+  import * as m from '$lib/paraglide/messages';
+  import { getLocale } from '$lib/paraglide/runtime';
   
-  // Use Svelte 5 runes for local state
-  let currentLanguage = $state(languageTag);
+  // Svelte 5 runes for local state
+  let userCount = $state(1234);
+  let userName = $state('João');
   
-  function toggleLanguage() {
-    setLanguage(currentLanguage === 'en' ? 'pt-br' : 'en');
-  }
+  // Get current locale (reactive)
+  let currentLocale = $state(getLocale());
 </script>
 
-<!-- Use $messages for reactive access to translations -->
-<h1>{$messages.dashboard.title}</h1>
-<p>{$messages.dashboard.welcome}</p>
+<svelte:head>
+  <title>{m.dashboard.title()} - CeLeste CMS</title>
+</svelte:head>
 
-<button on:click={toggleLanguage}>
-  Switch to {currentLanguage === 'en' ? 'Portuguese' : 'English'}
-</button>
+<main>
+  <h1>{m.dashboard.title()}</h1>
+  <p>{m.dashboard.welcome()}</p>
+  
+  <!-- With parameters -->
+  <p>{m.auth.welcomeUser({ name: userName })}</p>
+  
+  <!-- Reactive to locale changes -->
+  <p>Current language: {currentLocale}</p>
+  
+  <!-- Using in conditions -->
+  <p>{userCount === 1 ? m.dashboard.stats.user : m.dashboard.stats.users}</p>
+</main>
 ```
 
-### Language Switcher Component
+### Available Runtime Functions
 
-Create a reusable language switcher:
+```typescript
+import { 
+  getLocale,      // Get current locale
+  setLocale,      // Set locale (triggers strategy)
+  locales,        // Array of available locales ['en', 'pt-br']
+  localizeHref    // Create language-aware URLs
+} from '$lib/paraglide/runtime';
+
+// Examples
+const current = getLocale();           // "pt-br"
+const available = locales;             // ["en", "pt-br"]
+const url = localizeHref('/admin');    // "/pt-br/admin"
+const enUrl = localizeHref('/admin', { locale: 'en' }); // "/admin"
+```
+
+## Language Switching
+
+### Correct Language Switcher
+
+**Use `localizeHref()` for proper URL generation:**
 
 ```svelte
 <!-- src/lib/components/LanguageSwitcher.svelte -->
 <script lang="ts">
   import { Globe } from '@lucide/svelte';
-  import { languageStore, setLanguage, availableLanguageTags, languageNames } from '$lib/i18n/language';
+  import { getLocale, locales, localizeHref } from '$lib/paraglide/runtime';
+  import { page } from '$app/stores';
+  import { goto } from '$app/navigation';
   
-  // Use Svelte 5 runes for local state
-  let currentLanguage = $state('');
-  let isOpen = $state(false);
+  // Language display names
+  const languageNames = {
+    'en': 'English',
+    'pt-br': 'Português (BR)'
+  } as const;
   
-  // Subscribe to the language store with $effect
+  // ✅ Reactive current language
+  let currentLanguage = $state(getLocale());
+  
+  // ✅ Update when locale changes
   $effect(() => {
-    const unsubscribe = languageStore.subscribe(value => {
-      currentLanguage = value;
-    });
-    
-    return () => {
-      unsubscribe();
-    };
+    currentLanguage = getLocale();
   });
   
-  function switchLanguage(lang: string) {
-    setLanguage(lang);
-    isOpen = false;
-  }
-  
-  function toggleDropdown() {
-    isOpen = !isOpen;
+  // ✅ Proper language switching using localizeHref
+  function switchLanguage(targetLocale: string) {
+    // Generate correct URL for target language
+    const localizedUrl = localizeHref($page.url.pathname, { 
+      locale: targetLocale 
+    });
+    
+    // Navigate to localized URL
+    goto(localizedUrl);
   }
 </script>
 
-<div class="relative language-switcher">
+<div class="dropdown dropdown-end">
   <button 
-    class="flex items-center gap-2 px-3 py-1 rounded-md text-sm font-medium bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-    aria-label="Switch language"
-    onclick={toggleDropdown}
+    class="btn btn-sm btn-ghost gap-2"
+    aria-label="Choose language"
   >
     <Globe class="h-4 w-4" />
-    <span>{currentLanguage in languageNames ? languageNames[currentLanguage as keyof typeof languageNames] : currentLanguage}</span>
+    <span>
+      {currentLanguage in languageNames 
+        ? languageNames[currentLanguage as keyof typeof languageNames] 
+        : currentLanguage}
+    </span>
   </button>
   
-  {#if isOpen}
-    <div class="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-800 rounded-md shadow-lg overflow-hidden z-20 border border-gray-200 dark:border-gray-700">
-      {#each availableLanguageTags as lang}
-        <button
-          class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 {lang === currentLanguage ? 'bg-gray-100 dark:bg-gray-700' : ''}"
-          onclick={() => switchLanguage(lang)}
+  <ul class="dropdown-content menu bg-base-100 rounded-box w-52 p-2 shadow">
+    {#each locales as locale}
+      <li>
+        <button 
+          class="flex justify-between items-center"
+          class:active={locale === currentLanguage}
+          onclick={() => switchLanguage(locale)}
         >
-          {lang in languageNames ? languageNames[lang as keyof typeof languageNames] : lang}
+          <span>
+            {locale in languageNames 
+              ? languageNames[locale as keyof typeof languageNames] 
+              : locale}
+          </span>
+          {#if locale === currentLanguage}
+            <span class="text-success">✓</span>
+          {/if}
         </button>
-      {/each}
-    </div>
-  {/if}
+      </li>
+    {/each}
+  </ul>
 </div>
 ```
 
-## Language Detection and Persistence
+### How Language Switching Works
 
-### Browser Detection
+```typescript
+// User clicks "Português" on /admin/dashboard
+switchLanguage('pt-br');
 
-Paraglide can detect the user's preferred language from browser settings:
-
-```javascript
-// Detect browser language
-const detectBrowserLanguage = () => {
-  if (browser) {
-    const browserLang = navigator.language.split('-')[0];
-    if (availableLanguageTags.includes(browserLang)) {
-      return browserLang;
-    }
-  }
-  return sourceLanguageTag;
-};
+// ↓ localizeHref generates: "/pt-br/admin/dashboard"
+// ↓ goto() navigates to the localized URL
+// ↓ Strategy detects "pt-br" from URL
+// ↓ Updates locale + sets cookie
+// ↓ All messages switch to Portuguese
+// ✅ Language persists across navigation
 ```
 
-### URL-Based Language
+## Prerendering & SEO
 
-For shareable links with language preferences:
+### Enable Prerendering
 
-```javascript
-// In a +page.js or +layout.js file
-export function load({ url }) {
-  const langParam = url.searchParams.get('lang');
-  if (langParam && availableLanguageTags.includes(langParam)) {
-    return {
-      lang: langParam
-    };
-  }
-  return {};
-}
+For static site generation, add to your layout:
+
+```typescript
+// src/routes/+layout.ts
+export const prerender = true;
 ```
 
-### Persisting Language Choice
+### Generate All Language Pages
 
-Store language preference in localStorage:
+Add invisible anchor tags to ensure all language variants are generated:
 
-```javascript
-// Already implemented in the language store
-if (browser) {
-  localStorage.setItem('language', newLanguage);
-}
+```svelte
+<!-- src/routes/+layout.svelte -->
+<script>
+  import { page } from '$app/stores';
+  import { locales, localizeHref } from '$lib/paraglide/runtime';
+</script>
+
+<slot />
+
+<!-- Generate all language variants for static generation -->
+<div style="display:none">
+  {#each locales as locale}
+    <a href={localizeHref($page.url.pathname, { locale })}>{locale}</a>
+  {/each}
+</div>
 ```
 
-## Build Integration
-
-Paraglide works with Vite and SvelteKit's build process. Messages are compiled at build time for optimal performance.
-
-Add a build step to your package.json:
-
-```json
-"scripts": {
-  "paraglide:compile": "paraglide-js compile",
-  "build": "paraglide-js compile && vite build"
-}
-```
-
-## Best Practices
-
-### General Guidelines
-
-1. **Structured Messages**: Group messages by feature or component
-2. **Consistent Keys**: Use consistent naming for message keys
-3. **Avoid String Concatenation**: Use message parameters instead
-4. **Fallback to Source Language**: Always provide a fallback
-5. **Lazy Loading**: Consider lazy loading messages for large applications
-6. **Use Type Safety**: Leverage TypeScript for type-safe message access
-7. **Separate UI from Text**: Keep UI logic separate from translatable text
-
-### Svelte 5 Runes Compatibility
-
-1. **Component-Level Runes**: Use `$state` and `$effect` for component-level reactivity
-2. **Cross-Component State**: Use Svelte stores for shared state across components
-3. **Store Auto-Subscription**: Use the `$messages` syntax in templates for reactivity
-4. **Explicit Types**: Always type your parameters to avoid TypeScript errors
-5. **Avoid Direct Runes Import**: Don't import runes directly in .ts files, use them in .svelte files
-6. **Reactive Subscriptions**: Use `$effect` for subscribing to stores in components
-7. **Clean Unsubscribe**: Always return a cleanup function from `$effect` when subscribing
-
-## Examples
-
-### Example 1: Dashboard Page
+### SEO Best Practices
 
 ```svelte
 <!-- src/routes/admin/+page.svelte -->
 <script>
-  import { messages, languageTag } from '$lib/i18n';
-  import { Globe, Sun, Moon, Menu } from '@lucide/svelte';
-  import Card from '$lib/components/Card.svelte';
-  import StatCard from '$lib/components/StatCard.svelte';
-  import SidebarItem from '$lib/components/SidebarItem.svelte';
-  import LanguageSwitcher from '$lib/components/LanguageSwitcher.svelte';
+  import * as m from '$lib/paraglide/messages';
+  import { getLocale, localizeHref } from '$lib/paraglide/runtime';
+  import { page } from '$app/stores';
   
-  // State management with Svelte 5 runes
-  let isDarkMode = $state(false);
-  let isSidebarOpen = $state(true);
-  let currentLanguage = $state(languageTag);
-  
-  function handleThemeToggle() {
-    isDarkMode = !isDarkMode;
-  }
-  
-  function handleSidebarToggle() {
-    isSidebarOpen = !isSidebarOpen;
-  }
+  let currentLocale = $state(getLocale());
 </script>
 
-<div class={`h-screen flex flex-col ${isDarkMode ? 'dark bg-gray-950 text-gray-100' : 'bg-gray-100 text-gray-900'}`}>
-  <!-- Header -->
-  <header class={`${isDarkMode ? 'bg-gray-900 border-gray-700' : 'bg-white border-gray-200'} border-b p-4 flex items-center justify-between sticky top-0 z-10`}>
-    <div class="flex items-center">
-      <button 
-        onclick={handleSidebarToggle} 
-        class={`p-2 rounded-md ${isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-100'} mr-2`}
-      >
-        <Menu class="h-5 w-5" />
-      </button>
-      <h1 class="text-xl font-bold">CeLeste CMS</h1>
-    </div>
-    
-    <div class="flex items-center gap-4">
-      <LanguageSwitcher />
-      
-      <button 
-        onclick={handleThemeToggle} 
-        class={`p-2 rounded-md ${isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-100'}`}
-      >
-        {#if isDarkMode}
-          <Sun class="h-5 w-5" />
-        {:else}
-          <Moon class="h-5 w-5" />
-        {/if}
-      </button>
-    </div>
-  </header>
+<svelte:head>
+  <!-- Localized title -->
+  <title>{m.dashboard.title()} - CeLeste CMS</title>
   
-  <main>
-    <!-- Using $messages for reactive access to translations -->
-    <h2>{$messages.dashboard.title}</h2>
-    <p>{$messages.dashboard.welcome}</p>
-    
-    <!-- Stats Row -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-      <StatCard 
-        icon={Globe} 
-        title={$messages.dashboard.stats.activeSites} 
-        value="3" 
-        change="+1" 
-        {isDarkMode} 
-      />
-    </div>
-  </main>
-</div>
+  <!-- Language alternatives for SEO -->
+  <link rel="alternate" hreflang="en" 
+        href={localizeHref($page.url.pathname, { locale: 'en' })} />
+  <link rel="alternate" hreflang="pt-br" 
+        href={localizeHref($page.url.pathname, { locale: 'pt-br' })} />
+  
+  <!-- Current language -->
+  <meta property="og:locale" content={currentLocale} />
+</svelte:head>
 ```
 
-### Example 2: Form with Validation Messages
+## Advanced Configuration
 
-```svelte
-<!-- src/routes/admin/login/+page.svelte -->
-<script>
-  import { messages } from '$lib/i18n';
-  
-  let email = $state('');
-  let password = $state('');
-  let errors = $state({});
-  
-  function validateForm() {
-    errors = {};
-    
-    if (!email) {
-      errors.email = $messages.forms.validation.required;
-    } else if (!/^\S+@\S+\.\S+$/.test(email)) {
-      errors.email = $messages.forms.validation.invalidEmail;
-    }
-    
-    if (!password) {
-      errors.password = $messages.forms.validation.required;
-    } else if (password.length < 8) {
-      errors.password = $messages.forms.validation.passwordTooShort;
-    }
-    
-    return Object.keys(errors).length === 0;
-  }
-  
-  function handleSubmit() {
-    if (validateForm()) {
-      // Submit form
-    }
-  }
-</script>
+### Edge Runtime Support
 
-<form on:submit|preventDefault={handleSubmit}>
-  <div class="mb-4">
-    <label for="email">{$messages.forms.email}</label>
-    <input 
-      id="email"
-      type="email"
-      bind:value={email}
-      class="w-full p-2 border rounded"
-    />
-    {#if errors.email}
-      <p class="text-red-500 text-sm mt-1">{errors.email}</p>
-    {/if}
-  </div>
-  
-  <div class="mb-4">
-    <label for="password">{$messages.forms.password}</label>
-    <input 
-      id="password"
-      type="password"
-      bind:value={password}
-      class="w-full p-2 border rounded"
-    />
-    {#if errors.password}
-      <p class="text-red-500 text-sm mt-1">{errors.password}</p>
-    {/if}
-  </div>
-  
-  <button type="submit" class="bg-blue-500 text-white p-2 rounded">
-    {$messages.forms.login}
-  </button>
-</form>
+For Cloudflare Pages (your deployment target):
+
+```typescript
+// vite.config.ts
+export default defineConfig({
+  plugins: [
+    sveltekit(),
+    paraglideVitePlugin({
+      project: './project.inlang',
+      outdir: './src/lib/paraglide',
+      strategy: ['url', 'cookie', 'baseLocale'],
+      // ✅ Disable AsyncLocalStorage for edge compatibility
+      disableAsyncLocalStorage: true
+    })
+  ]
+});
 ```
+
+⚠️ **Only use `disableAsyncLocalStorage: true` in serverless environments.**
+
+### Custom Strategy Configuration
+
+You can customize the strategy order:
+
+```typescript
+// Different strategy orders for different needs
+
+// URL-first (default - good for SEO)
+strategy: ['url', 'cookie', 'baseLocale']
+
+// Cookie-first (good for SPAs)
+strategy: ['cookie', 'url', 'baseLocale']
+
+// URL-only (no persistence)
+strategy: ['url', 'baseLocale']
+```
+
+### TypeScript Configuration
+
+Ensure proper types in `src/app.d.ts`:
+
+```typescript
+// src/app.d.ts
+import type { AvailableLanguageTag } from '$lib/paraglide/runtime';
+
+declare global {
+  namespace App {
+    interface Locals {
+      // Your existing locals
+      session?: any;
+    }
+    // Paraglide types are automatically included
+  }
+}
+
+export {};
+```
+
+## Best Practices
+
+### Message Organization
+
+1. **Group by feature**: `auth.*`, `dashboard.*`, `common.*`
+2. **Use consistent naming**: camelCase for keys
+3. **Prefer parameters over concatenation**:
+   ```json
+   // ✅ Good
+   "welcomeUser": "Welcome, {name}!"
+   
+   // ❌ Avoid
+   "welcome": "Welcome",
+   "user": "{name}!"
+   ```
+
+### Component Patterns
+
+1. **Import messages at component level**:
+   ```svelte
+   <script>
+     import * as m from '$lib/paraglide/messages';
+     // Use m.* directly in template
+   </script>
+   ```
+
+2. **Use Svelte 5 runes for reactivity**:
+   ```svelte
+   <script>
+     let currentLocale = $state(getLocale());
+     
+     $effect(() => {
+       // React to locale changes
+       console.log('Language changed to:', getLocale());
+     });
+   </script>
+   ```
+
+3. **Keep messages close to usage**:
+   ```svelte
+   <!-- ✅ Good - clear context -->
+   <button>{m.common.save()}</button>
+   
+   <!-- ❌ Avoid - unclear context -->
+   <button>{m.save()}</button>
+   ```
+
+### Performance Tips
+
+1. **Messages are tree-shaken** - Only imported messages are bundled
+2. **Use conditional imports** for large features:
+   ```typescript
+   // Only load when needed
+   const { adminMessages } = await import('$lib/paraglide/admin');
+   ```
+
+3. **Leverage SvelteKit's code splitting** - Route-based message loading
+
+### Development Workflow
+
+1. **Use the inlang VSCode extension** for inline translation editing
+2. **Run type checking** after adding new messages:
+   ```bash
+   npm run check
+   ```
+3. **Test language switching** in development mode
+4. **Verify prerendering** generates all language variants
+
+## Migration from 1.x
+
+If migrating from Paraglide 1.x:
+
+### Remove Old Dependencies
+
+```bash
+# Remove old packages
+npm uninstall @inlang/paraglide-sveltekit
+
+# Keep only the new package
+npm install @inlang/paraglide-js
+```
+
+### Update Configuration
+
+1. **Remove old hooks** - Delete custom language detection
+2. **Update app.html** - Change `%paraglide.lang%` to `%lang%`
+3. **Remove manual stores** - Let strategy system handle state
+4. **Replace manual URL building** - Use `localizeHref()`
+
+### Update Components
+
+```diff
+- import { languageTag, setLanguageTag } from '$lib/paraglide/runtime';
++ import { getLocale, setLocale, localizeHref } from '$lib/paraglide/runtime';
+
+- setLanguageTag('pt-br');
++ goto(localizeHref($page.url.pathname, { locale: 'pt-br' }));
+```
+
+## Troubleshooting
+
+### Language Doesn't Persist
+
+**Check:**
+1. ✅ Strategy includes `'cookie'`
+2. ✅ Using `localizeHref()` for navigation  
+3. ✅ URLs include language prefix (`/pt-br/admin`)
+
+### Messages Not Updating
+
+**Check:**
+1. ✅ Import messages in component: `import * as m from '$lib/paraglide/messages'`
+2. ✅ Use messages directly: `{m.dashboard.title()}`
+3. ✅ No manual language overrides in hooks
+
+### TypeScript Errors
+
+**Check:**
+1. ✅ Run `npm run check` after adding messages
+2. ✅ Message keys match JSON structure
+3. ✅ Parameters match message placeholders
+
+### Build Errors
+
+**Check:**
+1. ✅ Paraglide plugin before SvelteKit in `vite.config.ts`
+2. ✅ Valid JSON in message files
+3. ✅ No syntax errors in `project.inlang/settings.json`
 
 ---
 
-This guide provides a comprehensive approach to implementing internationalization in CeLesteCMS Pro. Follow these patterns to ensure consistent language support across all screens and components.
+## Summary
+
+Paraglide 2.0 provides a **modern, automatic approach** to internationalization:
+
+- ✅ **Strategy system** handles language detection automatically
+- ✅ **No manual hooks** or complex setup required
+- ✅ **Type-safe messages** with full IDE support
+- ✅ **Perfect Svelte 5 compatibility** with runes
+- ✅ **Optimal performance** with tree-shaking and compilation
+- ✅ **SEO-friendly** with proper URL structure
+
+The key is to **trust the strategy system** and use `localizeHref()` for navigation instead of fighting it with manual state management.
+
+For the most up-to-date information, visit the [official Paraglide documentation](https://inlang.com/m/gerre34r/library-inlang-paraglideJs/sveltekit).

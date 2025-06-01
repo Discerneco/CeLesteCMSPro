@@ -6,8 +6,9 @@
   import * as m from '$lib/paraglide/messages';
   import { onMount } from 'svelte';
   
-  let isLoading = false;
-  let email = '';
+  // ✅ Fix Svelte 5 runes warnings - use $state()
+  let isLoading = $state(false);
+  let email = $state('');
   let theme = $state('light');
   
   function toggleTheme() {
@@ -16,22 +17,15 @@
     localStorage.setItem('theme', theme);
   }
   
-  // Initialize theme and language on mount
+  // ✅ Initialize theme on mount (language is handled by hooks.client.ts now)
   onMount(() => {
-    // Initialize language from localStorage
-    const savedLanguage = localStorage.getItem('language');
-    if (savedLanguage && ['en', 'pt-br'].includes(savedLanguage)) {
-      import('$lib/paraglide/runtime.js').then(({ setLanguageTag }) => {
-        setLanguageTag(savedLanguage as any);
-      });
-    }
-    
     // Initialize theme
     const savedTheme = localStorage.getItem('theme') || 'light';
     theme = savedTheme;
     document.documentElement.setAttribute('data-theme', savedTheme);
   });
   
+  // ✅ Use $derived for reactive values
   let message = $derived($page.url.searchParams.get('message'));
   let success = $derived($page.url.searchParams.get('success') === 'true');
 </script>
