@@ -15,11 +15,34 @@
 - [ ] Design dashboard structure
 - [ ] Configure light/dark mode
 
-#### Authentication System (Month 1-2)
-- [ ] User login/registration
-- [ ] Role-based permissions
-- [ ] Session management
-- [ ] User profile management
+#### Authentication System - Oslo + Arctic Implementation (Month 1-2)
+
+**Dependencies & Setup**
+- [ ] Install Oslo + Arctic dependencies (`@oslojs/crypto`, `@oslojs/encoding`, `@oslojs/cookie`, `arctic`)
+- [ ] Remove Better Auth code and dependencies
+- [ ] Clean up conflicting auth store files
+
+**Core Implementation**
+- [ ] Implement Oslo password hashing utilities (`hashPassword`, `verifyPassword`)
+- [ ] Create session management with Oslo cookies (`createSession`, `validateSession`, `deleteSession`)
+- [ ] Update database schema for sessions table (add sessions table to schema.ts)
+- [ ] Implement SvelteKit auth hooks in `hooks.server.ts`
+- [ ] Create login API endpoint (`/api/auth/login/+server.ts`)
+- [ ] Create logout API endpoint (`/api/auth/logout/+server.ts`)
+- [ ] Build client-side auth store with Svelte 5 runes
+- [ ] Update admin layout server load function
+
+**Integration & Testing**
+- [ ] Test complete authentication flow (login → dashboard → logout)
+- [ ] Verify session persistence and expiration
+- [ ] Test route protection for admin pages
+- [ ] Deploy and verify on Cloudflare D1 production environment
+- [ ] Create admin user creation script
+
+**User Management**
+- [ ] User login/registration functionality
+- [ ] Role-based permissions system
+- [ ] User profile management interface
 
 #### Content & Application Logic (Month 2)
 - [ ] Core content schemas with Drizzle ORM
