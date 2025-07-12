@@ -53,7 +53,7 @@ During setup, select the following options:
 - SvelteKit-adapter: Yes (Cloudflare)
 - MDSvex: Yes
 - Paraglide: Yes
-- Lucia: Optional (for authentication)
+- Oslo + Arctic: Yes (for authentication)
 
 ### 2. Add Cloudflare D1 integration
 ```bash
@@ -112,8 +112,7 @@ Create translation files for each language:
 
 ### 5. Set up authentication system
 ```bash
-npm install jsonwebtoken bcryptjs
-npm install -D @types/jsonwebtoken @types/bcryptjs
+npm install @oslojs/crypto @oslojs/encoding @oslojs/cookie arctic
 ```
 
 ### 6. Add deployment adapters

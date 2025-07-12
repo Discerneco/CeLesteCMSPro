@@ -10,7 +10,7 @@ This roadmap merges the high-level, outcome-driven approach of the new roadmap s
 ### Core Deliverables
 - Static Site Generation (SSG) for all blog posts (SvelteKit adapter-static)
 - Admin UI (SvelteKit 5, TailwindCSS v4, dark mode)
-- Basic authentication (Better Auth integration)
+- Basic authentication (Oslo + Arctic custom implementation)
 - Content management: schemas, markdown editor, REST API
 - Basic SEO: unique meta tags, sitemap.xml
 - Minimal client-side hydration (only for interactivity, e.g. comments)
@@ -138,7 +138,7 @@ Phase 2 Workflow Setup Order:
 - **Strict MVP focus:** No features beyond the MVP list until after launch.
 - **User feedback:** Post-MVP priorities are set by real-world usage and feedback.
 - **Agile iteration:** Each phase is planned in detail only after the previous phase is stable.
-- **Modern stack:** SvelteKit 5, TailwindCSS v4, Drizzle ORM, Cloudflare D1/Pages, Better Auth.
+- **Modern stack:** SvelteKit 5, TailwindCSS v4, Drizzle ORM, Cloudflare D1/Pages, Oslo + Arctic.
 
 ---
 

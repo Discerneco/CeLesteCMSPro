@@ -33,12 +33,13 @@ This document provides a comprehensive security checklist organized by domain. E
 - [ ] Verify authorization cannot be bypassed via direct URL access
 - [ ] Test for horizontal and vertical privilege escalation
 
-### Token Management
-- [ ] Implement secure JWT token generation and validation
-- [ ] Set appropriate token expiration times
-- [ ] Implement token refresh mechanism
-- [ ] Verify tokens are invalidated on logout
-- [ ] Ensure tokens contain minimal necessary information
+### Session Management
+- [ ] Implement secure session generation and validation with Oslo
+- [ ] Set appropriate session expiration times (7 days max)
+- [ ] Implement session refresh mechanism
+- [ ] Verify sessions are invalidated on logout
+- [ ] Ensure HTTP-only, secure cookies for session storage
+- [ ] Use proper CSRF protection with SameSite attributes
 
 ---
 

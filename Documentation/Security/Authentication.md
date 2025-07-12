@@ -2,21 +2,48 @@
 
 ## Architecture Overview
 
-CeLesteCMS Pro implements a secure authentication system built on:
+CeLesteCMS Pro implements a lightweight, edge-optimized authentication system built on:
 
+- **Oslo** for cryptographic utilities and session management
+- **Arctic** for OAuth providers (when needed)
 - **Cloudflare D1** for user storage
 - **Drizzle ORM** for database interactions
 - **Cloudflare Workers** (via SvelteKit's Cloudflare adapter) for serverless auth logic
-- **JWT tokens** for session management
+- **Secure HTTP-only cookies** for session management
 - **SvelteKit's auth hooks** for route protection
 - **Svelte 5 runes** for client-side auth state
 
+## Why Oslo + Arctic?
+
+This approach was chosen for CeLesteCMS Pro because:
+
+- **Edge-Optimized**: Lightweight libraries designed for serverless environments
+- **Modern Security**: Built on proven cryptographic primitives
+- **Framework Agnostic**: No vendor lock-in, works with any setup
+- **Active Development**: Maintained by the Lucia Auth creator post-deprecation
+- **Perfect D1 Integration**: Direct database access without adapter layers
+- **Minimal Bundle Size**: Only includes what you actually use
+
 ## Implementation Components
 
-### 1. Database Schema with Drizzle ORM
+### 1. Dependencies
+
+```json
+{
+  "dependencies": {
+    "@oslojs/crypto": "^1.0.0",
+    "@oslojs/encoding": "^1.0.0", 
+    "@oslojs/cookie": "^1.0.0",
+    "arctic": "^2.0.0",
+    "drizzle-orm": "^0.43.0"
+  }
+}
+```
+
+### 2. Database Schema with Drizzle ORM
 
 ```typescript
-// src/lib/db/schema.ts
+// src/lib/server/db/schema.ts
 import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
 import { createId } from '@paralleldrive/cuid2';
 
@@ -31,95 +58,180 @@ export const users = sqliteTable('users', {
   updatedAt: integer('updated_at', { mode: 'timestamp' })
     .$defaultFn(() => new Date()),
 });
+
+export const sessions = sqliteTable('sessions', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => users.id),
+  expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull(),
+  createdAt: integer('created_at', { mode: 'timestamp' })
+    .$defaultFn(() => new Date()),
+});
 ```
 
-### 2. Auth Utilities
+### 3. Authentication Utilities with Oslo
 
 ```typescript
 // src/lib/server/auth.ts
-import { Sha256 } from '@noble/hashes/sha256';
-import { base64 } from '@noble/hashes/utils';
-import { env } from '$env/dynamic/private';
-import { JWT } from '@cfworker/jwt';
+import { hash, verify } from '@oslojs/crypto/sha256';
+import { generateRandomString } from '@oslojs/crypto/random';
+import { encodeBase64, decodeBase64 } from '@oslojs/encoding';
+import { Cookie } from '@oslojs/cookie';
+import { getDB } from './db';
+import { sessions, users } from './db/schema';
+import { eq, and } from 'drizzle-orm';
 
-// Password hashing
+// Password hashing with Oslo
 export async function hashPassword(password: string): Promise<string> {
-  const hash = Sha256.create();
-  hash.update(password + env.PASSWORD_SALT);
-  return base64.encode(hash.digest());
+  const salt = generateRandomString(16);
+  const hashedPassword = await hash(new TextEncoder().encode(password + salt));
+  return encodeBase64(hashedPassword) + ':' + salt;
 }
 
-export async function verifyPassword(password: string, hash: string): Promise<boolean> {
-  const newHash = await hashPassword(password);
-  return newHash === hash;
+export async function verifyPassword(password: string, hashedPassword: string): Promise<boolean> {
+  const [encodedHash, salt] = hashedPassword.split(':');
+  const hash = decodeBase64(encodedHash);
+  const inputHash = await hash(new TextEncoder().encode(password + salt));
+  return encodeBase64(inputHash) === encodedHash;
 }
 
-// JWT handling
-const jwt = new JWT({
-  secret: env.JWT_SECRET,
-  algorithm: 'HS256'
-});
+// Session management
+export function generateSessionId(): string {
+  return generateRandomString(32);
+}
 
-export async function createToken(userId: string, role: string): Promise<string> {
-  return jwt.sign({
-    sub: userId,
-    role,
-    exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7 // 7 days
+export async function createSession(userId: string, platform: App.Platform): Promise<string> {
+  const db = getDB(platform);
+  const sessionId = generateSessionId();
+  const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24 * 7); // 7 days
+  
+  await db.insert(sessions).values({
+    id: sessionId,
+    userId,
+    expiresAt
+  });
+  
+  return sessionId;
+}
+
+export async function validateSession(sessionId: string, platform: App.Platform): Promise<{ user: any; session: any } | null> {
+  const db = getDB(platform);
+  
+  const result = await db
+    .select({
+      user: users,
+      session: sessions
+    })
+    .from(sessions)
+    .innerJoin(users, eq(sessions.userId, users.id))
+    .where(
+      and(
+        eq(sessions.id, sessionId),
+        // Check if session hasn't expired
+        gt(sessions.expiresAt, new Date())
+      )
+    )
+    .limit(1);
+    
+  if (result.length === 0) {
+    return null;
+  }
+  
+  const { user, session } = result[0];
+  
+  // Extend session if it expires within 1 day
+  if (session.expiresAt.getTime() - Date.now() < 1000 * 60 * 60 * 24) {
+    const newExpiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24 * 7);
+    await db
+      .update(sessions)
+      .set({ expiresAt: newExpiresAt })
+      .where(eq(sessions.id, sessionId));
+    session.expiresAt = newExpiresAt;
+  }
+  
+  return { user, session };
+}
+
+export async function deleteSession(sessionId: string, platform: App.Platform): Promise<void> {
+  const db = getDB(platform);
+  await db.delete(sessions).where(eq(sessions.id, sessionId));
+}
+
+// Cookie utilities
+export function createSessionCookie(sessionId: string): Cookie {
+  return new Cookie('session', sessionId, {
+    path: '/',
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+    maxAge: 60 * 60 * 24 * 7 // 7 days
   });
 }
 
-export async function verifyToken(token: string): Promise<{ userId: string; role: string } | null> {
-  try {
-    const payload = await jwt.verify(token);
-    return {
-      userId: payload.sub as string,
-      role: payload.role as string
-    };
-  } catch (e) {
-    return null;
-  }
+export function deleteSessionCookie(): Cookie {
+  return new Cookie('session', '', {
+    path: '/',
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+    maxAge: 0
+  });
 }
 ```
 
-### 3. Database Client Setup
+### 4. Database Client Setup
 
 ```typescript
-// src/lib/server/db.ts
+// src/lib/server/db/index.ts
 import { drizzle } from 'drizzle-orm/d1';
-import { env } from '$env/dynamic/private';
-import * as schema from '$lib/db/schema';
+import { drizzle as drizzleSQLite } from 'drizzle-orm/better-sqlite3';
+import Database from 'better-sqlite3';
+import * as schema from './schema';
 
-export function getDB(platform: App.Platform) {
-  return drizzle(platform.env.DB, { schema });
+export function getDB(platform?: App.Platform) {
+  // Production: Use Cloudflare D1
+  if (platform?.env?.DB) {
+    return drizzle(platform.env.DB, { schema });
+  }
+  
+  // Development: Use local SQLite
+  const sqlite = new Database('local.db');
+  return drizzleSQLite(sqlite, { schema });
 }
 ```
 
-### 4. SvelteKit Auth Hooks
+### 5. SvelteKit Auth Hooks
 
 ```typescript
 // src/hooks.server.ts
 import { sequence } from '@sveltejs/kit/hooks';
-import { verifyToken } from '$lib/server/auth';
+import { validateSession, deleteSession } from '$lib/server/auth';
 
 export const handle = sequence(
   async ({ event, resolve }) => {
-    // Get auth token from cookies
-    const authToken = event.cookies.get('auth_token');
+    // Get session ID from cookies
+    const sessionId = event.cookies.get('session');
     
-    if (authToken) {
-      const userData = await verifyToken(authToken);
+    if (sessionId) {
+      const sessionData = await validateSession(sessionId, event.platform);
       
-      if (userData) {
-        // Add user data to locals for access in load functions
+      if (sessionData) {
+        // Valid session
         event.locals.user = {
-          id: userData.userId,
-          role: userData.role,
+          id: sessionData.user.id,
+          email: sessionData.user.email,
+          name: sessionData.user.name,
+          role: sessionData.user.role,
           isAuthenticated: true
         };
+        event.locals.session = sessionData.session;
+      } else {
+        // Invalid session - clean up
+        await deleteSession(sessionId, event.platform);
+        event.cookies.delete('session', { path: '/' });
       }
     }
     
-    // Default user state if no valid token
+    // Default user state if no valid session
     if (!event.locals.user) {
       event.locals.user = {
         isAuthenticated: false
@@ -144,18 +256,17 @@ export const handle = sequence(
 );
 ```
 
-### 5. Auth API Endpoints
+### 6. Auth API Endpoints
 
 ```typescript
 // src/routes/api/auth/login/+server.ts
 import { json } from '@sveltejs/kit';
 import { getDB } from '$lib/server/db';
-import { verifyPassword, createToken } from '$lib/server/auth';
-import { users } from '$lib/db/schema';
+import { verifyPassword, createSession, createSessionCookie } from '$lib/server/auth';
+import { users } from '$lib/server/db/schema';
 import { eq } from 'drizzle-orm';
 
 export async function POST({ request, platform, cookies }) {
-  const db = getDB(platform);
   const { email, password } = await request.json();
   
   // Validate input
@@ -164,6 +275,8 @@ export async function POST({ request, platform, cookies }) {
   }
   
   try {
+    const db = getDB(platform);
+    
     // Find user
     const [user] = await db.select().from(users).where(eq(users.email, email)).limit(1);
     
@@ -178,16 +291,17 @@ export async function POST({ request, platform, cookies }) {
       return json({ success: false, message: 'Invalid credentials' }, { status: 401 });
     }
     
-    // Create JWT token
-    const token = await createToken(user.id, user.role);
+    // Create session
+    const sessionId = await createSession(user.id, platform);
     
     // Set cookie
-    cookies.set('auth_token', token, {
-      path: '/',
-      httpOnly: true,
-      secure: true,
-      sameSite: 'strict',
-      maxAge: 60 * 60 * 24 * 7 // 7 days
+    const sessionCookie = createSessionCookie(sessionId);
+    cookies.set(sessionCookie.name, sessionCookie.value, {
+      path: sessionCookie.attributes.path,
+      httpOnly: sessionCookie.attributes.httpOnly,
+      secure: sessionCookie.attributes.secure,
+      sameSite: sessionCookie.attributes.sameSite,
+      maxAge: sessionCookie.attributes.maxAge
     });
     
     return json({
@@ -209,14 +323,30 @@ export async function POST({ request, platform, cookies }) {
 ```typescript
 // src/routes/api/auth/logout/+server.ts
 import { json } from '@sveltejs/kit';
+import { deleteSession, deleteSessionCookie } from '$lib/server/auth';
 
-export async function POST({ cookies }) {
-  cookies.delete('auth_token', { path: '/' });
+export async function POST({ cookies, platform, locals }) {
+  const sessionId = cookies.get('session');
+  
+  if (sessionId) {
+    await deleteSession(sessionId, platform);
+  }
+  
+  // Clear session cookie
+  const sessionCookie = deleteSessionCookie();
+  cookies.set(sessionCookie.name, sessionCookie.value, {
+    path: sessionCookie.attributes.path,
+    httpOnly: sessionCookie.attributes.httpOnly,
+    secure: sessionCookie.attributes.secure,
+    sameSite: sessionCookie.attributes.sameSite,
+    maxAge: sessionCookie.attributes.maxAge
+  });
+  
   return json({ success: true });
 }
 ```
 
-### 6. Client-Side Auth Store with Svelte 5 Runes
+### 7. Client-Side Auth Store with Svelte 5 Runes
 
 ```typescript
 // src/lib/stores/auth.ts
@@ -285,7 +415,7 @@ export const createAuthStore = () => {
 export const auth = createAuthStore();
 ```
 
-### 7. Load Function for Admin Pages
+### 8. Load Function for Admin Pages
 
 ```typescript
 // src/routes/admin/+layout.server.ts
@@ -296,185 +426,77 @@ export function load({ locals }) {
 }
 ```
 
-### 8. Environment Variables
+### 9. OAuth Integration with Arctic (Optional)
 
-Add these to your `.dev.vars` file for local development and to your Cloudflare Pages environment variables:
-
-```
-PASSWORD_SALT=your-secure-random-salt
-JWT_SECRET=your-secure-random-jwt-secret
-```
-
-### 9. Admin User Creation Script
+If you need OAuth providers like GitHub or Google:
 
 ```typescript
-// scripts/create-admin.js
-import { drizzle } from 'drizzle-orm/d1';
-import { users } from '../src/lib/db/schema';
-import { hashPassword } from '../src/lib/server/auth';
+// src/lib/server/oauth.ts
+import { GitHub, Google } from 'arctic';
 
-export async function createAdmin(email, password, name, d1Database) {
-  const db = drizzle(d1Database);
-  
-  const passwordHash = await hashPassword(password);
-  
-  await db.insert(users).values({
-    email,
-    passwordHash,
-    name,
-    role: 'admin'
-  });
-  
-  console.log(`Admin user created: ${email}`);
-}
+export const github = new GitHub(
+  process.env.GITHUB_CLIENT_ID!,
+  process.env.GITHUB_CLIENT_SECRET!,
+  null // No redirect URI needed for PKCE
+);
+
+export const google = new Google(
+  process.env.GOOGLE_CLIENT_ID!,
+  process.env.GOOGLE_CLIENT_SECRET!,
+  "http://localhost:5173/auth/google/callback"
+);
 ```
 
 ## Security Considerations
 
-1. **CSRF Protection**: The JWT token is stored in an HTTP-only cookie with secure and SameSite attributes.
-2. **Password Hashing**: Passwords are hashed with SHA-256 and a salt.
-3. **Rate Limiting**: Consider adding Cloudflare Workers rate limiting for login attempts.
-4. **Environment Variables**: Sensitive values are stored in environment variables.
-5. **Input Validation**: All user inputs are validated before processing.
+1. **Session Security**: Sessions are stored in HTTP-only cookies with secure attributes
+2. **Password Hashing**: Passwords are hashed using SHA-256 with random salts via Oslo
+3. **Session Rotation**: Sessions are automatically extended and can be invalidated
+4. **CSRF Protection**: Same-site cookie attribute provides CSRF protection
+5. **Input Validation**: All user inputs are validated before processing
+6. **Environment Variables**: Sensitive values should be stored in environment variables
 
-## Deployment Considerations
+## Development Setup
 
-1. **Database Migrations**: Use Drizzle Kit to manage schema migrations.
-2. **Wrangler Configuration**: Ensure your wrangler.toml is configured for D1 access.
-3. **Environment Variables**: Set up environment variables in Cloudflare Pages dashboard.
-
-## Required Dependencies
-
-```json
-{
-  "dependencies": {
-    "@cfworker/jwt": "^2.0.0",
-    "@noble/hashes": "^1.3.2",
-    "@paralleldrive/cuid2": "^2.2.2",
-    "drizzle-orm": "^0.29.0"
-  },
-  "devDependencies": {
-    "drizzle-kit": "^0.20.0"
-  }
-}
-```
-
-## Implementation Steps with Cloudflare Account
-
-### 1. Cloudflare Account Setup (Completed)
-- ✅ Create a Cloudflare account
-- Login to your Cloudflare dashboard at https://dash.cloudflare.com
-
-### 2. Install Wrangler CLI and Authenticate
+### 1. Install Dependencies
 
 ```bash
-# Install Wrangler globally
-npm install -g wrangler
-
-# Login to your Cloudflare account
-wrangler login
+npm install @oslojs/crypto @oslojs/encoding @oslojs/cookie arctic drizzle-orm @paralleldrive/cuid2
+npm install -D better-sqlite3 @types/better-sqlite3
 ```
 
-### 3. Set Up Cloudflare D1 Database
+### 2. Database Migration
 
 ```bash
-# Create a D1 database
-wrangler d1 create celestecms-db
+# Generate migration
+npx drizzle-kit generate
 
-# This will output a database ID like: "database_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx""
-# Add this to your wrangler.toml
+# Apply to local SQLite
+npx drizzle-kit migrate
+
+# Apply to production D1
+npx wrangler d1 migrations apply your-database-name
 ```
 
-Update your `wrangler.toml`:
+### 3. Environment Variables
 
-```toml
-[[d1_databases]]
-binding = "DB"
-database_name = "celestecms-db"
-database_id = "your-database-id-from-above"
+For local development (`.dev.vars`):
+```
+NODE_ENV=development
 ```
 
-### 4. Install Required Dependencies
+For production, set in Cloudflare Pages dashboard.
 
-```bash
-# Core dependencies
-npm install drizzle-orm @paralleldrive/cuid2 @noble/hashes @cfworker/jwt
-
-# Development dependencies
-npm install -D drizzle-kit
-```
-
-### 5. Create Database Schema and Migrations
-
-Create the schema file as shown in the documentation, then:
-
-```bash
-# Initialize Drizzle
-npx drizzle-kit generate:sqlite --schema=src/lib/db/schema.ts --out=migrations
-
-# Apply migrations locally for development
-npx wrangler d1 migrations apply celestecms-db --local
-
-# Apply migrations to production
-npx wrangler d1 migrations apply celestecms-db
-```
-
-### 6. Set Up Environment Variables
-
-Create a `.dev.vars` file for local development:
-
-```
-PASSWORD_SALT=your-secure-random-salt
-JWT_SECRET=your-secure-random-jwt-secret
-```
-
-Add these same variables to your Cloudflare Pages project:
-
-```bash
-# Using Wrangler CLI
-wrangler pages project set-env-var PASSWORD_SALT "your-secure-random-salt"
-wrangler pages project set-env-var JWT_SECRET "your-secure-random-jwt-secret"
-
-# Or add them in the Cloudflare Dashboard under Pages > Your Project > Settings > Environment variables
-```
-
-### 7. Implement Auth Utilities
-
-Create the auth utility files as shown in the documentation:
-- `src/lib/server/auth.ts`
-- `src/lib/server/db.ts`
-
-### 8. Set Up SvelteKit Auth Hooks
-
-Create or update `src/hooks.server.ts` with the authentication middleware.
-
-### 9. Create API Endpoints
-
-Implement the login and logout endpoints:
-- `src/routes/api/auth/login/+server.ts`
-- `src/routes/api/auth/logout/+server.ts`
-
-### 10. Create Client-Side Auth Store
-
-Implement the auth store with Svelte 5 runes:
-- `src/lib/stores/auth.ts`
-
-### 11. Update Login Component
-
-Modify your existing login component to use the auth store.
-
-### 12. Create Admin User Creation Script
-
-Create a script to add your first admin user:
+### 4. Create Admin User
 
 ```typescript
 // scripts/create-admin.ts
-import { drizzle } from 'drizzle-orm/d1';
-import { users } from '../src/lib/db/schema';
+import { getDB } from '../src/lib/server/db';
+import { users } from '../src/lib/server/db/schema';
 import { hashPassword } from '../src/lib/server/auth';
 
-export async function createAdmin(email, password, name, d1Database) {
-  const db = drizzle(d1Database);
+export async function createAdmin(email: string, password: string, name: string) {
+  const db = getDB();
   
   const passwordHash = await hashPassword(password);
   
@@ -489,32 +511,20 @@ export async function createAdmin(email, password, name, d1Database) {
 }
 ```
 
-Run this script using Wrangler:
+## Deployment Considerations
 
-```bash
-# Create a command to run the script
-npx wrangler d1 execute celestecms-db --command="INSERT INTO users (id, email, password_hash, name, role) VALUES ('admin-id', 'admin@example.com', 'hashed-password', 'Admin User', 'admin')"
+1. **Database Migrations**: Use Drizzle Kit to manage schema migrations
+2. **Environment Variables**: Set in Cloudflare Pages dashboard
+3. **Session Storage**: Sessions are stored in D1, automatically cleaned up
+4. **Edge Optimization**: Minimal bundle size, optimized for Cloudflare Workers
 
-# Or create a custom script that uses the D1 binding
-```
+## Benefits of This Approach
 
-### 13. Test the Authentication System
+- **Lightweight**: Only ~5KB additional bundle size
+- **Secure**: Built on proven cryptographic primitives
+- **Fast**: Optimized for edge environments
+- **Maintainable**: Simple, well-understood code
+- **Flexible**: Easy to customize for specific needs
+- **Future-proof**: No vendor lock-in, works with any setup
 
-1. Start your development server:
-   ```bash
-   npm run dev
-   ```
-
-2. Navigate to `/admin/login` and test the login functionality.
-
-3. Verify that protected routes redirect to login when not authenticated.
-
-### 14. Deploy to Cloudflare Pages
-
-```bash
-# Build your project
-npm run build
-
-# Deploy to Cloudflare Pages
-npx wrangler pages deploy .svelte-kit/cloudflare
-```
+This authentication system provides a solid foundation for CeLesteCMS Pro while maintaining the edge-first architecture and performance characteristics that define the project.

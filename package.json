@@ -55,9 +55,11 @@
 		"@inlang/paraglide-js": "^2.0.12",
 		"@libsql/client": "^0.15.6",
 		"@lucide/svelte": "^0.511.0",
+		"@oslojs/cookie": "^1.0.0",
+		"@oslojs/crypto": "^1.0.0",
+		"@oslojs/encoding": "^1.0.0",
 		"@paralleldrive/cuid2": "^2.2.2",
-		"bcrypt": "^5.1.1",
-		"better-auth": "^1.2.8",
+		"arctic": "^2.0.0",
 		"better-sqlite3": "^11.10.0",
 		"dotenv": "^16.5.0",
 		"drizzle-orm": "^0.43.1"
@@ -65,7 +67,6 @@
 	"pnpm": {
 		"onlyBuiltDependencies": [
 			"@tailwindcss/oxide",
-			"bcrypt",
 			"better-sqlite3",
 			"esbuild",
 			"sharp",

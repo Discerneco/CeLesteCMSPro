@@ -21,7 +21,7 @@ CeLesteCMS Pro is a next-generation content management system designed for perfo
 - **⚡ Static Site Generation** - Pre-rendered pages for optimal performance
 - **🎨 Modern Admin UI** - Built with Svelte 5 runes and TailwindCSS v4
 - **🌐 Edge-First Architecture** - Powered by Cloudflare Pages and D1
-- **🔒 Secure Authentication** - Role-based access with JWT tokens
+- **🔒 Secure Authentication** - Role-based access with Oslo + Arctic (custom implementation)
 - **🌍 Internationalization** - Language switching from login page (English/Portuguese)
 - **🌓 Dark Mode** - Full dark mode support across the admin interface
 - **📱 Responsive Design** - Mobile-first approach with DaisyUI components
@@ -47,7 +47,7 @@ CeLesteCMS Pro is currently in **Phase 1: MVP Development**. See our [Roadmap](D
 - **Styling:** [TailwindCSS v4](https://tailwindcss.com/) + [DaisyUI](https://daisyui.com/)
 - **Database:** [Drizzle ORM](https://orm.drizzle.team/) with SQLite (dev) / Cloudflare D1 (prod)
 - **Deployment:** [Cloudflare Pages](https://pages.cloudflare.com/)
-- **Authentication:** JWT-based with secure cookie management
+- **Authentication:** Oslo + Arctic for lightweight, edge-optimized auth
 - **Icons:** [Lucide Icons](https://lucide.dev/)
 - **i18n:** [Paraglide JS](https://inlang.com/m/gerre34r/library-inlang-paraglideJs)
 
