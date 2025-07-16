@@ -34,19 +34,19 @@
   import StatusItem from '$lib/components/StatusItem.svelte';
   import LanguageSwitcher from '$lib/components/LanguageSwitcher.svelte';
   
-  // Import i18n
-  import { messages, languageTag } from '$lib/i18n';
-  import { auth } from '$lib/stores/auth.js';
+  // Import i18n with modern Paraglide pattern
+  import * as m from '$lib/paraglide/messages';
+  import { auth } from '$lib/stores/auth';
 
-  // State management with Svelte 5 runes
-  let isDarkMode = $state(false);
+  // Modern Svelte 5 runes state management
+  let theme = $state('light');
   let isSidebarOpen = $state(true);
-  let currentLanguage = $state(languageTag);
   
+  // Modern DaisyUI theme management
   function handleThemeToggle() {
-    isDarkMode = !isDarkMode;
-    document.documentElement.classList.toggle('dark', isDarkMode);
-    localStorage.setItem('darkMode', isDarkMode ? 'true' : 'false');
+    theme = theme === 'light' ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
   }
   
   function handleSidebarToggle() {
@@ -57,17 +57,17 @@
     auth.logout();
   }
   
-  // Initialize dark mode from localStorage on mount
+  // Initialize theme from localStorage on mount (Svelte 5 $effect)
   $effect(() => {
     if (typeof window !== 'undefined') {
-      const savedDarkMode = localStorage.getItem('darkMode') === 'true';
-      isDarkMode = savedDarkMode;
-      document.documentElement.classList.toggle('dark', isDarkMode);
+      const savedTheme = localStorage.getItem('theme') || 'light';
+      theme = savedTheme;
+      document.documentElement.setAttribute('data-theme', savedTheme);
     }
   });
 </script>
 
-<div class={`h-screen flex flex-col bg-base-200 ${isDarkMode ? 'dark' : ''}`} data-theme={isDarkMode ? 'dark' : 'light'}>
+<div class="h-screen flex flex-col bg-base-200" data-theme={theme}>
   <!-- Header -->
   <div class="navbar bg-base-100 sticky top-0 z-10 shadow-sm">
     <div class="navbar-start">
@@ -87,7 +87,7 @@
         onclick={handleThemeToggle} 
         class="btn btn-ghost btn-circle"
       >
-        {#if isDarkMode}
+        {#if theme === 'dark'}
           <Sun class="h-5 w-5" />
         {:else}
           <Moon class="h-5 w-5" />
@@ -101,9 +101,9 @@
           </div>
         </div>
         <ul tabindex="-1" class="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52">
-          <li><a href="/admin/profile">{$messages.userMenu.profile}</a></li>
-          <li><a href="/admin/settings">{$messages.userMenu.settings}</a></li>
-          <li><button onclick={handleLogout} class="w-full text-left px-4 py-2 hover:bg-base-200">{$messages.userMenu.logout}</button></li>
+          <li><a href="/admin/profile">{m.user_menu_profile()}</a></li>
+          <li><a href="/admin/settings">{m.user_menu_settings()}</a></li>
+          <li><button onclick={handleLogout} class="w-full text-left px-4 py-2 hover:bg-base-200">{m.user_menu_logout()}</button></li>
         </ul>
       </div>
     </div>
@@ -129,63 +129,63 @@
             <li>
               <a href="/admin" class="active bg-primary text-primary-content hover:bg-primary-focus">
                 <PieChart class="h-5 w-5" />
-                {$messages.sidebar.dashboard}
+                {m.sidebar_dashboard()}
               </a>
             </li>
             
             <li>
               <a href="/admin/sites">
                 <Globe class="h-5 w-5" />
-                {$messages.sidebar.sites}
+                {m.sidebar_sites()}
               </a>
             </li>
             
             <li>
               <a href="/admin/templates">
                 <Layout class="h-5 w-5" />
-                {$messages.sidebar.templates}
+                {m.sidebar_templates()}
               </a>
             </li>
             
             <li>
               <a href="/admin/posts">
                 <MessageSquare class="h-5 w-5" />
-                {$messages.sidebar.posts}
+                {m.sidebar_posts()}
               </a>
             </li>
             
             <li>
               <a href="/admin/pages">
                 <FileText class="h-5 w-5" />
-                {$messages.sidebar.pages}
+                {m.sidebar_pages()}
               </a>
             </li>
             
             <li>
               <a href="/admin/media">
                 <UploadCloud class="h-5 w-5" />
-                {$messages.sidebar.media}
+                {m.sidebar_media()}
               </a>
             </li>
             
             <li>
               <a href="/admin/users">
                 <Users class="h-5 w-5" />
-                {$messages.sidebar.users}
+                {m.sidebar_users()}
               </a>
             </li>
             
             <li>
               <a href="/admin/plugins">
                 <Database class="h-5 w-5" />
-                {$messages.sidebar.plugins}
+                {m.sidebar_plugins()}
               </a>
             </li>
             
             <li>
               <a href="/admin/settings">
                 <Settings class="h-5 w-5" />
-                {$messages.sidebar.settings}
+                {m.sidebar_settings()}
               </a>
             </li>
           </ul>
@@ -198,14 +198,14 @@
             <li>
               <a href="/admin/help">
                 <HelpCircle class="h-5 w-5" />
-                {$messages.sidebar.help}
+                {m.sidebar_help()}
               </a>
             </li>
             
             <li>
               <button type="button" onclick={handleLogout}>
                 <LogOut class="h-5 w-5" />
-                {$messages.sidebar.logout}
+                {m.sidebar_logout()}
               </button>
             </li>
           </ul>
@@ -215,8 +215,8 @@
     
     <!-- Main Content -->
     <main class="flex-1 overflow-y-auto p-6">
-      <h2 class="text-2xl font-bold mb-4">{$messages.dashboard.title}</h2>
-      <p class="text-base-content/70 mb-8">{$messages.dashboard.welcome}</p>
+      <h2 class="text-2xl font-bold mb-4">{m.dashboard_title()}</h2>
+      <p class="text-base-content/70 mb-8">{m.dashboard_welcome()}</p>
       
       <!-- Stats Row -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -225,11 +225,11 @@
           <div class="card-body p-6">
             <div class="flex items-center justify-between">
               <Globe class="text-primary h-8 w-8" />
-              <span class={`badge rounded-full px-3 py-1 font-medium ${isDarkMode ? 'bg-green-900/30 text-green-400' : 'bg-green-100 text-green-600'}`}>+1</span>
+              <span class="badge badge-success">+1</span>
             </div>
             <div class="mt-4">
               <h3 class="text-2xl font-bold">3</h3>
-              <p class="text-sm text-base-content/60">{$messages.dashboard.stats.activeSites}</p>
+              <p class="text-sm text-base-content/60">{m.dashboard_stats_active_sites()}</p>
             </div>
           </div>
         </div>
@@ -238,11 +238,11 @@
           <div class="card-body p-6">
             <div class="flex items-center justify-between">
               <MessageSquare class="text-primary h-8 w-8" />
-              <span class={`badge rounded-full px-3 py-1 font-medium ${isDarkMode ? 'bg-green-900/30 text-green-400' : 'bg-green-100 text-green-600'}`}>+12</span>
+              <span class="badge badge-success">+12</span>
             </div>
             <div class="mt-4">
               <h3 class="text-2xl font-bold">48</h3>
-              <p class="text-sm text-base-content/60">{$messages.dashboard.stats.posts}</p>
+              <p class="text-sm text-base-content/60">{m.dashboard_stats_posts()}</p>
             </div>
           </div>
         </div>
@@ -251,11 +251,11 @@
           <div class="card-body p-6">
             <div class="flex items-center justify-between">
               <Users class="text-primary h-8 w-8" />
-              <span class={`badge rounded-full px-3 py-1 font-medium ${isDarkMode ? 'bg-green-900/30 text-green-400' : 'bg-green-100 text-green-600'}`}>+3</span>
+              <span class="badge badge-success">+3</span>
             </div>
             <div class="mt-4">
               <h3 class="text-2xl font-bold">16</h3>
-              <p class="text-sm text-base-content/60">{$messages.dashboard.stats.users}</p>
+              <p class="text-sm text-base-content/60">{m.dashboard_stats_users()}</p>
             </div>
           </div>
         </div>
@@ -264,11 +264,11 @@
           <div class="card-body p-6">
             <div class="flex items-center justify-between">
               <UploadCloud class="text-primary h-8 w-8" />
-              <span class={`badge rounded-full px-3 py-1 font-medium ${isDarkMode ? 'bg-green-900/30 text-green-400' : 'bg-green-100 text-green-600'}`}>+28</span>
+              <span class="badge badge-success">+28</span>
             </div>
             <div class="mt-4">
               <h3 class="text-2xl font-bold">164</h3>
-              <p class="text-sm text-base-content/60">{$messages.dashboard.stats.mediaFiles}</p>
+              <p class="text-sm text-base-content/60">{m.dashboard_stats_media_files()}</p>
             </div>
           </div>
         </div>
@@ -280,8 +280,8 @@
         <div class="card bg-base-100 shadow-md md:col-span-2">
           <div class="card-body">
             <div class="flex justify-between items-center">
-              <h2 class="card-title">{$messages.dashboard.recentPosts}</h2>
-              <a href="/admin/posts/new" class="btn btn-sm btn-outline btn-primary">{$messages.dashboard.addPost}</a>
+              <h2 class="card-title">{m.dashboard_recent_posts()}</h2>
+              <a href="/admin/posts/new" class="btn btn-sm btn-outline btn-primary">{m.dashboard_add_post()}</a>
             </div>
             
             <div class="divider my-2"></div>
@@ -326,7 +326,7 @@
         <!-- Recent Activity -->
         <div class="card bg-base-100 shadow-md">
           <div class="card-body">
-            <h2 class="card-title">{$messages.dashboard.recentActivity}</h2>
+            <h2 class="card-title">{m.dashboard_recent_activity()}</h2>
             
             <div class="divider my-2"></div>
             
@@ -351,7 +351,7 @@
             </div>
             
             <div class="card-actions justify-end mt-4">
-              <a href="/admin/activity" class="link link-primary">{$messages.dashboard.viewAll}</a>
+              <a href="/admin/activity" class="link link-primary">{m.dashboard_view_all()}</a>
             </div>
           </div>
         </div>
@@ -361,49 +361,49 @@
       <div class="grid grid-cols-1 gap-6 mb-6">
         <div class="card bg-base-100 shadow-md">
           <div class="card-body">
-            <h2 class="card-title">{$messages.dashboard.systemStatus}</h2>
+            <h2 class="card-title">{m.dashboard_system_status()}</h2>
             
-            <div class={`p-4 rounded-lg mb-4 ${isDarkMode ? 'bg-green-900/30 text-green-700' : 'bg-green-100 text-green-800'}`}>
-              <span>{$messages.dashboard.systemOperational}</span>
+            <div class="alert alert-success mb-4">
+              <span>{m.dashboard_system_operational()}</span>
             </div>
             
             <div class="space-y-3">
               <div class="flex items-center justify-between">
-                <span>{$messages.dashboard.database}</span>
+                <span>{m.dashboard_database()}</span>
                 <div class="flex items-center gap-2">
-                  <span class={`badge font-medium gap-2 ${isDarkMode ? 'bg-green-900/30 text-green-400' : 'bg-green-100 text-green-600'}`}>
+                  <span class="badge badge-success font-medium gap-2">
                     <div aria-label="success" class="status status-success"></div>
-                    {$messages.dashboard.operational}
+                    {m.dashboard_operational()}
                   </span>
                 </div>
               </div>
               
               <div class="flex items-center justify-between">
-                <span>{$messages.dashboard.api}</span>
+                <span>{m.dashboard_api()}</span>
                 <div class="flex items-center gap-2">
-                  <span class={`badge font-medium gap-2 ${isDarkMode ? 'bg-green-900/30 text-green-400' : 'bg-green-100 text-green-600'}`}>
+                  <span class="badge badge-success font-medium gap-2">
                     <div aria-label="success" class="status status-success"></div>
-                    {$messages.dashboard.operational}
+                    {m.dashboard_operational()}
                   </span>
                 </div>
               </div>
               
               <div class="flex items-center justify-between">
-                <span>{$messages.dashboard.storage}</span>
+                <span>{m.dashboard_storage()}</span>
                 <div class="flex items-center gap-2">
-                  <span class={`badge font-medium gap-2 ${isDarkMode ? 'bg-green-900/30 text-green-400' : 'bg-green-100 text-green-600'}`}>
+                  <span class="badge badge-success font-medium gap-2">
                     <div aria-label="success" class="status status-success"></div>
-                    {$messages.dashboard.operational}
+                    {m.dashboard_operational()}
                   </span>
                 </div>
               </div>
               
               <div class="flex items-center justify-between">
-                <span>{$messages.dashboard.webServer}</span>
+                <span>{m.dashboard_web_server()}</span>
                 <div class="flex items-center gap-2">
-                  <span class={`badge font-medium gap-2 ${isDarkMode ? 'bg-green-900/30 text-green-400' : 'bg-green-100 text-green-600'}`}>
+                  <span class="badge badge-success font-medium gap-2">
                     <div aria-label="success" class="status status-success"></div>
-                    {$messages.dashboard.operational}
+                    {m.dashboard_operational()}
                   </span>
                 </div>
               </div>

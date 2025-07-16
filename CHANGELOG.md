@@ -9,6 +9,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Framework Modernization (COMPLETED)** - All frameworks updated to 2025 best practices
+  - **SvelteKit 2.22.5** - Latest with WebSocket support, async routing, Vite 7 compatibility
+  - **Svelte 5.35.6** - Complete runes implementation ($state, $effect, $derived)
+  - **TailwindCSS 4.1.11** - CSS-first configuration with Oxide engine performance
+  - **DaisyUI 5.0.46** - Modern theme system with TailwindCSS 4 compatibility
+  - **Drizzle ORM 0.44.2** - Latest with 2025 features and optimal SQLite config
+  - **Paraglide i18n 2.2.0** - Modernized flat message structure and universal i18n
+
+### Changed
+- **Message Structure** - Migrated from nested to flat semantic naming
+  - Old: `m["userMenu.profile"]()` → New: `m.user_menu_profile()`
+  - Applied consistently across all components for better performance
+  - Improved developer experience with cleaner, more predictable naming
+- **Theme Management** - Updated to use modern DaisyUI data-theme attributes
+- **Component Patterns** - All components now use consistent Svelte 5 runes
+
+### Removed
+- **Legacy Configuration** - Removed `tailwind.config.js` (replaced by CSS-first approach)
+- **Nested Message Structure** - Deprecated in favor of flat semantic naming
+
+### Technical
+- **Universal Reactivity** - Svelte 5 runes work across all components
+- **Fine-grained Updates** - Signals-based reactivity for optimal performance
+- **Type Safety** - Full TypeScript integration across all frameworks
+- **Future-Proof** - All frameworks aligned with 2025 development standards
+
 ### Planned
 - Route guards for protected admin pages
 - Role-based access control (admin, editor, etc.)
