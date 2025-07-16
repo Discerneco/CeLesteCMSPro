@@ -225,7 +225,7 @@
           <div class="card-body p-6">
             <div class="flex items-center justify-between">
               <Globe class="text-primary h-8 w-8" />
-              <span class="badge badge-success">+1</span>
+              <span class="badge badge-soft badge-success">+1</span>
             </div>
             <div class="mt-4">
               <h3 class="text-2xl font-bold">3</h3>
@@ -238,7 +238,7 @@
           <div class="card-body p-6">
             <div class="flex items-center justify-between">
               <MessageSquare class="text-primary h-8 w-8" />
-              <span class="badge badge-success">+12</span>
+              <span class="badge badge-soft badge-success">+12</span>
             </div>
             <div class="mt-4">
               <h3 class="text-2xl font-bold">48</h3>
@@ -251,7 +251,7 @@
           <div class="card-body p-6">
             <div class="flex items-center justify-between">
               <Users class="text-primary h-8 w-8" />
-              <span class="badge badge-success">+3</span>
+              <span class="badge badge-soft badge-success">+3</span>
             </div>
             <div class="mt-4">
               <h3 class="text-2xl font-bold">16</h3>
@@ -264,7 +264,7 @@
           <div class="card-body p-6">
             <div class="flex items-center justify-between">
               <UploadCloud class="text-primary h-8 w-8" />
-              <span class="badge badge-success">+28</span>
+              <span class="badge badge-soft badge-success">+28</span>
             </div>
             <div class="mt-4">
               <h3 class="text-2xl font-bold">164</h3>
@@ -363,7 +363,7 @@
           <div class="card-body">
             <h2 class="card-title">{m.dashboard_system_status()}</h2>
             
-            <div class="alert alert-success mb-4">
+            <div class="alert alert-success alert-soft mb-4">
               <span>{m.dashboard_system_operational()}</span>
             </div>
             
@@ -371,7 +371,7 @@
               <div class="flex items-center justify-between">
                 <span>{m.dashboard_database()}</span>
                 <div class="flex items-center gap-2">
-                  <span class="badge badge-success font-medium gap-2">
+                  <span class="badge badge-soft badge-success font-medium gap-2">
                     <div aria-label="success" class="status status-success"></div>
                     {m.dashboard_operational()}
                   </span>
@@ -381,7 +381,7 @@
               <div class="flex items-center justify-between">
                 <span>{m.dashboard_api()}</span>
                 <div class="flex items-center gap-2">
-                  <span class="badge badge-success font-medium gap-2">
+                  <span class="badge badge-soft badge-success font-medium gap-2">
                     <div aria-label="success" class="status status-success"></div>
                     {m.dashboard_operational()}
                   </span>
@@ -391,7 +391,7 @@
               <div class="flex items-center justify-between">
                 <span>{m.dashboard_storage()}</span>
                 <div class="flex items-center gap-2">
-                  <span class="badge badge-success font-medium gap-2">
+                  <span class="badge badge-soft badge-success font-medium gap-2">
                     <div aria-label="success" class="status status-success"></div>
                     {m.dashboard_operational()}
                   </span>
@@ -401,7 +401,7 @@
               <div class="flex items-center justify-between">
                 <span>{m.dashboard_web_server()}</span>
                 <div class="flex items-center gap-2">
-                  <span class="badge badge-success font-medium gap-2">
+                  <span class="badge badge-soft badge-success font-medium gap-2">
                     <div aria-label="success" class="status status-success"></div>
                     {m.dashboard_operational()}
                   </span>
