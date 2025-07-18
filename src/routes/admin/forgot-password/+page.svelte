@@ -31,7 +31,7 @@
 </script>
 
 <svelte:head>
-  <title>{m["auth.forgotPasswordTitle"]()} - CeLesteCMS Pro</title>
+  <title>{m.auth_forgot_password_title()} - CeLesteCMS Pro</title>
 </svelte:head>
 
 <div class="min-h-screen flex flex-col bg-base-200">
@@ -46,7 +46,7 @@
         <button 
           onclick={toggleTheme}
           class="btn btn-circle btn-ghost"
-          aria-label={m["auth.toggleTheme"]()}
+          aria-label={m["auth_toggle_theme"]()}
         >
           {#if theme === 'dark'}
             <Sun class="h-5 w-5" />
@@ -62,9 +62,9 @@
   <main class="flex-grow flex items-center justify-center px-4 sm:px-8 py-6">
   <div class="card w-96 bg-base-100 shadow-xl">
     <div class="card-body">
-      <h2 class="card-title justify-center">{m["auth.forgotPasswordTitle"]()}</h2>
+      <h2 class="card-title justify-center">{m.auth_forgot_password_title()}</h2>
       <p class="text-center text-sm opacity-70 mb-4">
-        {m["auth.forgotPasswordSubtitle"]()}
+        {m.auth_forgot_password_subtitle()}
       </p>
       
       {#if success}
@@ -72,10 +72,10 @@
           <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          <span>{m["auth.resetInstructions"]()}</span>
+          <span>{m.auth_reset_instructions()}</span>
         </div>
         <div class="card-actions justify-center mt-4">
-          <a href="/admin/login" class="btn btn-primary">{m["auth.backToLogin"]()}</a>
+          <a href="/admin/login" class="btn btn-primary">{m.auth_back_to_login()}</a>
         </div>
       {:else}
         <form method="POST" use:enhance={() => {
@@ -87,7 +87,7 @@
         }}>
           <div class="form-control">
             <label class="label" for="email">
-              <span class="label-text">{m["auth.emailLabel"]()}</span>
+              <span class="label-text">{m.auth_email_label()}</span>
             </label>
             <input
               id="email"
@@ -114,9 +114,9 @@
             <button type="submit" class="btn btn-primary" class:loading={isLoading} disabled={isLoading}>
               {#if isLoading}
                 <span class="loading loading-spinner"></span>
-                {m["auth.sendResetLink"]()}...
+                {m.auth_send_reset_link()}...
               {:else}
-                {m["auth.sendResetLink"]()}
+                {m.auth_send_reset_link()}
               {/if}
             </button>
           </div>
@@ -124,7 +124,7 @@
         
         <div class="divider"></div>
         <div class="text-center">
-          <a href="/admin/login" class="link link-hover">{m["auth.backToLogin"]()}</a>
+          <a href="/admin/login" class="link link-hover">{m.auth_back_to_login()}</a>
         </div>
       {/if}
     </div>
@@ -133,6 +133,6 @@
   
   <!-- Footer -->
   <footer class="footer footer-center px-4 sm:px-8 py-6 bg-base-200 text-base-content">
-    <p>{m["auth.copyright"]()}</p>
+    <p>{m.auth_copyright()}</p>
   </footer>
 </div>

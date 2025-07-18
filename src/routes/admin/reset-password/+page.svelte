@@ -68,17 +68,17 @@
     error = '';
     
     if (!password) {
-      error = m["auth.passwordRequired"]();
+      error = m.auth_password_required();
       return false;
     }
     
     if (password.length < 8) {
-      error = m["auth.passwordTooShort"]();
+      error = m.auth_password_too_short();
       return false;
     }
     
     if (!passwordsMatch) {
-      error = m["auth.passwordsDoNotMatch"]();
+      error = m.auth_passwords_do_not_match();
       return false;
     }
     
@@ -87,7 +87,7 @@
 </script>
 
 <svelte:head>
-  <title>{m["auth.resetPasswordTitle"]()} - CeLesteCMS Pro</title>
+  <title>{m.auth_reset_password_title()} - CeLesteCMS Pro</title>
 </svelte:head>
 
 <div class="min-h-screen flex flex-col bg-base-200">
@@ -102,7 +102,7 @@
         <button 
           onclick={toggleTheme}
           class="btn btn-circle btn-ghost"
-          aria-label={m["auth.toggleTheme"]()}
+          aria-label={m["auth_toggle_theme"]()}
         >
           {#if theme === 'dark'}
             <Sun class="h-5 w-5" />
@@ -118,9 +118,9 @@
   <main class="flex-grow flex items-center justify-center px-4 sm:px-8 py-6">
   <div class="card w-96 bg-base-100 shadow-xl">
     <div class="card-body">
-      <h2 class="card-title justify-center">{m["auth.resetPasswordTitle"]()}</h2>
+      <h2 class="card-title justify-center">{m.auth_reset_password_title()}</h2>
       <p class="text-center text-sm opacity-70 mb-4">
-        {m["auth.resetPasswordSubtitle"]()}
+        {m.auth_reset_password_subtitle()}
       </p>
       
       {#if success}
@@ -128,10 +128,10 @@
           <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          <span>{m["auth.passwordResetSuccess"]()}</span>
+          <span>{m.auth_password_reset_success()}</span>
         </div>
         <div class="card-actions justify-center mt-4">
-          <a href="/admin/login" class="btn btn-primary">{m["common.login"]()}</a>
+          <a href="/admin/login" class="btn btn-primary">{m.common_login()}</a>
         </div>
       {:else if token}
         <form method="POST" use:enhance={() => {
@@ -147,7 +147,7 @@
           
           <div class="form-control">
             <label class="label" for="password">
-              <span class="label-text">{m["auth.passwordLabel"]()}</span>
+              <span class="label-text">{m.auth_password_label()}</span>
             </label>
             <input
               id="password"
@@ -174,7 +174,7 @@
           
           <div class="form-control">
             <label class="label" for="confirmPassword">
-              <span class="label-text">{m["auth.confirmPasswordLabel"]()}</span>
+              <span class="label-text">{m.auth_confirm_password_label()}</span>
             </label>
             <input
               id="confirmPassword"
@@ -191,7 +191,7 @@
             />
             {#if confirmPassword && !passwordsMatch}
               <div class="label">
-                <span class="label-text-alt text-error">{m["auth.passwordsDoNotMatch"]()}</span>
+                <span class="label-text-alt text-error">{m.auth_passwords_do_not_match()}</span>
               </div>
             {/if}
           </div>
@@ -237,9 +237,9 @@
             >
               {#if isLoading}
                 <span class="loading loading-spinner"></span>
-                {m["auth.setNewPassword"]()}...
+                {m.auth_set_new_password()}...
               {:else}
-                {m["auth.setNewPassword"]()}
+                {m.auth_set_new_password()}
               {/if}
             </button>
           </div>
@@ -247,7 +247,7 @@
         
         <div class="divider"></div>
         <div class="text-center">
-          <a href="/admin/login" class="link link-hover">{m["auth.backToLogin"]()}</a>
+          <a href="/admin/login" class="link link-hover">{m.auth_back_to_login()}</a>
         </div>
       {:else}
         <div class="alert alert-error">
@@ -257,7 +257,7 @@
           <span>Invalid or missing reset token. Please request a new password reset.</span>
         </div>
         <div class="card-actions justify-center mt-4">
-          <a href="/admin/forgot-password" class="btn btn-primary">{m["auth.sendResetLink"]()}</a>
+          <a href="/admin/forgot-password" class="btn btn-primary">{m.auth_send_reset_link()}</a>
         </div>
       {/if}
     </div>
@@ -266,6 +266,6 @@
   
   <!-- Footer -->
   <footer class="footer footer-center px-4 sm:px-8 py-6 bg-base-200 text-base-content">
-    <p>{m["auth.copyright"]()}</p>
+    <p>{m.auth_copyright()}</p>
   </footer>
 </div>

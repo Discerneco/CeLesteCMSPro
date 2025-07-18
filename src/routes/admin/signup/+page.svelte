@@ -38,28 +38,28 @@
     
     // Validation
     if (!name || !email || !password || !confirmPassword) {
-      error = m["auth.fillAllFields"]();
+      error = m.auth_fill_all_fields();
       return;
     }
     
     if (name.trim().length < 2) {
-      error = m["auth.nameTooShort"]();
+      error = m.auth_name_too_short();
       return;
     }
     
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      error = m["auth.invalidEmail"]();
+      error = m.auth_invalid_email();
       return;
     }
     
     if (password.length < 8) {
-      error = m["auth.passwordTooShort"]();
+      error = m.auth_password_too_short();
       return;
     }
     
     if (password !== confirmPassword) {
-      error = m["auth.passwordsDoNotMatch"]();
+      error = m.auth_passwords_do_not_match();
       return;
     }
     
@@ -73,10 +73,10 @@
         // Redirect to admin dashboard (Better Auth auto-signs in after signup)
         goto('/admin');
       } else {
-        error = result.message || m["auth.signupFailed"]();
+        error = result.message || m.auth_signup_failed();
       }
     } catch (e) {
-      error = m["auth.signupError"]();
+      error = m.auth_signup_error();
       console.error(e);
     } finally {
       isLoading = false;
@@ -115,7 +115,7 @@
         <button 
           onclick={toggleTheme}
           class="btn btn-circle btn-ghost"
-          aria-label={m["auth.toggleTheme"]()}
+          aria-label={m["auth_toggle_theme"]()}
         >
           {#if theme === 'dark'}
             <Sun class="h-5 w-5" />
@@ -133,8 +133,8 @@
       <div class="card-body">
         <div class="flex flex-col items-center justify-center">
           <img src="/logo.png" alt="CeLeste CMS Logo" class="w-24 h-24 mb-2" />
-          <h2 class="card-title text-2xl font-bold text-center">{m["auth.signupTitle"]()}</h2>
-          <p class="text-center text-base-content/70 mb-6">{m["auth.signupSubtitle"]()}</p>
+          <h2 class="card-title text-2xl font-bold text-center">{m.auth_signup_title()}</h2>
+          <p class="text-center text-base-content/70 mb-6">{m.auth_signup_subtitle()}</p>
         </div>
 
         {#if error}
@@ -148,7 +148,7 @@
           <!-- Name Field -->
           <div class="form-control mb-4">
             <label for="name" class="label">
-              <span class="label-text">{m["auth.nameLabel"]()}</span>
+              <span class="label-text">{m.auth_name_label()}</span>
             </label>
             <input
               id="name"
@@ -164,7 +164,7 @@
           <!-- Email Field -->
           <div class="form-control mb-4">
             <label for="email" class="label">
-              <span class="label-text">{m["auth.emailLabel"]()}</span>
+              <span class="label-text">{m.auth_email_label()}</span>
             </label>
             <input
               id="email"
@@ -180,7 +180,7 @@
           <!-- Password Field with Toggle -->
           <div class="form-control mb-4">
             <label for="password" class="label">
-              <span class="label-text">{m["auth.passwordLabel"]()}</span>
+              <span class="label-text">{m.auth_password_label()}</span>
             </label>
             <div class="relative">
               <input
@@ -196,7 +196,7 @@
                 type="button"
                 onclick={togglePasswordVisibility}
                 class="absolute right-2 top-1/2 transform -translate-y-1/2 text-base-content/70 btn btn-ghost btn-sm btn-circle"
-                aria-label={showPassword ? m["auth.hidePassword"]() : m["auth.showPassword"]()}
+                aria-label={showPassword ? m.auth_hide_password() : m.auth_show_password()}
               >
                 {#if showPassword}
                   <EyeOff class="h-4 w-4" />
@@ -210,7 +210,7 @@
           <!-- Confirm Password Field with Toggle -->
           <div class="form-control mb-6">
             <label for="confirmPassword" class="label">
-              <span class="label-text">{m["auth.confirmPasswordLabel"]()}</span>
+              <span class="label-text">{m.auth_confirm_password_label()}</span>
             </label>
             <div class="relative">
               <input
@@ -226,7 +226,7 @@
                 type="button"
                 onclick={toggleConfirmPasswordVisibility}
                 class="absolute right-2 top-1/2 transform -translate-y-1/2 text-base-content/70 btn btn-ghost btn-sm btn-circle"
-                aria-label={showConfirmPassword ? m["auth.hidePassword"]() : m["auth.showPassword"]()}
+                aria-label={showConfirmPassword ? m.auth_hide_password() : m.auth_show_password()}
               >
                 {#if showConfirmPassword}
                   <EyeOff class="h-4 w-4" />
@@ -245,9 +245,9 @@
           >
             {#if isLoading}
               <span class="loading loading-spinner"></span>
-              <span class="opacity-0">{m["auth.signupButton"]()}</span>
+              <span class="opacity-0">{m.auth_signup_button()}</span>
             {:else}
-              {m["auth.signupButton"]()}
+              {m.auth_signup_button()}
             {/if}
           </button>
         </form>
@@ -255,14 +255,14 @@
         <!-- Link to Login -->
         <div class="text-center">
           <p class="text-sm text-base-content/70">
-            {m["auth.alreadyHaveAccount"]()} 
-            <a href="/admin/login" class="link link-primary">{m["common.login"]()}</a>
+            {m.auth_already_have_account()} 
+            <a href="/admin/login" class="link link-primary">{m.common_login()}</a>
           </p>
         </div>
 
         <div class="divider mt-6 mb-4"></div>
         <p class="text-xs text-center text-base-content/70">
-          {m["auth.support"]()}
+          {m.auth_support()}
         </p>
       </div>
     </div>
@@ -270,6 +270,6 @@
   
   <!-- Footer -->
   <footer class="footer footer-center px-4 sm:px-8 py-6 bg-base-200 text-base-content">
-    <p>{m["auth.copyright"]()}</p>
+    <p>{m.auth_copyright()}</p>
   </footer>
 </div>

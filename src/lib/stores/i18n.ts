@@ -7,10 +7,12 @@ import { writable, derived } from 'svelte/store';
 function createLocaleStore() {
   const { subscribe, set } = writable(getLocale());
   
-  // Update store when locale changes
+  let updateLocale: (() => void) | undefined;
+  
+  // Update store when locale changes - only in browser
   if (typeof window !== 'undefined') {
     // Listen to URL changes which indicate locale changes
-    const updateLocale = () => {
+    updateLocale = () => {
       const currentLocale = getLocale();
       set(currentLocale);
     };
@@ -20,14 +22,12 @@ function createLocaleStore() {
     
     // Update periodically to catch any missed changes
     setInterval(updateLocale, 100);
-    
-    return {
-      subscribe,
-      update: updateLocale
-    };
   }
   
-  return { subscribe };
+  return {
+    subscribe,
+    update: updateLocale
+  };
 }
 
 export const locale = createLocaleStore();
@@ -47,7 +47,7 @@ export const messages = derived(locale, ($locale) => {
       dontHaveAccount: () => m['auth.dontHaveAccount'](),
       support: () => m['auth.support'](),
       copyright: () => m['auth.copyright'](),
-      toggleTheme: () => m['auth.toggleTheme'](),
+      themeToggle: () => m['auth.toggleTheme'](),
       fillAllFields: () => m['auth.fillAllFields'](),
       invalidEmail: () => m['auth.invalidEmail'](),
       invalidCredentials: () => m['auth.invalidCredentials'](),
@@ -111,7 +111,7 @@ export const messages = derived(locale, ($locale) => {
 
 // Helper function to force locale update
 export function updateLocale() {
-  if (locale.update) {
+  if (typeof window !== 'undefined' && locale.update) {
     locale.update();
   }
 }

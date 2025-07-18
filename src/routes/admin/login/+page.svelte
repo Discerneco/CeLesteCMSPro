@@ -30,12 +30,12 @@
   async function handleSubmit(event: Event) {
     event.preventDefault();
     if (!email || !password) {
-      error = m["auth.fillAllFields"]();
+      error = m.auth_fill_all_fields();
       return;
     }
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      error = m["auth.invalidEmail"]();
+      error = m.auth_invalid_email();
       return;
     }
     
@@ -54,10 +54,10 @@
         // Redirect to admin dashboard
         goto('/admin');
       } else {
-        error = result.message || m["auth.invalidCredentials"]();
+        error = result.message || m.auth_invalid_credentials();
       }
     } catch (e) {
-      error = m["auth.loginError"]();
+      error = m.auth_login_error();
       console.error(e);
     } finally {
       isLoading = false;
@@ -91,7 +91,7 @@
         <button 
           onclick={toggleTheme}
           class="btn btn-circle btn-ghost"
-          aria-label={m["auth.toggleTheme"]()}
+          aria-label={m["auth_toggle_theme"]()}
         >
           {#if theme === 'dark'}
             <Sun class="h-5 w-5" />
@@ -110,8 +110,8 @@
       <div class="card-body">
         <div class="flex flex-col items-center justify-center">
           <img src="/logo.png" alt="CeLeste CMS Logo" class="w-24 h-24 mb-2" />
-          <h2 class="card-title text-2xl font-bold text-center">{m["auth.loginTitle"]()}</h2>
-          <p class="text-center text-base-content/70 mb-6">{m["auth.loginSubtitle"]()}</p>
+          <h2 class="card-title text-2xl font-bold text-center">{m.auth_login_title()}</h2>
+          <p class="text-center text-base-content/70 mb-6">{m.auth_login_subtitle()}</p>
         </div>
 
         {#if error}
@@ -125,7 +125,7 @@
           <!-- Email Field -->
           <div class="form-control mb-4">
             <label for="email" class="label">
-              <span class="label-text">{m["auth.emailLabel"]()}</span>
+              <span class="label-text">{m.auth_email_label()}</span>
             </label>
             <input
               id="email"
@@ -141,7 +141,7 @@
           <!-- Password Field with Toggle -->
           <div class="form-control mb-4">
             <label for="password" class="label">
-              <span class="label-text">{m["auth.passwordLabel"]()}</span>
+              <span class="label-text">{m.auth_password_label()}</span>
             </label>
             <div class="relative">
               <input
@@ -157,7 +157,7 @@
                 type="button"
                 onclick={togglePasswordVisibility}
                 class="absolute right-2 top-1/2 transform -translate-y-1/2 text-base-content/70 btn btn-ghost btn-sm btn-circle"
-                aria-label={showPassword ? m["auth.hidePassword"]() : m["auth.showPassword"]()}
+                aria-label={showPassword ? m.auth_hide_password() : m.auth_show_password()}
               >
                 {#if showPassword}
                   <EyeOff class="h-4 w-4" />
@@ -178,10 +178,10 @@
                   checked={rememberMe}
                   onchange={(e) => rememberMe = e.currentTarget.checked}
                 />
-                <span class="label-text ml-2">{m["auth.rememberMe"]()}</span>
+                <span class="label-text ml-2">{m.auth_remember_me()}</span>
               </label>
             </div>
-            <a href="/admin/forgot-password" class="link link-primary text-sm">{m["common.forgotPassword"]()}</a>
+            <a href="/admin/forgot-password" class="link link-primary text-sm">{m.common_forgot_password()}</a>
           </div>
           
           <!-- Submit Button -->
@@ -192,9 +192,9 @@
           >
             {#if isLoading}
               <span class="loading loading-spinner"></span>
-              <span class="opacity-0">{m["auth.loginButton"]()}</span>
+              <span class="opacity-0">{m.auth_login_button()}</span>
             {:else}
-              {m["auth.loginButton"]()}
+              {m.auth_login_button()}
             {/if}
           </button>
         </form>
@@ -202,14 +202,14 @@
         <!-- Link to Signup -->
         <div class="text-center mt-6">
           <p class="text-sm text-base-content/70">
-            {m["auth.dontHaveAccount"]()} 
-            <a href="/admin/signup" class="link link-primary font-medium">{m["common.signup"]()}</a>
+            {m.auth_dont_have_account()} 
+            <a href="/admin/signup" class="link link-primary font-medium">{m.common_signup()}</a>
           </p>
         </div>
 
         <div class="divider mt-6 mb-4"></div>
         <p class="text-xs text-center text-base-content/70">
-          {m["auth.support"]()}
+          {m.auth_support()}
         </p>
       </div>
       </div>
@@ -218,6 +218,6 @@
   
   <!-- Footer -->
   <footer class="footer footer-center px-4 sm:px-8 py-6 bg-base-200 text-base-content">
-    <p>{m["auth.copyright"]()}</p>
+    <p>{m.auth_copyright()}</p>
   </footer>
 </div>
