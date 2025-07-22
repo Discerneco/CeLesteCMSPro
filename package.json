@@ -14,7 +14,7 @@
 		"lint": "prettier --check . && eslint .",
 		"db:push": "drizzle-kit push",
 		"db:generate": "drizzle-kit generate:sqlite",
-		"db:migrate": "node --loader tsx src/lib/server/db/migrate.ts",
+		"db:migrate": "node --import tsx src/lib/server/db/migrate.ts",
 		"db:studio": "drizzle-kit studio",
 		"db:seed": "tsx src/lib/server/db/seed.ts",
 		"db:seed-standalone": "tsx src/lib/server/db/seed-standalone.ts",

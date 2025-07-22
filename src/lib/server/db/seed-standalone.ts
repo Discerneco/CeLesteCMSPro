@@ -3,6 +3,27 @@ import Database from 'better-sqlite3';
 import { drizzle } from 'drizzle-orm/better-sqlite3';
 import * as schema from './schema.js';
 import { createId } from '@paralleldrive/cuid2';
+import { sha256 } from '@oslojs/crypto/sha2';
+import { encodeBase64 } from '@oslojs/encoding';
+
+// Oslo password hashing function (copied from auth-oslo.ts to avoid SvelteKit dependencies)
+function generateRandomBytes(length: number): Uint8Array {
+  return crypto.getRandomValues(new Uint8Array(length));
+}
+
+function generateRandomString(length: number): string {
+  const bytes = generateRandomBytes(length);
+  return encodeBase64(bytes).slice(0, length);
+}
+
+async function hashPassword(password: string): Promise<string> {
+  const salt = generateRandomString(16);
+  const encoder = new TextEncoder();
+  const passwordBytes = encoder.encode(password + salt);
+  const hashBytes = await sha256(passwordBytes);
+  const hashB64 = encodeBase64(hashBytes);
+  return `${hashB64}:${salt}`;
+}
 
 /**
  * Standalone seed script that works outside SvelteKit context
@@ -22,18 +43,22 @@ async function seedDatabase() {
   const db = drizzle(sqlite, { schema });
   
   try {
-    // Create admin user
+    // Create admin user with Oslo password hash
     const adminId = createId();
+    const osloPasswordHash = await hashPassword('password');
+    
     await db.insert(schema.users).values({
       id: adminId,
       email: 'admin@example.com',
       username: 'admin',
-      passwordHash: '$2b$10$J8SGeG1ADGfaTGNrBueiIuhS3GX4Xrn0VIuXLGf.iMOY9EANMkFui', // "password"
+      passwordHash: osloPasswordHash, // Oslo SHA-256 hash for "password"
       firstName: 'Admin',
       lastName: 'User',
       role: 'admin',
       active: true,
-      verifiedEmail: true
+      verifiedEmail: true,
+      createdAt: new Date(),
+      updatedAt: new Date()
     }).onConflictDoNothing();
     
     // Create content types
@@ -43,11 +68,13 @@ async function seedDatabase() {
       name: 'Post',
       slug: 'post',
       description: 'Regular blog post',
-      fields: [
+      fields: JSON.stringify([
         { name: 'title', type: 'text', required: true },
         { name: 'content', type: 'richtext', required: true },
         { name: 'excerpt', type: 'text', required: false }
-      ]
+      ]),
+      createdAt: new Date(),
+      updatedAt: new Date()
     }).onConflictDoNothing();
     
     // Create categories
@@ -56,7 +83,9 @@ async function seedDatabase() {
       id: categoryId,
       name: 'General',
       slug: 'general',
-      description: 'General posts'
+      description: 'General posts',
+      createdAt: new Date(),
+      updatedAt: new Date()
     }).onConflictDoNothing();
     
     // Create tag
@@ -65,7 +94,9 @@ async function seedDatabase() {
       id: tagId,
       name: 'News',
       slug: 'news',
-      description: 'News and updates'
+      description: 'News and updates',
+      createdAt: new Date(),
+      updatedAt: new Date()
     }).onConflictDoNothing();
     
     // Create sample post
@@ -78,7 +109,10 @@ async function seedDatabase() {
       excerpt: 'Get started with CeLesteCMS Pro',
       authorId: adminId,
       status: 'published',
-      contentTypeId: postTypeId
+      contentTypeId: postTypeId,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      publishedAt: new Date()
     }).onConflictDoNothing();
     
     // Associate post with category
@@ -96,12 +130,13 @@ async function seedDatabase() {
     // Default settings
     await db.insert(schema.settings).values({
       key: 'site',
-      value: {
+      value: JSON.stringify({
         title: 'CeLesteCMS Pro',
         description: 'Modern CMS built with SvelteKit and Drizzle',
         language: 'en',
         theme: 'system'
-      }
+      }),
+      updatedAt: new Date()
     }).onConflictDoNothing();
     
     console.log('✅ Database seeded successfully');
