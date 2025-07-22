@@ -1,7 +1,7 @@
-import { json } from '@sveltejs/kit';
+import { json, type RequestHandler } from '@sveltejs/kit';
 import { deleteSession, deleteSessionCookie } from '$lib/server/auth-oslo';
 
-export async function POST({ cookies, platform, locals }) {
+export const POST: RequestHandler = async ({ cookies, platform, locals }) => {
   const sessionId = cookies.get('session');
   
   if (sessionId) {

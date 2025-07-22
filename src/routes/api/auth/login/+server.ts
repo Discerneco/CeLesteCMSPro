@@ -1,10 +1,10 @@
-import { json } from '@sveltejs/kit';
+import { json, type RequestHandler } from '@sveltejs/kit';
 import { createDb } from '$lib/server/db';
 import { verifyPassword, createSession, createSessionCookie } from '$lib/server/auth-oslo';
 import { users } from '$lib/server/db/schema';
 import { eq } from 'drizzle-orm';
 
-export async function POST({ request, platform, cookies }) {
+export const POST: RequestHandler = async ({ request, platform, cookies }) => {
   const { email, password } = await request.json();
   
   // Validate input

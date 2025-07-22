@@ -1,11 +1,11 @@
-import { json } from '@sveltejs/kit';
+import { json, type RequestHandler } from '@sveltejs/kit';
 import { hashPassword, createSession, createSessionCookie } from '$lib/server/auth-oslo';
 import { createDb } from '$lib/server/db';
 import { users } from '$lib/server/db/schema';
 import { createId } from '@paralleldrive/cuid2';
 import { eq } from 'drizzle-orm';
 
-export async function POST({ request, cookies, platform }) {
+export const POST: RequestHandler = async ({ request, cookies, platform }) => {
   try {
     const { email, password, name } = await request.json();
     
