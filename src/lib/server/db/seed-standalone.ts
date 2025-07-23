@@ -68,11 +68,11 @@ async function seedDatabase() {
       name: 'Post',
       slug: 'post',
       description: 'Regular blog post',
-      fields: JSON.stringify([
+      fields: [
         { name: 'title', type: 'text', required: true },
         { name: 'content', type: 'richtext', required: true },
         { name: 'excerpt', type: 'text', required: false }
-      ]),
+      ],
       createdAt: new Date(),
       updatedAt: new Date()
     }).onConflictDoNothing();
