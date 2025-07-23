@@ -41,6 +41,12 @@ const handleAuth: Handle = async ({ event, resolve }) => {
 	// Default user state if no valid session
 	if (!event.locals.user) {
 		event.locals.user = {
+			id: '',
+			email: '',
+			username: '',
+			firstName: '',
+			lastName: '',
+			role: '',
 			isAuthenticated: false
 		};
 	}
