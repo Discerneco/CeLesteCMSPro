@@ -79,7 +79,7 @@ export const createAuthStore = () => {
         update(state => ({ ...state, isLoading: false }));
       }
     },
-    setUser: (user) => {
+    setUser: (user: any) => {
       update(state => ({
         ...state,
         user,
