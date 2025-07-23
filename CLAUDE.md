@@ -57,7 +57,14 @@ CeLesteCMS Pro is a modern, headless CMS built with cutting-edge web technologie
 - **File Upload System** - Media handling with Cloudflare integration
 - **Content Validation** - Input sanitization and schema validation
 
-### 4. Production Deployment
+### 4. Authentication Enhancements
+- **Oslo Password Reset System** - Implement secure password reset using Oslo cryptographic primitives
+  - Create `password_reset_tokens` database table
+  - Use Oslo's `@oslojs/crypto` for token generation and hashing
+  - Integrate with existing email service infrastructure
+  - Replace temporary "coming soon" UI with full functionality
+
+### 5. Production Deployment
 - **Cloudflare Pages** setup and configuration
 - **D1 Database Migration** from SQLite
 - **Environment Configuration** and secrets management

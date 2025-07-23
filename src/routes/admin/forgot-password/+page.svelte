@@ -78,49 +78,19 @@
           <a href="/admin/login" class="btn btn-primary">{m.auth_back_to_login()}</a>
         </div>
       {:else}
-        <form method="POST" use:enhance={() => {
-          isLoading = true;
-          return async ({ update }) => {
-            isLoading = false;
-            update();
-          };
-        }}>
-          <div class="form-control">
-            <label class="label" for="email">
-              <span class="label-text">{m.auth_email_label()}</span>
-            </label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              bind:value={email}
-              placeholder="admin@example.com"
-              class="input input-bordered"
-              required
-              autocomplete="email"
-            />
-          </div>
-          
-          {#if message && !success}
-            <div class="alert alert-error mt-4">
-              <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <span>{message}</span>
+        <!-- Coming Soon Notice -->
+        <div class="alert alert-info">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <div>
+            <h3 class="font-bold">Password Reset Coming Soon</h3>
+            <div class="text-sm">
+              Password reset functionality is being reimplemented with Oslo authentication. 
+              Please contact your administrator for password assistance.
             </div>
-          {/if}
-          
-          <div class="form-control mt-6">
-            <button type="submit" class="btn btn-primary" class:loading={isLoading} disabled={isLoading}>
-              {#if isLoading}
-                <span class="loading loading-spinner"></span>
-                {m.auth_send_reset_link()}...
-              {:else}
-                {m.auth_send_reset_link()}
-              {/if}
-            </button>
           </div>
-        </form>
+        </div>
         
         <div class="divider"></div>
         <div class="text-center">

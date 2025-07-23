@@ -134,116 +134,19 @@
           <a href="/admin/login" class="btn btn-primary">{m.common_login()}</a>
         </div>
       {:else if token}
-        <form method="POST" use:enhance={() => {
-          if (!validateForm()) return;
-          
-          isLoading = true;
-          return async ({ update }) => {
-            isLoading = false;
-            update();
-          };
-        }}>
-          <input type="hidden" name="token" value={token} />
-          
-          <div class="form-control">
-            <label class="label" for="password">
-              <span class="label-text">{m.auth_password_label()}</span>
-            </label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              bind:value={password}
-              placeholder="Enter new password"
-              class="input input-bordered"
-              class:input-error={password && passwordStrength === 'weak'}
-              class:input-warning={password && passwordStrength === 'medium'}
-              class:input-success={password && passwordStrength === 'strong'}
-              required
-              minlength="8"
-              autocomplete="new-password"
-            />
-            {#if password}
-              <div class="label">
-                <span class="label-text-alt {getStrengthColor(passwordStrength)}">
-                  Password strength: {passwordStrength}
-                </span>
-              </div>
-            {/if}
-          </div>
-          
-          <div class="form-control">
-            <label class="label" for="confirmPassword">
-              <span class="label-text">{m.auth_confirm_password_label()}</span>
-            </label>
-            <input
-              id="confirmPassword"
-              name="confirmPassword"
-              type="password"
-              bind:value={confirmPassword}
-              placeholder="Confirm new password"
-              class="input input-bordered"
-              class:input-error={confirmPassword && !passwordsMatch}
-              class:input-success={confirmPassword && passwordsMatch}
-              required
-              minlength="8"
-              autocomplete="new-password"
-            />
-            {#if confirmPassword && !passwordsMatch}
-              <div class="label">
-                <span class="label-text-alt text-error">{m.auth_passwords_do_not_match()}</span>
-              </div>
-            {/if}
-          </div>
-          
-          <div class="alert alert-info mt-4">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <div>
-              <h3 class="font-bold">Password Requirements:</h3>
-              <ul class="text-sm mt-1">
-                <li>• At least 8 characters long</li>
-                <li>• Mix of uppercase and lowercase letters (recommended)</li>
-                <li>• Include numbers and special characters (recommended)</li>
-              </ul>
+        <!-- Coming Soon Notice -->
+        <div class="alert alert-info">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <div>
+            <h3 class="font-bold">Password Reset Coming Soon</h3>
+            <div class="text-sm">
+              Password reset functionality is being reimplemented with Oslo authentication. 
+              Please contact your administrator for password assistance.
             </div>
           </div>
-          
-          {#if error}
-            <div class="alert alert-error mt-4">
-              <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <span>{error}</span>
-            </div>
-          {/if}
-          
-          {#if message}
-            <div class="alert alert-error mt-4">
-              <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <span>{message}</span>
-            </div>
-          {/if}
-          
-          <div class="form-control mt-6">
-            <button 
-              type="submit" 
-              class="btn btn-primary" 
-              class:loading={isLoading} 
-              disabled={isLoading || !passwordsMatch || passwordStrength === 'weak'}
-            >
-              {#if isLoading}
-                <span class="loading loading-spinner"></span>
-                {m.auth_set_new_password()}...
-              {:else}
-                {m.auth_set_new_password()}
-              {/if}
-            </button>
-          </div>
-        </form>
+        </div>
         
         <div class="divider"></div>
         <div class="text-center">
