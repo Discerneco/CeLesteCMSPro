@@ -94,6 +94,7 @@ export const posts = sqliteTable('posts', {
   authorId: text('author_id').notNull().references(() => users.id),
   contentTypeId: text('content_type_id').notNull().references(() => contentTypes.id),
   status: text('status', { enum: ['draft', 'published', 'archived'] }).notNull().default('draft'),
+  featured: integer('featured', { mode: 'boolean' }).notNull().default(false),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
   updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
   publishedAt: integer('published_at', { mode: 'timestamp' }),

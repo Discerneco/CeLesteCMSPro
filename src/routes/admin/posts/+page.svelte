@@ -129,7 +129,7 @@
             <div class="col-span-4">
               <div class="flex items-start gap-3">
                 {#if post.featured}
-                  <span class="badge badge-warning badge-sm font-medium px-2 py-1">{m.posts_featured_badge()}</span>
+                  <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-warning/10 text-warning">{m.posts_featured_badge()}</span>
                 {/if}
                 <div class="min-w-0 flex-1">
                   <h3 class="font-semibold text-base-content hover:text-primary cursor-pointer transition-colors duration-150 text-base leading-6">

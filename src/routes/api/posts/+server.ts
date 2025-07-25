@@ -21,6 +21,7 @@ export const GET: RequestHandler = async (event) => {
         content: posts.content,
         excerpt: posts.excerpt,
         status: posts.status,
+        featured: posts.featured,
         createdAt: posts.createdAt,
         updatedAt: posts.updatedAt,
         publishedAt: posts.publishedAt,
@@ -44,7 +45,7 @@ export const GET: RequestHandler = async (event) => {
       slug: post.slug,
       excerpt: post.excerpt || '',
       status: post.status,
-      featured: false, // TODO: Add featured field to schema later
+      featured: !!post.featured,
       author: post.author?.username || 'Unknown',
       createdAt: post.createdAt,
       publishedAt: post.publishedAt,
