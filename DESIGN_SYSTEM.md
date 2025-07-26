@@ -89,6 +89,46 @@ This design system implements modern 2025 best practices using TailwindCSS 4.x a
 </div>
 ```
 
+#### Advanced Table Layout with Smart Grid
+For complex tables with varying content lengths, use the responsive grid system:
+
+```html
+<!-- Table Header -->
+<div class="cms-table-header">
+  <div class="hidden md:grid items-center gap-2 cms-table-header-text" 
+       style="grid-template-columns: minmax(200px, 2fr) minmax(80px, 1fr) minmax(100px, 1fr) minmax(100px, 1fr) minmax(80px, 1fr);">
+    <div>Title</div>
+    <div class="text-center">Status</div>
+    <div class="text-center">Date</div>
+    <div class="text-center">Author</div>
+    <div class="text-right">Actions</div>
+  </div>
+</div>
+
+<!-- Table Body -->
+<div class="hidden md:block divide-y divide-base-content/10">
+  <div class="cms-table-row">
+    <div class="grid items-center gap-2" 
+         style="grid-template-columns: minmax(200px, 2fr) minmax(80px, 1fr) minmax(100px, 1fr) minmax(100px, 1fr) minmax(80px, 1fr);">
+      <!-- Content cells -->
+    </div>
+  </div>
+</div>
+```
+
+**Grid System Benefits:**
+- **Title Column**: `minmax(200px, 2fr)` - Gets priority space but respects minimum width
+- **Utility Columns**: `minmax(80px-100px, 1fr)` - Equal distribution with content-appropriate minimums
+- **Responsive Behavior**: Prevents layout breaking with very long content
+- **Future-proof**: Handles any content length variations gracefully
+
+**Column Sizing Guidelines:**
+- **Text-heavy columns** (titles, descriptions): Use `2fr` for priority
+- **Status indicators**: `minmax(80px, 1fr)` for badges and short text
+- **Dates**: `minmax(100px, 1fr)` for formatted dates
+- **Names**: `minmax(100px, 1fr)` for author/user names
+- **Actions**: `minmax(80px, 1fr)` for icon button groups
+
 ### Forms
 
 #### Search Input Pattern
@@ -107,6 +147,45 @@ This design system implements modern 2025 best practices using TailwindCSS 4.x a
 - Search icon uses `text-base-content/60` for optimal visibility while maintaining subtle appearance
 - Icon positioning is absolute with left padding to prevent overlap with input text
 - Focus state applies primary color border for clear interaction feedback
+
+#### Search Pattern Troubleshooting
+
+**Common Issues and Solutions:**
+
+1. **Icon Not Visible**
+   ```css
+   .cms-search-icon {
+     z-index: 10; /* Ensure icon appears above input */
+     color: text-base-content/60; /* Proper visibility */
+   }
+   ```
+
+2. **Container Class Conflicts**
+   ```html
+   <!-- ❌ Wrong: Duplicate flex-1 -->
+   <div class="cms-search-container flex-1">
+   
+   <!-- ✅ Correct: cms-search-container already includes flex-1 -->
+   <div class="cms-search-container">
+   ```
+
+3. **Icon Positioning Issues**
+   ```css
+   .cms-search-container {
+     position: relative; /* Required for absolute icon positioning */
+   }
+   
+   .cms-search-input {
+     padding-left: 2.5rem; /* Space for icon */
+   }
+   ```
+
+**Implementation Checklist:**
+- [ ] Container has `position: relative`
+- [ ] Icon has `z-index: 10` for proper layering
+- [ ] No duplicate CSS classes on container
+- [ ] Input has left padding for icon space
+- [ ] Icon color provides sufficient contrast
 
 ### Buttons
 
@@ -132,6 +211,48 @@ The design system establishes three levels of button hierarchy based on function
   Filter
 </button>
 ```
+
+#### Utility Button Pattern
+For subtle control elements like filters, dropdowns, and secondary actions:
+
+```html
+<!-- Filter dropdown trigger -->
+<div class="dropdown dropdown-end">
+  <div tabindex="0" role="button" class="cms-btn-utility">
+    <Filter class="h-4 w-4" />
+    Filter
+  </div>
+</div>
+
+<!-- Sort controls -->
+<button class="cms-btn-utility">
+  <SortAsc class="h-4 w-4" />
+  Sort
+</button>
+
+<!-- View toggles -->
+<button class="cms-btn-utility">
+  <Grid class="h-4 w-4" />
+  Grid View
+</button>
+```
+
+**Design Features:**
+- Uses `border-base-content/10` matching table dividers for visual consistency
+- Subtle hover states: `hover:border-base-content/20` and `hover:bg-base-content/5`
+- Appropriate for controls that modify data display without navigation
+- Maintains gap-2 for icon spacing consistency
+
+**When to Use:**
+- **Utility controls**: Filter, sort, view toggles
+- **Dropdown triggers**: Menu activators, option selectors  
+- **Secondary controls**: Non-destructive actions that modify UI state
+- **Data manipulation**: Search filters, pagination controls
+
+**Avoid for:**
+- **Primary actions**: Use `btn btn-primary` instead
+- **Navigation**: Use `btn btn-outline btn-primary` for important links
+- **Destructive actions**: Use `cms-btn-icon-danger` for delete operations
 
 #### Icon Buttons
 ```html
