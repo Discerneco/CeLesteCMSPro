@@ -89,7 +89,7 @@
   <div class="px-6 py-4 border-b border-base-200">
     <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
       <!-- Search -->
-      <div class="cms-search-container flex-1">
+      <div class="cms-search-container">
         <Search class="cms-search-icon" />
         <input
           type="text"
@@ -100,7 +100,7 @@
       
       <!-- Filter -->
       <div class="dropdown dropdown-end">
-        <div tabindex="0" role="button" class="btn btn-outline gap-2">
+        <div tabindex="0" role="button" class="cms-btn-utility">
           <Filter class="h-4 w-4" />
           {m.posts_filter()}
         </div>
@@ -109,7 +109,7 @@
   </div>
   <!-- Table Header -->
   <div class="cms-table-header">
-    <div class="hidden md:grid items-center gap-2 cms-table-header-text" style="grid-template-columns: 1fr 100px 120px 120px 120px;">
+    <div class="hidden md:grid items-center gap-2 cms-table-header-text" style="grid-template-columns: minmax(200px, 2fr) minmax(80px, 1fr) minmax(100px, 1fr) minmax(100px, 1fr) minmax(80px, 1fr);">
       <div>{m.posts_table_title()}</div>
       <div class="text-center">{m.posts_table_status()}</div>
       <div class="text-center">{m.posts_table_date()}</div>
@@ -123,7 +123,7 @@
     {#if data.posts && data.posts.length > 0}
       {#each data.posts as post}
         <div class="cms-table-row">
-          <div class="grid items-center gap-2" style="grid-template-columns: 1fr 100px 120px 120px 120px;">
+          <div class="grid items-center gap-2" style="grid-template-columns: minmax(200px, 2fr) minmax(80px, 1fr) minmax(100px, 1fr) minmax(100px, 1fr) minmax(80px, 1fr);">
             <!-- Title -->
             <div>
               <div class="min-w-0">

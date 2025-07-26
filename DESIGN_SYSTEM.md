@@ -103,7 +103,35 @@ This design system implements modern 2025 best practices using TailwindCSS 4.x a
 </div>
 ```
 
+**Design Notes:**
+- Search icon uses `text-base-content/60` for optimal visibility while maintaining subtle appearance
+- Icon positioning is absolute with left padding to prevent overlap with input text
+- Focus state applies primary color border for clear interaction feedback
+
 ### Buttons
+
+#### Button Hierarchy
+The design system establishes three levels of button hierarchy based on function:
+
+```html
+<!-- Primary: Main actions (most prominent) -->
+<button class="btn btn-primary gap-2">
+  <Plus class="h-4 w-4" />
+  New Post
+</button>
+
+<!-- Secondary: Important navigation actions -->
+<button class="btn btn-outline btn-primary gap-2">
+  <Plus class="h-4 w-4" />
+  Add Post
+</button>
+
+<!-- Utility: Subtle controls and filters -->
+<button class="cms-btn-utility">
+  <Filter class="h-4 w-4" />
+  Filter
+</button>
+```
 
 #### Icon Buttons
 ```html
