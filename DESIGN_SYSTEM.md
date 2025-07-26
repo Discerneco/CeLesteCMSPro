@@ -40,6 +40,14 @@ This design system implements modern 2025 best practices using TailwindCSS 4.x a
 --size-icon-lg: 2rem;                  /* 32px - Large icons */
 ```
 
+#### Typography Weight Scale
+```css
+--font-weight-normal: 400;             /* Normal weight */
+--font-weight-medium: 500;             /* Medium weight */
+--font-weight-semibold: 600;           /* Semibold weight */
+--font-weight-bold: 700;               /* Bold weight */
+```
+
 ## Component Classes
 
 ### Page Layout

@@ -83,34 +83,33 @@
   </button>
 </div>
 
-<!-- Search and Filters -->
-<div class="bg-base-100 rounded-lg border border-base-300 p-4 mb-6">
-  <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-    <!-- Search -->
-    <div class="cms-search-container max-w-md">
-      <Search class="cms-search-icon" />
-      <input
-        type="text"
-        placeholder={m.posts_search_placeholder()}
-        class="cms-search-input"
-      />
-    </div>
-    
-    <!-- Filter -->
-    <div class="dropdown dropdown-end">
-      <div tabindex="0" role="button" class="btn btn-outline gap-2">
-        <Filter class="h-4 w-4" />
-        {m.posts_filter()}
+<!-- Posts Table -->
+<div class="cms-table-container">
+  <!-- Search and Filter Bar -->
+  <div class="px-6 py-4 border-b border-base-200">
+    <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+      <!-- Search -->
+      <div class="cms-search-container flex-1">
+        <Search class="cms-search-icon" />
+        <input
+          type="text"
+          placeholder={m.posts_search_placeholder()}
+          class="cms-search-input"
+        />
+      </div>
+      
+      <!-- Filter -->
+      <div class="dropdown dropdown-end">
+        <div tabindex="0" role="button" class="btn btn-outline gap-2">
+          <Filter class="h-4 w-4" />
+          {m.posts_filter()}
+        </div>
       </div>
     </div>
   </div>
-</div>
-
-<!-- Posts Table -->
-<div class="cms-table-container">
   <!-- Table Header -->
   <div class="cms-table-header">
-    <div class="hidden md:grid items-center gap-2 text-xs font-medium text-base-content/60 uppercase tracking-wider" style="grid-template-columns: 1fr 100px 120px 120px 120px;">
+    <div class="hidden md:grid items-center gap-2 cms-table-header-text" style="grid-template-columns: 1fr 100px 120px 120px 120px;">
       <div>{m.posts_table_title()}</div>
       <div class="text-center">{m.posts_table_status()}</div>
       <div class="text-center">{m.posts_table_date()}</div>
@@ -296,25 +295,22 @@
   </div>
   
   {#if data.posts && data.posts.length > 0}
-    <div class="flex items-center gap-2">
-      <span class="text-sm text-base-content/60">
+    <div class="join">
+      <button 
+        class="join-item btn btn-sm"
+        disabled
+      >
+        <ChevronLeft class="h-4 w-4" />
+      </button>
+      <span class="join-item btn btn-sm text-sm text-base-content/60 cursor-default">
         Page 1 of 1
       </span>
-      
-      <div class="join">
-        <button 
-          class="join-item btn btn-sm"
-          disabled
-        >
-          <ChevronLeft class="h-4 w-4" />
-        </button>
-        <button 
-          class="join-item btn btn-sm"
-          disabled
-        >
-          <ChevronRight class="h-4 w-4" />
-        </button>
-      </div>
+      <button 
+        class="join-item btn btn-sm"
+        disabled
+      >
+        <ChevronRight class="h-4 w-4" />
+      </button>
     </div>
   {/if}
 </div>

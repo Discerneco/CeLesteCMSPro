@@ -42,7 +42,27 @@
 **User Management**
 - [x] User login/registration functionality ✅ COMPLETED
 - [x] Role-based permissions system ✅ COMPLETED (basic implementation)
+- [x] Auth pages layout override (clean, standalone experience) ✅ COMPLETED
 - [ ] User profile management interface 🔄 IN PROGRESS
+
+**Authentication System Enhancements**
+- [ ] Language-aware navigation in auth flows 🔄 NEXT
+  - **Issue**: Auth pages use hardcoded URLs without language prefixes
+  - **Problem**: Portuguese users navigate to English pages during auth flows  
+  - **Solution**: Use Paraglide i18n routing for language-persistent navigation
+  - **Affected Pages**: Login, Signup, Forgot Password, Reset Password
+  - **Implementation**: Replace `/admin/login` with language-aware routing
+- [ ] Enhanced password reset system with Oslo cryptographic primitives 🔄 FUTURE
+- [ ] Input focus styling consistency across all auth forms 🔄 NEXT
+
+**Design System Implementation** 
+- [x] TailwindCSS 4.x + DaisyUI 5.x design token system ✅ COMPLETED
+- [x] Semantic component classes with @layer components ✅ COMPLETED
+- [x] Typography scale standardization across pages ✅ COMPLETED
+- [x] Consistent spacing system with CSS custom properties ✅ COMPLETED
+- [x] Applied to Dashboard and Posts pages ✅ COMPLETED
+- [x] Comprehensive documentation in DESIGN_SYSTEM.md ✅ COMPLETED
+- [ ] Primary color customization system 🔄 NEXT
 
 #### Content & Application Logic (Month 2)
 - [ ] Core content schemas with Drizzle ORM
