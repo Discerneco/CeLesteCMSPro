@@ -11,14 +11,19 @@
   import * as m from '$lib/paraglide/messages';
 </script>
 
-<h2 class="text-2xl font-bold mb-4">{m.dashboard_title()}</h2>
-<p class="text-base-content/70 mb-8">{m.dashboard_welcome()}</p>
+<!-- Page Header using CMS design tokens -->
+<div class="cms-page-header mb-8">
+  <div>
+    <h1 class="cms-page-title">{m.dashboard_title()}</h1>
+    <p class="cms-page-subtitle">{m.dashboard_welcome()}</p>
+  </div>
+</div>
 
 <!-- Stats Row -->
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-  <!-- Stats Cards using DaisyUI card component -->
-  <div class="card bg-base-100 shadow-sm">
-    <div class="card-body p-6">
+<div class="cms-grid-stats mb-8">
+  <!-- Stats Cards using CMS design tokens -->
+  <div class="cms-card">
+    <div class="cms-card-body">
       <div class="flex items-center justify-between">
         <Globe class="text-primary h-8 w-8" />
         <span class="badge badge-soft badge-success">+1</span>
@@ -30,8 +35,8 @@
     </div>
   </div>
   
-  <div class="card bg-base-100 shadow-sm">
-    <div class="card-body p-6">
+  <div class="cms-card">
+    <div class="cms-card-body">
       <div class="flex items-center justify-between">
         <MessageSquare class="text-primary h-8 w-8" />
         <span class="badge badge-soft badge-success">+12</span>
@@ -43,8 +48,8 @@
     </div>
   </div>
   
-  <div class="card bg-base-100 shadow-sm">
-    <div class="card-body p-6">
+  <div class="cms-card">
+    <div class="cms-card-body">
       <div class="flex items-center justify-between">
         <Users class="text-primary h-8 w-8" />
         <span class="badge badge-soft badge-success">+3</span>
@@ -56,8 +61,8 @@
     </div>
   </div>
   
-  <div class="card bg-base-100 shadow-sm">
-    <div class="card-body p-6">
+  <div class="cms-card">
+    <div class="cms-card-body">
       <div class="flex items-center justify-between">
         <UploadCloud class="text-primary h-8 w-8" />
         <span class="badge badge-soft badge-success">+28</span>
@@ -71,12 +76,12 @@
 </div>
 
 <!-- Posts and Activity Sections -->
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+<div class="cms-grid-content mb-6">
   <!-- Recent Posts -->
-  <div class="card bg-base-100 shadow-md md:col-span-2">
-    <div class="card-body">
+  <div class="cms-card md:col-span-2">
+    <div class="cms-card-body">
       <div class="flex justify-between items-center">
-        <h2 class="card-title">{m.dashboard_recent_posts()}</h2>
+        <h2 class="cms-card-title">{m.dashboard_recent_posts()}</h2>
         <a href="/admin/posts/new" class="btn btn-sm btn-outline btn-primary">{m.dashboard_add_post()}</a>
       </div>
       
@@ -120,9 +125,9 @@
   </div>
   
   <!-- Recent Activity -->
-  <div class="card bg-base-100 shadow-md">
-    <div class="card-body">
-      <h2 class="card-title">{m.dashboard_recent_activity()}</h2>
+  <div class="cms-card">
+    <div class="cms-card-body">
+      <h2 class="cms-card-title">{m.dashboard_recent_activity()}</h2>
       
       <div class="divider my-2"></div>
       
@@ -155,9 +160,9 @@
 
 <!-- System Status Section -->
 <div class="grid grid-cols-1 gap-6 mb-6">
-  <div class="card bg-base-100 shadow-md">
-    <div class="card-body">
-      <h2 class="card-title">{m.dashboard_system_status()}</h2>
+  <div class="cms-card">
+    <div class="cms-card-body">
+      <h2 class="cms-card-title">{m.dashboard_system_status()}</h2>
       
       <div class="alert alert-success alert-soft mb-4">
         <span>{m.dashboard_system_operational()}</span>

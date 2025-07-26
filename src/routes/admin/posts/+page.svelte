@@ -43,13 +43,13 @@
   function getStatusClass(status) {
     switch (status) {
       case 'published':
-        return 'bg-success/10 text-success border-success/20';
+        return 'cms-status-published';
       case 'draft':
-        return 'bg-base-300/60 text-base-content/90 border-base-300/50';
+        return 'cms-status-draft';
       case 'archived':
-        return 'bg-neutral/10 text-neutral border-neutral/20';
+        return 'cms-status-archived';
       default:
-        return 'bg-base-200 text-base-content/60 border-base-300';
+        return 'cms-status-draft';
     }
   }
   
@@ -69,10 +69,10 @@
 
 
 <!-- Page Header -->
-<div class="flex items-center justify-between mb-6">
+<div class="cms-page-header">
   <div>
-    <h1 class="text-2xl font-bold text-base-content">{m.posts_title()}</h1>
-    <p class="text-base-content/70 mt-1">{m.posts_subtitle()}</p>
+    <h1 class="cms-page-title">{m.posts_title()}</h1>
+    <p class="cms-page-subtitle">{m.posts_subtitle()}</p>
   </div>
   <button 
     onclick={handleNewPost}
@@ -87,12 +87,12 @@
 <div class="bg-base-100 rounded-lg border border-base-300 p-4 mb-6">
   <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
     <!-- Search -->
-    <div class="relative flex-1 max-w-md">
-      <Search class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-base-content/40" />
+    <div class="cms-search-container max-w-md">
+      <Search class="cms-search-icon" />
       <input
         type="text"
         placeholder={m.posts_search_placeholder()}
-        class="input input-bordered w-full pl-10"
+        class="cms-search-input"
       />
     </div>
     
@@ -107,9 +107,9 @@
 </div>
 
 <!-- Posts Table -->
-<div class="bg-base-100 rounded-xl border border-base-200 shadow-sm overflow-hidden">
+<div class="cms-table-container">
   <!-- Table Header -->
-  <div class="px-6 py-4 bg-base-200 border-b border-base-300">
+  <div class="cms-table-header">
     <div class="hidden md:grid items-center gap-2 text-xs font-medium text-base-content/60 uppercase tracking-wider" style="grid-template-columns: 1fr 100px 120px 120px 120px;">
       <div>{m.posts_table_title()}</div>
       <div class="text-center">{m.posts_table_status()}</div>
@@ -123,7 +123,7 @@
   <div class="hidden md:block divide-y divide-base-content/10">
     {#if data.posts && data.posts.length > 0}
       {#each data.posts as post}
-        <div class="px-6 py-4 hover:bg-base-50 transition-colors duration-150">
+        <div class="cms-table-row">
           <div class="grid items-center gap-2" style="grid-template-columns: 1fr 100px 120px 120px 120px;">
             <!-- Title -->
             <div>
@@ -144,7 +144,7 @@
             
             <!-- Status -->
             <div class="text-center">
-              <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium {getStatusClass(post.status)}">
+              <span class="cms-status-badge {getStatusClass(post.status)}">
                 {getStatusText(post.status)}
               </span>
             </div>
@@ -166,21 +166,21 @@
               <div class="flex items-center gap-1 justify-end">
                 <button 
                   onclick={() => handleEdit(post.id)}
-                  class="btn btn-ghost btn-sm btn-square text-base-content/60 hover:text-primary hover:bg-primary/10 transition-all duration-150"
+                  class="cms-btn-icon"
                   title={m.posts_action_edit()}
                 >
                   <Edit class="h-4 w-4" />
                 </button>
                 <button 
                   onclick={() => handleView(post.id)}
-                  class="btn btn-ghost btn-sm btn-square text-base-content/60 hover:text-primary hover:bg-primary/10 transition-all duration-150"
+                  class="cms-btn-icon"
                   title={m.posts_action_view()}
                 >
                   <Eye class="h-4 w-4" />
                 </button>
                 <button 
                   onclick={() => handleDelete(post.id)}
-                  class="btn btn-ghost btn-sm btn-square text-base-content/60 hover:text-error hover:bg-error/10 transition-all duration-150"
+                  class="cms-btn-icon-danger"
                   title={m.posts_action_delete()}
                 >
                   <Trash2 class="h-4 w-4" />
@@ -225,7 +225,7 @@
                 {post.title}
               </h3>
             </div>
-            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium {getStatusClass(post.status)} ml-2 flex-shrink-0">
+            <span class="cms-status-badge {getStatusClass(post.status)} ml-2 flex-shrink-0">
               {getStatusText(post.status)}
             </span>
           </div>
@@ -245,7 +245,7 @@
           <div class="flex items-center justify-end gap-1 pt-2 border-t border-base-200">
             <button 
               onclick={() => handleEdit(post.id)}
-              class="btn btn-ghost btn-sm text-base-content/60 hover:text-primary hover:bg-primary/10 transition-all duration-150"
+              class="cms-btn-icon"
               title={m.posts_action_edit()}
             >
               <Edit class="h-4 w-4" />
@@ -253,7 +253,7 @@
             </button>
             <button 
               onclick={() => handleView(post.id)}
-              class="btn btn-ghost btn-sm text-base-content/60 hover:text-primary hover:bg-primary/10 transition-all duration-150"
+              class="cms-btn-icon"
               title={m.posts_action_view()}
             >
               <Eye class="h-4 w-4" />
@@ -261,7 +261,7 @@
             </button>
             <button 
               onclick={() => handleDelete(post.id)}
-              class="btn btn-ghost btn-sm text-base-content/60 hover:text-error hover:bg-error/10 transition-all duration-150"
+              class="cms-btn-icon-danger"
               title={m.posts_action_delete()}
             >
               <Trash2 class="h-4 w-4" />
