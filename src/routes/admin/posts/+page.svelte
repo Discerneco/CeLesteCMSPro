@@ -7,7 +7,8 @@
     Search,
     Filter,
     ChevronLeft,
-    ChevronRight
+    ChevronRight,
+    Star
   } from '@lucide/svelte';
   
   // Import i18n with modern Paraglide pattern
@@ -92,7 +93,6 @@
         type="text"
         placeholder={m.posts_search_placeholder()}
         class="input input-bordered w-full pl-10"
-        disabled
       />
     </div>
     
@@ -110,47 +110,47 @@
 <div class="bg-base-100 rounded-xl border border-base-200 shadow-sm overflow-hidden">
   <!-- Table Header -->
   <div class="px-6 py-4 bg-base-200 border-b border-base-300">
-    <div class="grid grid-cols-12 gap-4 items-center text-xs font-medium text-base-content/60 uppercase tracking-wider">
-      <div class="col-span-4">{m.posts_table_title()}</div>
-      <div class="col-span-2">{m.posts_table_status()}</div>
-      <div class="col-span-2">{m.posts_table_date()}</div>
+    <div class="grid grid-cols-12 gap-2 items-center text-xs font-medium text-base-content/60 uppercase tracking-wider">
+      <div class="col-span-5">{m.posts_table_title()}</div>
+      <div class="col-span-1">{m.posts_table_status()}</div>
+      <div class="col-span-2 text-center">{m.posts_table_date()}</div>
       <div class="col-span-2">{m.posts_table_author()}</div>
-      <div class="col-span-2">{m.posts_table_actions()}</div>
+      <div class="col-span-2 text-right">{m.posts_table_actions()}</div>
     </div>
   </div>
   
   <!-- Table Body -->
-  <div class="divide-y divide-base-300">
+  <div class="divide-y divide-base-content/10">
     {#if data.posts && data.posts.length > 0}
       {#each data.posts as post}
         <div class="px-6 py-4 hover:bg-base-50 transition-colors duration-150">
-          <div class="grid grid-cols-12 gap-4 items-center">
+          <div class="grid grid-cols-12 gap-2 items-center">
             <!-- Title -->
-            <div class="col-span-4">
-              <div class="flex items-start gap-3">
-                {#if post.featured}
-                  <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-warning/10 text-warning">{m.posts_featured_badge()}</span>
-                {/if}
-                <div class="min-w-0 flex-1">
+            <div class="col-span-5">
+              <div class="min-w-0">
+                <div class="flex items-center gap-2">
+                  {#if post.featured}
+                    <Star class="h-4 w-4 text-warning fill-warning" />
+                  {/if}
                   <h3 class="font-semibold text-base-content hover:text-primary cursor-pointer transition-colors duration-150 text-base leading-6">
                     {post.title}
                   </h3>
-                  <p class="text-sm text-base-content/60 mt-2 line-clamp-2 leading-5">
-                    {post.excerpt || 'No excerpt available'}
-                  </p>
                 </div>
+                <p class="text-sm text-base-content/60 mt-2 line-clamp-2 leading-5">
+                  {post.excerpt || 'No excerpt available'}
+                </p>
               </div>
             </div>
             
             <!-- Status -->
-            <div class="col-span-2">
+            <div class="col-span-1">
               <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium {getStatusClass(post.status)}">
                 {getStatusText(post.status)}
               </span>
             </div>
             
             <!-- Date -->
-            <div class="col-span-2">
+            <div class="col-span-2 text-center">
               <span class="text-sm font-medium text-base-content/80">
                 {post.publishedAtFormatted || post.createdAtFormatted}
               </span>
@@ -163,7 +163,7 @@
             
             <!-- Actions -->
             <div class="col-span-2">
-              <div class="flex items-center gap-1">
+              <div class="flex items-center gap-1 justify-end">
                 <button 
                   onclick={() => handleEdit(post.id)}
                   class="btn btn-ghost btn-sm btn-square text-base-content/60 hover:text-primary hover:bg-primary/10 transition-all duration-150"
