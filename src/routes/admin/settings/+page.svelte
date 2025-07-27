@@ -210,7 +210,7 @@
             <input 
               type="text" 
               bind:value={siteTitle}
-              class="input input-bordered w-full" 
+              class="input w-full" 
               placeholder="Enter site title"
             />
           </div>
@@ -220,7 +220,7 @@
             <label class="label">
               <span class="label-text">{m.settings_general_language()}</span>
             </label>
-            <select bind:value={defaultLanguage} class="select select-bordered w-full">
+            <select bind:value={defaultLanguage} class="select w-full">
               <option value="en">English</option>
               <option value="pt-br">Português (Brasil)</option>
             </select>
@@ -234,7 +234,7 @@
           </label>
           <textarea 
             bind:value={siteDescription}
-            class="textarea textarea-bordered w-full" 
+            class="textarea w-full" 
             rows="3"
             placeholder="Enter site description"
           ></textarea>
@@ -245,7 +245,7 @@
           <label class="label">
             <span class="label-text">{m.settings_general_timezone()}</span>
           </label>
-          <select bind:value={timezone} class="select select-bordered w-full max-w-xs">
+          <select bind:value={timezone} class="select w-full max-w-xs">
             <option value="UTC">UTC</option>
             <option value="America/New_York">Eastern Time (ET)</option>
             <option value="America/Chicago">Central Time (CT)</option>
@@ -302,7 +302,7 @@
               <input 
                 type="text" 
                 bind:value={primaryColor}
-                class="input input-bordered flex-1" 
+                class="input flex-1" 
                 placeholder="#8b5cf6"
               />
             </div>
@@ -322,7 +322,7 @@
               <input 
                 type="text" 
                 bind:value={secondaryColor}
-                class="input input-bordered flex-1" 
+                class="input flex-1" 
                 placeholder="#64748b"
               />
             </div>
@@ -342,7 +342,7 @@
               <input 
                 type="text" 
                 bind:value={accentColor}
-                class="input input-bordered flex-1" 
+                class="input flex-1" 
                 placeholder="#06b6d4"
               />
             </div>

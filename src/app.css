@@ -82,7 +82,7 @@
   }
   
   .cms-search-input {
-    @apply input w-full border border-base-300 rounded-lg;
+    @apply input w-full;
     padding-left: 2.5rem; /* Space for icon */
   }
   
@@ -94,18 +94,18 @@
   .input:focus,
   .textarea:focus,
   .select:focus {
-    @apply outline-none border-primary;
+    @apply !outline-none !border-primary;
   }
   
   /* Special focus styling for color inputs */
   input[type="color"]:focus {
-    @apply outline-none border-primary;
+    @apply !outline-none !border-primary;
     box-shadow: 0 0 0 2px hsl(var(--primary) / 0.2);
   }
   
   /* Auth input pattern - for login, signup, forgot password forms */
   .cms-auth-input {
-    @apply input w-full border border-base-300 rounded-lg;
+    @apply input w-full;
   }
   
   .cms-auth-input:focus {
@@ -181,15 +181,15 @@
   
   /* Settings Page Specific Patterns */
   .cms-color-picker {
-    @apply input input-bordered w-full h-12;
+    @apply input w-full h-12;
   }
   
   .cms-settings-preview {
-    @apply cms-card bg-base-200 border-2 border-dashed border-base-300;
+    @apply card bg-base-200 shadow-sm border-2 border-dashed border-base-300;
   }
   
   .cms-settings-section {
-    @apply cms-card mb-6;
+    @apply card bg-base-100 shadow-sm mb-6;
   }
   
   .cms-tab-content {
