@@ -95,9 +95,17 @@
     @apply outline-none border-primary;
   }
   
-  /* Apply consistent focus styling to all DaisyUI inputs */
-  .input:focus {
+  /* Apply consistent focus styling to all DaisyUI form elements */
+  .input:focus,
+  .textarea:focus,
+  .select:focus {
     @apply outline-none border-primary;
+  }
+  
+  /* Special focus styling for color inputs */
+  input[type="color"]:focus {
+    @apply outline-none border-primary;
+    box-shadow: 0 0 0 2px hsl(var(--primary) / 0.2);
   }
   
   /* Auth input pattern - for login, signup, forgot password forms */

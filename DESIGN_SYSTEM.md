@@ -148,6 +148,47 @@ For complex tables with varying content lengths, use the responsive grid system:
 - Icon positioning is absolute with left padding to prevent overlap with input text
 - Focus state applies primary color border for clear interaction feedback
 
+#### Form Focus Patterns
+All form elements in the design system use consistent focus styling for accessibility and visual feedback:
+
+```css
+/* Comprehensive focus styling for all form elements */
+.input:focus,
+.textarea:focus,
+.select:focus {
+  @apply outline-none border-primary;
+}
+
+/* Enhanced focus for color inputs */
+input[type="color"]:focus {
+  @apply outline-none border-primary;
+  box-shadow: 0 0 0 2px hsl(var(--primary) / 0.2);
+}
+```
+
+**Focus Implementation Examples:**
+```html
+<!-- Text input with consistent focus -->
+<input type="text" class="input input-bordered w-full" placeholder="Text input" />
+
+<!-- Textarea with consistent focus -->
+<textarea class="textarea textarea-bordered w-full" placeholder="Textarea"></textarea>
+
+<!-- Select dropdown with consistent focus -->
+<select class="select select-bordered w-full">
+  <option>Select option</option>
+</select>
+
+<!-- Color picker with enhanced focus -->
+<input type="color" class="w-12 h-12 rounded-lg border border-base-300" />
+```
+
+**Accessibility Features:**
+- **Primary color border**: Clear visual focus indicator using theme primary color
+- **Box shadow enhancement**: Additional visual feedback for color inputs
+- **Outline removal**: Replaces default browser outline with custom styling
+- **Theme aware**: Automatically adapts to light/dark mode color schemes
+
 #### Search Pattern Troubleshooting
 
 **Common Issues and Solutions:**
