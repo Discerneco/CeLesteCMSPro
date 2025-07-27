@@ -132,7 +132,7 @@
               type="email"
               value={email}
               oninput={(e) => email = e.currentTarget.value}
-              class="input input-bordered w-full"
+              class="cms-auth-input"
               placeholder="your@email.com"
               required
             />
@@ -149,7 +149,7 @@
                 type={showPassword ? 'text' : 'password'}
                 value={password}
                 oninput={(e) => password = e.currentTarget.value}
-                class="input input-bordered w-full pr-10"
+                class="cms-auth-input pr-10"
                 placeholder="••••••••"
                 required
               />

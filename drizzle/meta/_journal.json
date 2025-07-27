@@ -8,6 +8,13 @@
       "when": 1747883526077,
       "tag": "0000_famous_paibok",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1753481740370,
+      "tag": "0001_eminent_magus",
+      "breakpoints": true
     }
   ]
 }

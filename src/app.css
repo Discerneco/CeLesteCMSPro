@@ -3,3 +3,176 @@
 @plugin 'daisyui' {
   themes: light --default, dark --prefersdark;
 }
+
+/* ==========================================================================
+   CeLesteCMS Pro Design Token System - 2025 Best Practices
+   TailwindCSS 4.x + DaisyUI 5.x Integration
+   ========================================================================== */
+
+/* Phase 1: Foundation Design Tokens */
+@theme {
+  /* Typography Scale - Consistent Sizing */
+  --font-size-page-title: 1.5rem;        /* 24px - Consistent page headers */
+  --font-size-section-title: 1.25rem;    /* 20px - Section headers */
+  --font-size-card-title: 1.125rem;      /* 18px - Card titles */
+  --font-size-body: 1rem;                /* 16px - Body text */
+  --font-size-caption: 0.875rem;         /* 14px - Captions and meta text */
+  --font-size-small: 0.75rem;            /* 12px - Small text */
+  
+  /* Spacing Scale - Layout Consistency */
+  --spacing-page-header: 1.5rem;         /* 24px - Page header bottom margin */
+  --spacing-section: 2rem;               /* 32px - Section spacing */
+  --spacing-card: 1.5rem;                /* 24px - Card internal padding */
+  --spacing-element: 1rem;               /* 16px - Element spacing */
+  --spacing-compact: 0.75rem;            /* 12px - Compact spacing */
+  
+  /* Component Sizing */
+  --size-icon-sm: 1rem;                  /* 16px - Small icons */
+  --size-icon-md: 1.25rem;               /* 20px - Medium icons */
+  --size-icon-lg: 2rem;                  /* 32px - Large icons */
+  
+  /* Border Radius - Consistent Rounding */
+  --radius-card: 0.75rem;                /* 12px - Card border radius */
+  --radius-button: 0.5rem;               /* 8px - Button border radius */
+  --radius-input: 0.5rem;                /* 8px - Input border radius */
+  
+  /* Typography Weight Scale */
+  --font-weight-normal: 400;             /* Normal weight */
+  --font-weight-medium: 500;             /* Medium weight */
+  --font-weight-semibold: 600;           /* Semibold weight */
+  --font-weight-bold: 700;               /* Bold weight */
+}
+
+/* Phase 1: Semantic Component Classes */
+@layer components {
+  /* Page Header Pattern - Consistent across all admin pages */
+  .cms-page-header {
+    @apply flex items-center justify-between mb-6;
+  }
+  
+  .cms-page-title {
+    @apply font-bold text-base-content;
+    font-size: var(--font-size-page-title);
+    line-height: 1.2;
+  }
+  
+  .cms-page-subtitle {
+    @apply text-base-content/70 mt-1;
+    font-size: var(--font-size-body);
+  }
+  
+  /* Card Pattern - Build on DaisyUI card component */
+  .cms-card {
+    @apply card bg-base-100 shadow-sm;
+  }
+  
+  .cms-card-body {
+    @apply card-body;
+    padding: var(--spacing-card);
+  }
+  
+  .cms-card-title {
+    @apply font-semibold text-base-content;
+    font-size: var(--font-size-card-title);
+  }
+  
+  /* Search Pattern - Consistent search inputs */
+  .cms-search-container {
+    @apply relative flex-1;
+  }
+  
+  .cms-search-input {
+    @apply input w-full border border-base-300 rounded-lg;
+    padding-left: 2.5rem; /* Space for icon */
+  }
+  
+  .cms-search-input:focus {
+    @apply outline-none border-primary;
+  }
+  
+  /* General input focus pattern for design system */
+  .cms-input:focus {
+    @apply outline-none border-primary;
+  }
+  
+  /* Apply consistent focus styling to all DaisyUI inputs */
+  .input:focus {
+    @apply outline-none border-primary;
+  }
+  
+  /* Auth input pattern - for login, signup, forgot password forms */
+  .cms-auth-input {
+    @apply input w-full border border-base-300 rounded-lg;
+  }
+  
+  .cms-auth-input:focus {
+    @apply outline-none border-primary;
+  }
+  
+  .cms-search-icon {
+    @apply absolute left-3 top-1/2 transform -translate-y-1/2 text-base-content/60;
+    width: var(--size-icon-sm);
+    height: var(--size-icon-sm);
+    z-index: 10;
+  }
+  
+  /* Button Patterns - Extend DaisyUI buttons */
+  .cms-btn-icon {
+    @apply btn btn-ghost btn-sm btn-square text-base-content/60 hover:text-primary hover:bg-primary/10 transition-all duration-150;
+  }
+  
+  .cms-btn-icon-danger {
+    @apply btn btn-ghost btn-sm btn-square text-base-content/60 hover:text-error hover:bg-error/10 transition-all duration-150;
+  }
+  
+  .cms-btn-utility {
+    @apply btn btn-outline gap-2 border-base-content/10 text-base-content/70 hover:border-base-content/20 hover:bg-base-content/5 transition-all duration-150;
+  }
+  
+  /* Table Pattern - Consistent table layouts */
+  .cms-table-container {
+    @apply bg-base-100 rounded-xl border border-base-200 shadow-sm overflow-hidden;
+  }
+  
+  .cms-table-header {
+    @apply px-6 py-4 bg-base-200 border-b border-base-300;
+  }
+  
+  .cms-table-header-text {
+    @apply text-xs text-base-content/60 uppercase tracking-wider;
+    font-weight: var(--font-weight-semibold);
+  }
+  
+  .cms-table-row {
+    @apply px-6 py-4 hover:bg-base-200/50 transition-colors duration-150;
+  }
+  
+  /* Status Badge Pattern - Semantic status indicators */
+  .cms-status-badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full font-medium;
+    font-size: var(--font-size-small);
+  }
+  
+  .cms-status-published {
+    @apply bg-success/10 text-success;
+  }
+  
+  .cms-status-draft {
+    @apply bg-base-300/60 text-base-content/90;
+  }
+  
+  .cms-status-archived {
+    @apply bg-neutral/10 text-neutral;
+  }
+  
+  /* Grid Patterns - Consistent layout grids */
+  .cms-grid-stats {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4;
+    gap: var(--spacing-element);
+  }
+  
+  .cms-grid-content {
+    @apply grid grid-cols-1 md:grid-cols-3;
+    gap: var(--spacing-element);
+  }
+}
