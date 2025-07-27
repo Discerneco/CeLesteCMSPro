@@ -148,40 +148,53 @@ For complex tables with varying content lengths, use the responsive grid system:
 - Icon positioning is absolute with left padding to prevent overlap with input text
 - Focus state applies primary color border for clear interaction feedback
 
-#### Form Focus Patterns
-All form elements in the design system use consistent focus styling for accessibility and visual feedback:
+#### Semantic Form Focus Classes
+The design system uses semantic focus classes that work alongside DaisyUI classes to provide consistent primary color focus styling:
 
+**Focus-Only Semantic Classes:**
 ```css
-/* Comprehensive focus styling for all form elements */
-.input:focus,
-.textarea:focus,
-.select:focus {
+/* These classes only add focus behavior, preserving DaisyUI base styling */
+.cms-form-input:focus {
   @apply outline-none border-primary;
 }
 
-/* Enhanced focus for color inputs */
-input[type="color"]:focus {
+.cms-form-textarea:focus {
+  @apply outline-none border-primary;
+}
+
+.cms-form-select:focus {
+  @apply outline-none border-primary;
+}
+
+.cms-form-color:focus {
   @apply outline-none border-primary;
   box-shadow: 0 0 0 2px hsl(var(--primary) / 0.2);
 }
 ```
 
-**Focus Implementation Examples:**
+**Usage Pattern:**
+Combine DaisyUI classes with semantic focus classes for consistent styling:
+
 ```html
-<!-- Text input with consistent focus -->
-<input type="text" class="input input-bordered w-full" placeholder="Text input" />
+<!-- Text input: DaisyUI base + semantic focus -->
+<input type="text" class="input input-bordered w-full cms-form-input" placeholder="Enter text" />
 
-<!-- Textarea with consistent focus -->
-<textarea class="textarea textarea-bordered w-full" placeholder="Textarea"></textarea>
+<!-- Textarea: DaisyUI base + semantic focus -->
+<textarea class="textarea textarea-bordered w-full cms-form-textarea" rows="3" placeholder="Enter description"></textarea>
 
-<!-- Select dropdown with consistent focus -->
-<select class="select select-bordered w-full">
+<!-- Select dropdown: DaisyUI base + semantic focus -->
+<select class="select select-bordered w-full cms-form-select">
   <option>Select option</option>
 </select>
 
-<!-- Color picker with enhanced focus -->
-<input type="color" class="w-12 h-12 rounded-lg border border-base-300" />
+<!-- Color picker: DaisyUI base + semantic focus -->
+<input type="color" class="w-12 h-12 rounded-lg border border-base-300 cursor-pointer cms-form-color" />
 ```
+
+**Design Philosophy:**
+- **Preserve DaisyUI styling**: Keep original appearance and functionality
+- **Add semantic focus**: Consistent primary color borders on focus
+- **Non-intrusive**: Focus classes only activate on `:focus` state
 
 **Accessibility Features:**
 - **Primary color border**: Clear visual focus indicator using theme primary color

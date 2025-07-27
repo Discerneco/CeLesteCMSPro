@@ -90,11 +90,6 @@
     @apply outline-none border-primary;
   }
   
-  /* General input focus pattern for design system */
-  .cms-input:focus {
-    @apply outline-none border-primary;
-  }
-  
   /* Apply consistent focus styling to all DaisyUI form elements */
   .input:focus,
   .textarea:focus,
