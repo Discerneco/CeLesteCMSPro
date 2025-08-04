@@ -10,34 +10,47 @@
     ChevronRight,
     Star
   } from '@lucide/svelte';
+  import { goto } from '$app/navigation';
   
   // Import i18n with modern Paraglide pattern
   import * as m from '$lib/paraglide/messages';
   
-  // Get data from load function
-  export let data;
+  // Get data from load function (Svelte 5 runes mode)
+  let { data } = $props();
   
   // Simple functions for handling actions
   function handleEdit(postId) {
-    console.log('Edit post:', postId);
-    // TODO: Navigate to edit page
+    goto(`/admin/posts/${postId}/edit`);
   }
   
   function handleView(postId) {
-    console.log('View post:', postId);
-    // TODO: Navigate to view page
+    goto(`/admin/posts/${postId}`);
   }
   
-  function handleDelete(postId) {
+  async function handleDelete(postId) {
     if (confirm(m.posts_delete_confirm())) {
-      console.log('Delete post:', postId);
-      // TODO: Implement delete functionality
+      try {
+        const response = await fetch(`/api/posts/${postId}`, {
+          method: 'DELETE'
+        });
+        
+        if (response.ok) {
+          // Success - reload posts data
+          window.location.reload();
+        } else {
+          const error = await response.text();
+          console.error('Failed to delete post:', error);
+          alert('Failed to delete post. Please try again.');
+        }
+      } catch (err) {
+        console.error('Error deleting post:', err);
+        alert('An error occurred while deleting. Please try again.');
+      }
     }
   }
   
   function handleNewPost() {
-    console.log('Create new post');
-    // TODO: Navigate to new post page
+    goto('/admin/posts/new');
   }
   
   function getStatusClass(status) {

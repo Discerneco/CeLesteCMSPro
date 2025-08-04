@@ -127,6 +127,79 @@ async function seedDatabase() {
       tagId
     }).onConflictDoNothing();
     
+    // Sample media data
+    const sampleMedia = [
+      {
+        id: createId(),
+        filename: 'hero-banner.jpg',
+        originalFilename: 'hero-banner.jpg',
+        mimeType: 'image/jpeg',
+        size: 2048000, // 2MB
+        path: '/uploads/hero-banner.jpg',
+        url: 'https://picsum.photos/1920/1080?random=1',
+        altText: 'Hero banner image for website',
+        width: 1920,
+        height: 1080,
+        uploaderId: adminId,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        metadata: { description: 'Main hero banner for homepage' }
+      },
+      {
+        id: createId(),
+        filename: 'blog-post-1.jpg',
+        originalFilename: 'blog-post-1.jpg',
+        mimeType: 'image/jpeg',
+        size: 1536000, // 1.5MB
+        path: '/uploads/blog-post-1.jpg',
+        url: 'https://picsum.photos/800/600?random=2',
+        altText: 'Featured image for blog post',
+        width: 800,
+        height: 600,
+        uploaderId: adminId,
+        createdAt: new Date(Date.now() - 86400000), // 1 day ago
+        updatedAt: new Date(Date.now() - 86400000),
+        metadata: { description: 'Blog post featured image' }
+      },
+      {
+        id: createId(),
+        filename: 'company-logo.png',
+        originalFilename: 'company-logo.png',
+        mimeType: 'image/png',
+        size: 256000, // 256KB
+        path: '/uploads/company-logo.png',
+        url: 'https://picsum.photos/400/200?random=3',
+        altText: 'Company logo',
+        width: 400,
+        height: 200,
+        uploaderId: adminId,
+        createdAt: new Date(Date.now() - 172800000), // 2 days ago
+        updatedAt: new Date(Date.now() - 172800000),
+        metadata: { description: 'Official company logo' }
+      },
+      {
+        id: createId(),
+        filename: 'sample-document.pdf',
+        originalFilename: 'sample-document.pdf',
+        mimeType: 'application/pdf',
+        size: 1024000, // 1MB
+        path: '/uploads/sample-document.pdf',
+        url: '/uploads/sample-document.pdf',
+        altText: 'Sample PDF document',
+        width: null,
+        height: null,
+        uploaderId: adminId,
+        createdAt: new Date(Date.now() - 259200000), // 3 days ago
+        updatedAt: new Date(Date.now() - 259200000),
+        metadata: { description: 'Sample PDF document for testing' }
+      }
+    ];
+
+    // Insert sample media
+    for (const mediaItem of sampleMedia) {
+      await db.insert(schema.media).values(mediaItem).onConflictDoNothing();
+    }
+    
     // Default settings
     await db.insert(schema.settings).values({
       key: 'site',
@@ -142,6 +215,7 @@ async function seedDatabase() {
     console.log('✅ Database seeded successfully');
     console.log('👤 Admin user created: admin@example.com / password');
     console.log('📝 Sample post created: "Welcome to CeLesteCMS Pro"');
+    console.log(`🖼️ Sample media files added (${sampleMedia.length} items)`);
     
   } catch (error) {
     console.error('❌ Seeding failed:', error);
