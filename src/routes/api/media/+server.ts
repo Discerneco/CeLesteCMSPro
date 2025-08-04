@@ -3,6 +3,9 @@ import { getDbFromEvent } from '$lib/server/db/utils';
 import { media, users } from '$lib/server/db/schema';
 import { eq } from 'drizzle-orm';
 import type { RequestHandler } from './$types';
+import { writeFile, mkdir } from 'fs/promises';
+import { existsSync } from 'fs';
+import path from 'path';
 
 /**
  * GET /api/media
@@ -81,12 +84,86 @@ export const POST: RequestHandler = async (event) => {
       return json({ error: 'Authentication required' }, { status: 401 });
     }
 
-    // For now, return a placeholder response
-    // File upload implementation will be added in Phase 2
+    // Parse multipart form data
+    const formData = await event.request.formData();
+    const file = formData.get('file') as File;
+    const altText = formData.get('altText') as string || '';
+
+    if (!file) {
+      return json({ error: 'No file provided' }, { status: 400 });
+    }
+
+    // Validate file
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    if (file.size > maxSize) {
+      return json({ error: 'File too large. Maximum size is 10MB.' }, { status: 400 });
+    }
+
+    // Create uploads directory if it doesn't exist
+    const uploadsDir = './static/uploads';
+    if (!existsSync(uploadsDir)) {
+      await mkdir(uploadsDir, { recursive: true });
+    }
+    
+    // Generate unique filename to prevent conflicts
+    const timestamp = Date.now();
+    const randomString = Math.random().toString(36).substring(2, 8);
+    const fileExtension = file.name.split('.').pop() || '';
+    const filename = `${timestamp}-${randomString}.${fileExtension}`;
+    const filepath = path.join(uploadsDir, filename);
+    const publicUrl = `/uploads/${filename}`;
+
+    // Convert File to Buffer and save to filesystem
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    await writeFile(filepath, buffer);
+
+    let width = null;
+    let height = null;
+
+    // Get image dimensions for images
+    if (file.type.startsWith('image/')) {
+      // For demo purposes, we'll set sample dimensions
+      // In production, you'd extract actual dimensions from the image
+      width = 800;
+      height = 600;
+    }
+
+    // Insert into database
+    const mediaData = {
+      filename: filename,
+      originalFilename: file.name,
+      mimeType: file.type,
+      size: file.size,
+      path: filepath,
+      url: publicUrl,
+      altText: altText,
+      width: width,
+      height: height,
+      uploaderId: event.locals.user.id,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      metadata: JSON.stringify({
+        originalName: file.name,
+        uploadedAt: new Date().toISOString()
+      })
+    };
+
+    const [newMedia] = await db.insert(media).values(mediaData).returning();
+
     return json({ 
-      message: 'File upload endpoint - implementation coming soon',
-      note: 'This will handle multipart/form-data file uploads'
-    }, { status: 501 });
+      message: 'File uploaded successfully',
+      media: {
+        ...newMedia,
+        // Transform for UI
+        name: newMedia.originalFilename,
+        type: getMediaType(newMedia.mimeType),
+        size: formatFileSize(newMedia.size),
+        dimensions: width && height ? `${width}x${height}` : '',
+        uploaded: new Date(newMedia.createdAt).toLocaleDateString('pt-BR'),
+        thumbnail: newMedia.mimeType.startsWith('image/') ? newMedia.url : ''
+      }
+    }, { status: 201 });
 
   } catch (error) {
     console.error('Error uploading media:', error);

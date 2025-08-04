@@ -33,6 +33,10 @@
   let showUploadModal = $state(false);
   let showDeleteModal = $state(false);
   let mediaToDelete = $state(null);
+  let isDragOver = $state(false);
+  let isUploading = $state(false);
+  let uploadProgress = $state(0);
+  let selectedFiles = $state([]);
   
   // Filter media based on search query
   let filteredMedia = $derived(
@@ -108,6 +112,114 @@
       case 'pdf': return FileText;
       default: return File;
     }
+  };
+
+  // File upload handling
+  const handleFileSelect = (event: Event) => {
+    const target = event.target as HTMLInputElement;
+    if (target.files) {
+      const files = Array.from(target.files);
+      selectedFiles = files;
+    }
+  };
+
+  const handleDragOver = (event: DragEvent) => {
+    event.preventDefault();
+    isDragOver = true;
+  };
+
+  const handleDragLeave = (event: DragEvent) => {
+    event.preventDefault();
+    isDragOver = false;
+  };
+
+  const handleDrop = (event: DragEvent) => {
+    event.preventDefault();
+    isDragOver = false;
+    
+    if (event.dataTransfer?.files) {
+      const files = Array.from(event.dataTransfer.files);
+      selectedFiles = files;
+    }
+  };
+
+  const validateFile = (file: File): string | null => {
+    // Check file size (10MB limit)
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    if (file.size > maxSize) {
+      return `File "${file.name}" is too large. Maximum size is 10MB.`;
+    }
+
+    // Check file type
+    const allowedTypes = [
+      'image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp',
+      'video/mp4', 'video/webm', 'video/ogg',
+      'application/pdf',
+      'text/plain', 'text/markdown'
+    ];
+    
+    if (!allowedTypes.includes(file.type)) {
+      return `File "${file.name}" type is not supported.`;
+    }
+
+    return null;
+  };
+
+  const uploadFiles = async () => {
+    if (selectedFiles.length === 0) return;
+
+    isUploading = true;
+    uploadProgress = 0;
+
+    try {
+      // Validate all files first
+      for (const file of selectedFiles) {
+        const error = validateFile(file);
+        if (error) {
+          alert(error);
+          isUploading = false;
+          return;
+        }
+      }
+
+      // Upload files one by one (or implement batch upload)
+      for (let i = 0; i < selectedFiles.length; i++) {
+        const file = selectedFiles[i];
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('altText', '');
+
+        const response = await fetch('/api/media', {
+          method: 'POST',
+          body: formData
+        });
+
+        if (!response.ok) {
+          const error = await response.text();
+          throw new Error(`Failed to upload ${file.name}: ${error}`);
+        }
+
+        // Update progress
+        uploadProgress = Math.round(((i + 1) / selectedFiles.length) * 100);
+      }
+
+      // Success - refresh the page to show new files
+      alert(`Successfully uploaded ${selectedFiles.length} file(s)!`);
+      window.location.reload();
+      
+    } catch (error) {
+      console.error('Upload error:', error);
+      alert(`Upload failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      isUploading = false;
+      uploadProgress = 0;
+      selectedFiles = [];
+      closeUploadModal();
+    }
+  };
+
+  const removeSelectedFile = (index: number) => {
+    selectedFiles = selectedFiles.filter((_, i) => i !== index);
   };
 </script>
 
@@ -449,28 +561,102 @@
         <button 
           class="btn btn-sm btn-circle btn-ghost"
           onclick={closeUploadModal}
+          disabled={isUploading}
         >
           <X class="h-5 w-5" />
         </button>
       </div>
       
-      <div class="border-2 border-dashed border-base-300 rounded-lg p-12 text-center">
-        <UploadCloud class="h-12 w-12 mx-auto text-base-content/40" />
-        <p class="mt-4 font-medium">{m.media_upload_instructions()}</p>
-        <p class="mt-2 text-sm text-base-content/60">{m.media_upload_types()}</p>
-        
-        <label class="mt-6 inline-block">
-          <span class="btn btn-primary cursor-pointer">
-            {m.media_upload_files()}
-          </span>
-          <input type="file" class="hidden" multiple />
-        </label>
-      </div>
+      {#if selectedFiles.length === 0}
+        <!-- File Drop Zone -->
+        <div 
+          class="border-2 border-dashed rounded-lg p-12 text-center transition-colors {isDragOver ? 'border-primary bg-primary/5' : 'border-base-300'}"
+          ondragover={handleDragOver}
+          ondragleave={handleDragLeave}
+          ondrop={handleDrop}
+        >
+          <UploadCloud class="h-12 w-12 mx-auto {isDragOver ? 'text-primary' : 'text-base-content/40'}" />
+          <p class="mt-4 font-medium">{m.media_upload_instructions()}</p>
+          <p class="mt-2 text-sm text-base-content/60">{m.media_upload_types()}</p>
+          
+          <label class="mt-6 inline-block">
+            <span class="btn btn-primary cursor-pointer">
+              {m.media_upload_files()}
+            </span>
+            <input type="file" class="hidden" multiple accept="image/*,video/*,application/pdf,text/*" onchange={handleFileSelect} />
+          </label>
+        </div>
+      {:else}
+        <!-- Selected Files Preview -->
+        <div class="space-y-3">
+          <p class="font-medium">Selected Files ({selectedFiles.length})</p>
+          
+          <div class="max-h-60 overflow-y-auto space-y-2">
+            {#each selectedFiles as file, index}
+              <div class="flex items-center justify-between p-3 bg-base-200 rounded-lg">
+                <div class="flex items-center gap-3">
+                  <File class="h-5 w-5 text-base-content/60" />
+                  <div>
+                    <div class="font-medium truncate max-w-xs">{file.name}</div>
+                    <div class="text-xs text-base-content/60">
+                      {(file.size / 1024).toFixed(1)} KB • {file.type || 'Unknown type'}
+                    </div>
+                  </div>
+                </div>
+                <button 
+                  class="btn btn-ghost btn-sm btn-square"
+                  onclick={() => removeSelectedFile(index)}
+                  disabled={isUploading}
+                >
+                  <X class="h-4 w-4" />
+                </button>
+              </div>
+            {/each}
+          </div>
+
+          <label class="block">
+            <span class="btn btn-outline btn-sm cursor-pointer">
+              Add More Files
+            </span>
+            <input type="file" class="hidden" multiple accept="image/*,video/*,application/pdf,text/*" onchange={handleFileSelect} />
+          </label>
+        </div>
+      {/if}
+
+      {#if isUploading}
+        <!-- Upload Progress -->
+        <div class="mt-4">
+          <div class="flex justify-between text-sm mb-1">
+            <span>Uploading...</span>
+            <span>{uploadProgress}%</span>
+          </div>
+          <progress class="progress progress-primary w-full" value={uploadProgress} max="100"></progress>
+        </div>
+      {/if}
       
       <div class="modal-action">
-        <button class="btn btn-outline" onclick={closeUploadModal}>
+        <button 
+          class="btn btn-outline" 
+          onclick={closeUploadModal}
+          disabled={isUploading}
+        >
           {m.media_cancel()}
         </button>
+        {#if selectedFiles.length > 0}
+          <button 
+            class="btn btn-primary gap-2" 
+            onclick={uploadFiles}
+            disabled={isUploading}
+          >
+            {#if isUploading}
+              <span class="loading loading-spinner loading-sm"></span>
+              Uploading...
+            {:else}
+              <UploadCloud class="h-4 w-4" />
+              Upload {selectedFiles.length} file{selectedFiles.length === 1 ? '' : 's'}
+            {/if}
+          </button>
+        {/if}
       </div>
     </div>
     <div class="modal-backdrop" onclick={closeUploadModal}></div>
