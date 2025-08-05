@@ -539,50 +539,122 @@
             <span>{m.settings_statistics_error()}: {statsError}</span>
           </div>
         {:else if statsData}
-          <!-- Statistics Cards -->
-          <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <div class="stats shadow">
-              <div class="stat">
-                <div class="stat-figure text-primary">
-                  <TrendingUp class="w-8 h-8" />
-                </div>
-                <div class="stat-title">{m.settings_statistics_posts_count()}</div>
-                <div class="stat-value text-primary">{statsData.posts}</div>
-              </div>
-            </div>
-            
-            <div class="stats shadow">
-              <div class="stat">
-                <div class="stat-figure text-secondary">
-                  <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" />
-                  </svg>
-                </div>
-                <div class="stat-title">{m.settings_statistics_media_count()}</div>
-                <div class="stat-value text-secondary">{statsData.media}</div>
-              </div>
-            </div>
-            
-            <div class="stats shadow">
-              <div class="stat">
-                <div class="stat-figure text-accent">
-                  <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
-                  </svg>
-                </div>
-                <div class="stat-title">{m.settings_statistics_users_count()}</div>
-                <div class="stat-value text-accent">{statsData.users}</div>
-              </div>
-            </div>
-            
-            <div class="stats shadow">
-              <div class="stat">
-                <div class="stat-figure text-info">
-                  <Globe class="w-8 h-8" />
-                </div>
-                <div class="stat-title">{m.settings_statistics_sites_count()}</div>
-                <div class="stat-value text-info">{statsData.sites}</div>
-              </div>
+          <!-- Statistics Table -->
+          <div class="overflow-x-auto">
+            <table class="table table-zebra">
+              <thead>
+                <tr>
+                  <th class="font-semibold">Content Type</th>
+                  <th class="text-center font-semibold">Current Period</th>
+                  <th class="text-center text-xs text-base-content/60">
+                    {#if selectedTimeframe === 'total'}
+                      All Time
+                    {:else if selectedTimeframe === 'hour'}
+                      Last Hour
+                    {:else if selectedTimeframe === '24hrs'}
+                      Last 24 Hours
+                    {:else if selectedTimeframe === 'week'}
+                      Last Week
+                    {:else if selectedTimeframe === 'month'}
+                      Last Month
+                    {:else if selectedTimeframe === 'login'}
+                      Since Login
+                    {/if}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="hover">
+                  <td class="font-medium">
+                    <div class="flex items-center gap-3">
+                      <TrendingUp class="w-5 h-5 text-primary" />
+                      {m.settings_statistics_posts_count()}
+                    </div>
+                  </td>
+                  <td class="text-center">
+                    <div class="stat-value text-lg font-bold text-primary">{statsData.posts}</div>
+                  </td>
+                  <td class="text-center text-sm text-base-content/60">
+                    {selectedTimeframe === 'total' ? 'Total posts created' : `Posts created in selected period`}
+                  </td>
+                </tr>
+                
+                <tr class="hover">
+                  <td class="font-medium">
+                    <div class="flex items-center gap-3">
+                      <svg class="w-5 h-5 text-secondary" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" />
+                      </svg>
+                      {m.settings_statistics_media_count()}
+                    </div>
+                  </td>
+                  <td class="text-center">
+                    <div class="stat-value text-lg font-bold text-secondary">{statsData.media}</div>
+                  </td>
+                  <td class="text-center text-sm text-base-content/60">
+                    {selectedTimeframe === 'total' ? 'Total media files uploaded' : `Media files uploaded in selected period`}
+                  </td>
+                </tr>
+                
+                <tr class="hover">
+                  <td class="font-medium">
+                    <div class="flex items-center gap-3">
+                      <svg class="w-5 h-5 text-accent" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
+                      </svg>
+                      {m.settings_statistics_users_count()}
+                    </div>
+                  </td>
+                  <td class="text-center">
+                    <div class="stat-value text-lg font-bold text-accent">{statsData.users}</div>
+                  </td>
+                  <td class="text-center text-sm text-base-content/60">
+                    {selectedTimeframe === 'total' ? 'Total users registered' : `Users registered in selected period`}
+                  </td>
+                </tr>
+                
+                <tr class="hover">
+                  <td class="font-medium">
+                    <div class="flex items-center gap-3">
+                      <Globe class="w-5 h-5 text-info" />
+                      {m.settings_statistics_sites_count()}
+                    </div>
+                  </td>
+                  <td class="text-center">
+                    <div class="stat-value text-lg font-bold text-info">{statsData.sites}</div>
+                  </td>
+                  <td class="text-center text-sm text-base-content/60">
+                    {selectedTimeframe === 'total' ? 'Total active sites' : `Sites activity in selected period`}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          
+          <!-- Summary Info -->
+          <div class="mt-6 p-4 bg-base-200 rounded-lg">
+            <div class="flex items-center justify-between text-sm">
+              <span class="font-medium">
+                Statistics for: 
+                <span class="badge badge-primary badge-sm ml-1">
+                  {#if selectedTimeframe === 'total'}
+                    All Time
+                  {:else if selectedTimeframe === 'hour'}
+                    Last Hour
+                  {:else if selectedTimeframe === '24hrs'}
+                    Last 24 Hours
+                  {:else if selectedTimeframe === 'week'}
+                    Last Week
+                  {:else if selectedTimeframe === 'month'}
+                    Last Month
+                  {:else if selectedTimeframe === 'login'}
+                    Since Last Login
+                  {/if}
+                </span>
+              </span>
+              <span class="text-base-content/60">
+                Last updated: just now
+              </span>
             </div>
           </div>
         {/if}
