@@ -62,9 +62,14 @@
   
   // Toast notification functions
   const showSuccessToast = (message: string) => {
+    console.log('Toast triggered:', message); // Debug log
     toastMessage = message;
     showToast = true;
-    setTimeout(() => showToast = false, 3000);
+    console.log('Toast state:', { showToast, toastMessage }); // Debug log
+    setTimeout(() => {
+      showToast = false;
+      console.log('Toast hidden'); // Debug log
+    }, 3000);
   };
   
   // Edit functionality
@@ -764,8 +769,8 @@
 
 <!-- Toast Notification -->
 {#if showToast}
-  <div class="toast toast-top toast-end">
-    <div class="alert alert-success">
+  <div class="toast toast-top toast-end z-50">
+    <div class="alert alert-success shadow-lg">
       <span>{toastMessage}</span>
     </div>
   </div>
