@@ -321,7 +321,7 @@
                 {item.dimensions ? `${item.dimensions} • ` : ''}{item.size}
               </div>
             </div>
-            <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+            <div class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
               <div class="flex gap-2">
                 <button 
                   class="btn btn-sm btn-circle btn-neutral"
