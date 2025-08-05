@@ -302,48 +302,48 @@
   </button>
 </div>
 
-<!-- Search and Controls -->
-<div class="flex flex-col md:flex-row gap-4 mb-6">
-  <div class="cms-search-container flex-1">
-    <Search class="cms-search-icon" />
-    <input
-      type="text"
-      placeholder={m.media_search_placeholder()}
-      class="cms-search-input"
-      bind:value={searchQuery}
-    />
-  </div>
-  
-  <div class="flex gap-2">
-    <div class="dropdown dropdown-end">
-      <div tabindex="0" role="button" class="cms-btn-utility">
-        <Filter class="h-4 w-4" />
-        {m.media_filter()}
-      </div>
-    </div>
-    
-    <div class="join">
-      <button 
-        class="join-item btn {viewMode === 'grid' ? 'btn-active' : ''}"
-        onclick={() => viewMode = 'grid'}
-        title="Grid view"
-      >
-        <Grid class="h-4 w-4" />
-      </button>
-      <button 
-        class="join-item btn {viewMode === 'list' ? 'btn-active' : ''}"
-        onclick={() => viewMode = 'list'}
-        title="List view"
-      >
-        <List class="h-4 w-4" />
-      </button>
-    </div>
-  </div>
-</div>
-
 <!-- Media Display -->
 <div class="cms-card">
   <div class="cms-card-body">
+    <!-- Search and Controls - integrated inside content card -->
+    <div class="flex flex-col md:flex-row gap-4 mb-6 pb-4 border-b border-base-200">
+      <div class="cms-search-container flex-1">
+        <Search class="cms-search-icon" />
+        <input
+          type="text"
+          placeholder={m.media_search_placeholder()}
+          class="cms-search-input"
+          bind:value={searchQuery}
+        />
+      </div>
+      
+      <div class="flex gap-2">
+        <div class="dropdown dropdown-end">
+          <div tabindex="0" role="button" class="cms-btn-utility">
+            <Filter class="h-4 w-4" />
+            {m.media_filter()}
+          </div>
+        </div>
+        
+        <div class="join">
+          <button 
+            class="join-item btn {viewMode === 'grid' ? 'btn-active' : ''}"
+            onclick={() => viewMode = 'grid'}
+            title="Grid view"
+          >
+            <Grid class="h-4 w-4" />
+          </button>
+          <button 
+            class="join-item btn {viewMode === 'list' ? 'btn-active' : ''}"
+            onclick={() => viewMode = 'list'}
+            title="List view"
+          >
+            <List class="h-4 w-4" />
+          </button>
+        </div>
+      </div>
+    </div>
+    
     <div class="flex justify-between mb-4">
       <span class="text-sm text-base-content/60">
         {m.media_item_count({ count: filteredMedia.length })}
