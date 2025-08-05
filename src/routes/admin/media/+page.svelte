@@ -80,8 +80,15 @@
       });
       
       if (response.ok) {
-        // Success - reload page
-        window.location.reload();
+        // Success - refresh data without page reload to preserve view mode
+        const mediaResponse = await fetch('/api/media');
+        if (mediaResponse.ok) {
+          const updatedMedia = await mediaResponse.json();
+          data.media = updatedMedia;
+        } else {
+          // Fallback to reload if refresh fails
+          window.location.reload();
+        }
       } else {
         const error = await response.text();
         console.error('Failed to delete media:', error);
@@ -321,7 +328,7 @@
                 {item.dimensions ? `${item.dimensions} • ` : ''}{item.size}
               </div>
             </div>
-            <div class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+            <div class="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
               <div class="flex gap-2">
                 <button 
                   class="btn btn-sm btn-circle btn-neutral"
