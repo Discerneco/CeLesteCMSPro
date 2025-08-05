@@ -295,9 +295,11 @@
       <!-- Grid View -->
       <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {#each filteredMedia as item}
-          <div 
-            class="cursor-pointer group relative rounded-lg overflow-hidden border border-base-200 hover:border-base-300 transition-colors"
+          <button 
+            class="cursor-pointer group relative rounded-lg overflow-hidden border border-base-200 hover:border-base-300 transition-colors w-full text-left"
             onclick={() => openMediaDetails(item)}
+            onkeydown={(e) => e.key === 'Enter' || e.key === ' ' ? openMediaDetails(item) : null}
+            aria-label="View details for {item.name}"
           >
             <div class="aspect-square bg-base-200 flex items-center justify-center overflow-hidden">
               {#if item.type === 'image' && item.thumbnail}
@@ -348,7 +350,7 @@
                 </button>
               </div>
             </div>
-          </div>
+          </button>
         {/each}
       </div>
     {:else}
@@ -548,7 +550,7 @@
         </div>
       </div>
     </div>
-    <div class="modal-backdrop" onclick={closeMediaDetails}></div>
+    <button class="modal-backdrop" onclick={closeMediaDetails} onkeydown={(e) => e.key === 'Enter' || e.key === ' ' ? closeMediaDetails() : null} aria-label="Close media details"></button>
   </div>
 {/if}
 
@@ -574,6 +576,9 @@
           ondragover={handleDragOver}
           ondragleave={handleDragLeave}
           ondrop={handleDrop}
+          role="button"
+          tabindex="0"
+          aria-label="Drop files here or click to select files"
         >
           <UploadCloud class="h-12 w-12 mx-auto {isDragOver ? 'text-primary' : 'text-base-content/40'}" />
           <p class="mt-4 font-medium">{m.media_upload_instructions()}</p>
@@ -659,7 +664,7 @@
         {/if}
       </div>
     </div>
-    <div class="modal-backdrop" onclick={closeUploadModal}></div>
+    <button class="modal-backdrop" onclick={closeUploadModal} onkeydown={(e) => e.key === 'Enter' || e.key === ' ' ? closeUploadModal() : null} aria-label="Close upload modal"></button>
   </div>
 {/if}
 
@@ -693,6 +698,6 @@
         </div>
       </div>
     </div>
-    <div class="modal-backdrop" onclick={closeDeleteModal}></div>
+    <button class="modal-backdrop" onclick={closeDeleteModal} onkeydown={(e) => e.key === 'Enter' || e.key === ' ' ? closeDeleteModal() : null} aria-label="Close delete confirmation"></button>
   </div>
 {/if}
