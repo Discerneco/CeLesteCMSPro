@@ -681,7 +681,7 @@
         
         <h3 class="text-lg font-medium mb-4">{m.media_delete_title()}</h3>
         <p class="text-base-content/70 mb-6">
-          {m.media_delete_confirm().replace('{name}', mediaToDelete.name)}
+          {m.media_delete_confirm({ name: mediaToDelete.name })}
         </p>
         
         <div class="flex justify-center gap-3">
