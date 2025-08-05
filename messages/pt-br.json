@@ -178,6 +178,7 @@
 	"settings_subtitle": "Configure suas preferências e aparência do CMS",
 	"settings_tab_general": "Geral",
 	"settings_tab_appearance": "Aparência",
+	"settings_tab_statistics": "Estatísticas",
 	"settings_tab_advanced": "Avançado",
 	"settings_general_site_title": "Título do Site",
 	"settings_general_site_description": "Descrição do Site",
@@ -196,5 +197,21 @@
 	"settings_appearance_preset_sunset": "Pôr do Sol",
 	"settings_save_changes": "Salvar Alterações",
 	"settings_reset_defaults": "Restaurar Padrões",
-	"settings_changes_saved": "Configurações salvas com sucesso"
+	"settings_changes_saved": "Configurações salvas com sucesso",
+	
+	"settings_statistics_title": "Estatísticas e Análises",
+	"settings_statistics_subtitle": "Visualize estatísticas detalhadas para diferentes períodos",
+	"settings_statistics_time_period": "Período",
+	"settings_statistics_total": "Total",
+	"settings_statistics_last_hour": "Última Hora",
+	"settings_statistics_24_hours": "24 Horas",
+	"settings_statistics_week": "Semana",
+	"settings_statistics_month": "Mês",
+	"settings_statistics_since_login": "Desde o Login",
+	"settings_statistics_posts_count": "Posts Criados",
+	"settings_statistics_media_count": "Mídia Enviada",
+	"settings_statistics_users_count": "Usuários Registrados",
+	"settings_statistics_sites_count": "Sites Ativos",
+	"settings_statistics_loading": "Carregando estatísticas...",
+	"settings_statistics_error": "Falha ao carregar estatísticas"
 }

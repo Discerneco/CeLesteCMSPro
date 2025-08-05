@@ -9,6 +9,9 @@
 
   // Import i18n with modern Paraglide pattern
   import * as m from '$lib/paraglide/messages';
+  
+  // Get data from load function (Svelte 5 runes mode)
+  let { data } = $props();
 </script>
 
 <!-- Page Header using CMS design tokens -->
@@ -26,10 +29,12 @@
     <div class="cms-card-body">
       <div class="flex items-center justify-between">
         <Globe class="text-primary h-8 w-8" />
-        <span class="badge badge-soft badge-success">+1</span>
+        {#if data.stats.sinceLastSession.sites > 0}
+          <span class="badge badge-soft badge-success">+{data.stats.sinceLastSession.sites}</span>
+        {/if}
       </div>
       <div class="mt-4">
-        <h3 class="text-2xl font-bold">3</h3>
+        <h3 class="text-2xl font-bold">{data.stats.total.sites}</h3>
         <p class="text-sm text-base-content/60">{m.dashboard_stats_active_sites()}</p>
       </div>
     </div>
@@ -39,10 +44,12 @@
     <div class="cms-card-body">
       <div class="flex items-center justify-between">
         <MessageSquare class="text-primary h-8 w-8" />
-        <span class="badge badge-soft badge-success">+12</span>
+        {#if data.stats.sinceLastSession.posts > 0}
+          <span class="badge badge-soft badge-success">+{data.stats.sinceLastSession.posts}</span>
+        {/if}
       </div>
       <div class="mt-4">
-        <h3 class="text-2xl font-bold">48</h3>
+        <h3 class="text-2xl font-bold">{data.stats.total.posts}</h3>
         <p class="text-sm text-base-content/60">{m.dashboard_stats_posts()}</p>
       </div>
     </div>
@@ -52,10 +59,12 @@
     <div class="cms-card-body">
       <div class="flex items-center justify-between">
         <Users class="text-primary h-8 w-8" />
-        <span class="badge badge-soft badge-success">+3</span>
+        {#if data.stats.sinceLastSession.users > 0}
+          <span class="badge badge-soft badge-success">+{data.stats.sinceLastSession.users}</span>
+        {/if}
       </div>
       <div class="mt-4">
-        <h3 class="text-2xl font-bold">16</h3>
+        <h3 class="text-2xl font-bold">{data.stats.total.users}</h3>
         <p class="text-sm text-base-content/60">{m.dashboard_stats_users()}</p>
       </div>
     </div>
@@ -65,10 +74,12 @@
     <div class="cms-card-body">
       <div class="flex items-center justify-between">
         <UploadCloud class="text-primary h-8 w-8" />
-        <span class="badge badge-soft badge-success">+28</span>
+        {#if data.stats.sinceLastSession.media > 0}
+          <span class="badge badge-soft badge-success">+{data.stats.sinceLastSession.media}</span>
+        {/if}
       </div>
       <div class="mt-4">
-        <h3 class="text-2xl font-bold">164</h3>
+        <h3 class="text-2xl font-bold">{data.stats.total.media}</h3>
         <p class="text-sm text-base-content/60">{m.dashboard_stats_media_files()}</p>
       </div>
     </div>

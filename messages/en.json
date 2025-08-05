@@ -178,6 +178,7 @@
 	"settings_subtitle": "Configure your CMS preferences and appearance",
 	"settings_tab_general": "General",
 	"settings_tab_appearance": "Appearance",
+	"settings_tab_statistics": "Statistics",
 	"settings_tab_advanced": "Advanced",
 	"settings_general_site_title": "Site Title",
 	"settings_general_site_description": "Site Description",
@@ -196,5 +197,21 @@
 	"settings_appearance_preset_sunset": "Sunset",
 	"settings_save_changes": "Save Changes",
 	"settings_reset_defaults": "Reset to Defaults",
-	"settings_changes_saved": "Settings saved successfully"
+	"settings_changes_saved": "Settings saved successfully",
+	
+	"settings_statistics_title": "Statistics & Analytics",
+	"settings_statistics_subtitle": "View detailed statistics for different time periods",
+	"settings_statistics_time_period": "Time Period",
+	"settings_statistics_total": "Total",
+	"settings_statistics_last_hour": "Last Hour",
+	"settings_statistics_24_hours": "24 Hours",
+	"settings_statistics_week": "Week",
+	"settings_statistics_month": "Month",
+	"settings_statistics_since_login": "Since Login",
+	"settings_statistics_posts_count": "Posts Created",
+	"settings_statistics_media_count": "Media Uploaded",
+	"settings_statistics_users_count": "Users Registered",
+	"settings_statistics_sites_count": "Sites Active",
+	"settings_statistics_loading": "Loading statistics...",
+	"settings_statistics_error": "Failed to load statistics"
 }

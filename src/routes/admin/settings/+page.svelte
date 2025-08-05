@@ -7,7 +7,9 @@
     Sun,
     Moon,
     RotateCcw,
-    Save
+    Save,
+    BarChart3,
+    TrendingUp
   } from '@lucide/svelte';
   
   // Import i18n with modern Paraglide pattern
@@ -15,6 +17,10 @@
   
   // Svelte 5 runes for state management
   let activeTab = $state('general');
+  let selectedTimeframe = $state('login');
+  let statsLoading = $state(false);
+  let statsData = $state(null);
+  let statsError = $state(null);
   let primaryColor = $state('#8b5cf6');
   let secondaryColor = $state('#64748b');
   let accentColor = $state('#06b6d4');
@@ -148,6 +154,39 @@
   $effect(() => {
     applyColors();
   });
+  
+  // Load statistics when Statistics tab is active or timeframe changes
+  $effect(() => {
+    if (activeTab === 'statistics') {
+      loadStatistics(selectedTimeframe);
+    }
+  });
+  
+  // Statistics loading function
+  async function loadStatistics(timeframe) {
+    statsLoading = true;
+    statsError = null;
+    
+    try {
+      const response = await fetch(`/api/stats?timeframe=${timeframe}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch statistics');
+      }
+      statsData = await response.json();
+    } catch (error) {
+      console.error('Error loading statistics:', error);
+      statsError = error.message;
+      statsData = null;
+    } finally {
+      statsLoading = false;
+    }
+  }
+  
+  // Handle timeframe selection
+  function selectTimeframe(timeframe) {
+    selectedTimeframe = timeframe;
+    loadStatistics(timeframe);
+  }
 </script>
 
 <!-- Page Header - Following exact Posts page pattern -->
@@ -182,6 +221,14 @@
     <Palette class="h-4 w-4 mr-1 md:mr-2" />
     <span class="hidden sm:inline">{m.settings_tab_appearance()}</span>
     <span class="sm:hidden">Theme</span>
+  </button>
+  <button 
+    class="tab tab-sm md:tab-md {activeTab === 'statistics' ? 'tab-active' : ''} whitespace-nowrap"
+    onclick={() => switchTab('statistics')}
+  >
+    <BarChart3 class="h-4 w-4 mr-1 md:mr-2" />
+    <span class="hidden sm:inline">{m.settings_tab_statistics()}</span>
+    <span class="sm:hidden">Stats</span>
   </button>
   <button 
     class="tab tab-sm md:tab-md {activeTab === 'advanced' ? 'tab-active' : ''} whitespace-nowrap"
@@ -423,6 +470,154 @@
               <p class="text-xs">This is how cards will look with your color scheme.</p>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{:else if activeTab === 'statistics'}
+  <!-- Statistics Tab -->
+  <div class="cms-grid-content">
+    <div class="cms-card md:col-span-2">
+      <div class="cms-card-body">
+        <h2 class="cms-card-title">{m.settings_statistics_title()}</h2>
+        <p class="text-sm text-base-content/60 mb-6">{m.settings_statistics_subtitle()}</p>
+        
+        <!-- Time Period Selector -->
+        <div class="form-control mb-6">
+          <label class="label">
+            <span class="label-text font-medium">{m.settings_statistics_time_period()}</span>
+          </label>
+          <div class="join">
+            <button 
+              class="join-item btn btn-sm {selectedTimeframe === 'total' ? 'btn-active' : 'btn-outline'}"
+              onclick={() => selectTimeframe('total')}
+            >
+              {m.settings_statistics_total()}
+            </button>
+            <button 
+              class="join-item btn btn-sm {selectedTimeframe === 'hour' ? 'btn-active' : 'btn-outline'}"
+              onclick={() => selectTimeframe('hour')}
+            >
+              {m.settings_statistics_last_hour()}
+            </button>
+            <button 
+              class="join-item btn btn-sm {selectedTimeframe === '24hrs' ? 'btn-active' : 'btn-outline'}"
+              onclick={() => selectTimeframe('24hrs')}
+            >
+              {m.settings_statistics_24_hours()}
+            </button>
+            <button 
+              class="join-item btn btn-sm {selectedTimeframe === 'week' ? 'btn-active' : 'btn-outline'}"
+              onclick={() => selectTimeframe('week')}
+            >
+              {m.settings_statistics_week()}
+            </button>
+            <button 
+              class="join-item btn btn-sm {selectedTimeframe === 'month' ? 'btn-active' : 'btn-outline'}"
+              onclick={() => selectTimeframe('month')}
+            >
+              {m.settings_statistics_month()}
+            </button>
+            <button 
+              class="join-item btn btn-sm {selectedTimeframe === 'login' ? 'btn-active' : 'btn-outline'}"
+              onclick={() => selectTimeframe('login')}
+            >
+              {m.settings_statistics_since_login()}
+            </button>
+          </div>
+        </div>
+        
+        <!-- Statistics Display -->
+        {#if statsLoading}
+          <div class="flex items-center justify-center py-12">
+            <span class="loading loading-spinner loading-lg"></span>
+            <span class="ml-3">{m.settings_statistics_loading()}</span>
+          </div>
+        {:else if statsError}
+          <div class="alert alert-error">
+            <span>{m.settings_statistics_error()}: {statsError}</span>
+          </div>
+        {:else if statsData}
+          <!-- Statistics Cards -->
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="stats shadow">
+              <div class="stat">
+                <div class="stat-figure text-primary">
+                  <TrendingUp class="w-8 h-8" />
+                </div>
+                <div class="stat-title">{m.settings_statistics_posts_count()}</div>
+                <div class="stat-value text-primary">{statsData.posts}</div>
+              </div>
+            </div>
+            
+            <div class="stats shadow">
+              <div class="stat">
+                <div class="stat-figure text-secondary">
+                  <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" />
+                  </svg>
+                </div>
+                <div class="stat-title">{m.settings_statistics_media_count()}</div>
+                <div class="stat-value text-secondary">{statsData.media}</div>
+              </div>
+            </div>
+            
+            <div class="stats shadow">
+              <div class="stat">
+                <div class="stat-figure text-accent">
+                  <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
+                  </svg>
+                </div>
+                <div class="stat-title">{m.settings_statistics_users_count()}</div>
+                <div class="stat-value text-accent">{statsData.users}</div>
+              </div>
+            </div>
+            
+            <div class="stats shadow">
+              <div class="stat">
+                <div class="stat-figure text-info">
+                  <Globe class="w-8 h-8" />
+                </div>
+                <div class="stat-title">{m.settings_statistics_sites_count()}</div>
+                <div class="stat-value text-info">{statsData.sites}</div>
+              </div>
+            </div>
+          </div>
+        {/if}
+      </div>
+    </div>
+    
+    <!-- Statistics Info Panel -->
+    <div class="cms-card">
+      <div class="cms-card-body">
+        <h3 class="font-semibold mb-4">Time Period Information</h3>
+        <div class="space-y-3 text-sm">
+          <div>
+            <strong>Total:</strong> All records since installation
+          </div>
+          <div>
+            <strong>Last Hour:</strong> Records created in the past 60 minutes
+          </div>
+          <div>
+            <strong>24 Hours:</strong> Records created in the past day
+          </div>
+          <div>
+            <strong>Week:</strong> Records created in the past 7 days
+          </div>
+          <div>
+            <strong>Month:</strong> Records created in the past 30 days
+          </div>
+          <div>
+            <strong>Since Login:</strong> Records created since your last login
+          </div>
+        </div>
+        
+        <div class="divider"></div>
+        
+        <div class="text-xs text-base-content/60">
+          Statistics are updated in real-time and reflect the current state of your CMS database.
         </div>
       </div>
     </div>
