@@ -118,6 +118,7 @@
         if (mediaResponse.ok) {
           const updatedMedia = await mediaResponse.json();
           mediaData = updatedMedia; // Update reactive state
+          showSuccessToast(`Successfully deleted "${mediaToDelete.name}"`);
         } else {
           // Fallback to reload if refresh fails
           window.location.reload();
@@ -303,12 +304,12 @@
 
 <!-- Search and Controls -->
 <div class="flex flex-col md:flex-row gap-4 mb-6">
-  <div class="relative flex-1">
-    <Search class="absolute left-3 top-1/2 transform -translate-y-1/2 text-base-content/60" />
+  <div class="cms-search-container flex-1">
+    <Search class="cms-search-icon" />
     <input
       type="text"
       placeholder={m.media_search_placeholder()}
-      class="input w-full pl-10 pr-4"
+      class="cms-search-input"
       bind:value={searchQuery}
     />
   </div>
