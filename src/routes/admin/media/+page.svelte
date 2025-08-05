@@ -38,9 +38,12 @@
   let uploadProgress = $state(0);
   let selectedFiles = $state([]);
   
+  // Local reactive media data for proper reactivity
+  let mediaData = $state(data.media || []);
+  
   // Filter media based on search query
   let filteredMedia = $derived(
-    data.media?.filter((item: any) => 
+    mediaData?.filter((item: any) => 
       item.name.toLowerCase().includes(searchQuery.toLowerCase())
     ) || []
   );
@@ -80,11 +83,11 @@
       });
       
       if (response.ok) {
-        // Success - refresh data without page reload to preserve view mode
+        // Success - update local reactive state to trigger UI update
         const mediaResponse = await fetch('/api/media');
         if (mediaResponse.ok) {
           const updatedMedia = await mediaResponse.json();
-          data.media = updatedMedia;
+          mediaData = updatedMedia; // Update reactive state
         } else {
           // Fallback to reload if refresh fails
           window.location.reload();
@@ -328,7 +331,7 @@
                 {item.dimensions ? `${item.dimensions} • ` : ''}{item.size}
               </div>
             </div>
-            <div class="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+            <div class="absolute inset-0 bg-black/80 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
               <div class="flex gap-2">
                 <button 
                   class="btn btn-sm btn-circle btn-neutral"
