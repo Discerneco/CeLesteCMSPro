@@ -295,10 +295,12 @@
       <!-- Grid View -->
       <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {#each filteredMedia as item}
-          <button 
-            class="cursor-pointer group relative rounded-lg overflow-hidden border border-base-200 hover:border-base-300 transition-colors w-full text-left"
+          <div 
+            class="cursor-pointer group relative rounded-lg overflow-hidden border border-base-200 hover:border-base-300 transition-colors"
             onclick={() => openMediaDetails(item)}
             onkeydown={(e) => e.key === 'Enter' || e.key === ' ' ? openMediaDetails(item) : null}
+            role="button"
+            tabindex="0"
             aria-label="View details for {item.name}"
           >
             <div class="aspect-square bg-base-200 flex items-center justify-center overflow-hidden">
@@ -350,7 +352,7 @@
                 </button>
               </div>
             </div>
-          </button>
+          </div>
         {/each}
       </div>
     {:else}
