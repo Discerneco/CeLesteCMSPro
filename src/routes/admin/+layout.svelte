@@ -24,6 +24,9 @@
   import { auth } from '$lib/stores/auth';
   import { page } from '$app/stores';
 
+  // Svelte 5 children prop for slot replacement
+  let { children } = $props();
+
   // Modern Svelte 5 runes state management
   let theme = $state('light');
   let isSidebarOpen = $state(true);
@@ -206,7 +209,7 @@
     
     <!-- Main Content -->
     <main class="flex-1 overflow-y-auto p-6">
-      <slot />
+      {@render children()}
     </main>
   </div>
 </div>
