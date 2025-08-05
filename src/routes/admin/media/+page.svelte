@@ -38,6 +38,10 @@
   let uploadProgress = $state(0);
   let selectedFiles = $state([]);
   
+  // Toast notification state
+  let showToast = $state(false);
+  let toastMessage = $state('');
+  
   // Local reactive media data for proper reactivity
   let mediaData = $state(data.media || []);
   
@@ -47,6 +51,27 @@
       item.name.toLowerCase().includes(searchQuery.toLowerCase())
     ) || []
   );
+  
+  // URL helper for dev/prod environments
+  const getMediaUrl = (path: string) => {
+    if (typeof window !== 'undefined') {
+      return `${window.location.origin}${path}`;
+    }
+    return path; // Fallback for SSR
+  };
+  
+  // Toast notification functions
+  const showSuccessToast = (message: string) => {
+    toastMessage = message;
+    showToast = true;
+    setTimeout(() => showToast = false, 3000);
+  };
+  
+  // Edit functionality
+  const editMedia = (item: any) => {
+    // For now, just show a toast - later can navigate to edit page or show edit modal
+    showSuccessToast(`Edit functionality for "${item.name}" coming soon!`);
+  };
   
   const openMediaDetails = (item: any) => {
     selectedMedia = item;
@@ -105,13 +130,26 @@
     }
   };
 
-  const copyToClipboard = async (text: string) => {
+  const copyToClipboard = async (url: string) => {
     try {
-      await navigator.clipboard.writeText(text);
-      alert(m.media_url_copied());
+      const fullUrl = getMediaUrl(url);
+      await navigator.clipboard.writeText(fullUrl);
+      showSuccessToast(m.media_url_copied());
     } catch (err) {
       console.error('Failed to copy:', err);
+      showSuccessToast('Failed to copy URL to clipboard');
     }
+  };
+  
+  const downloadMedia = (item: any) => {
+    const fullUrl = getMediaUrl(item.url);
+    const link = document.createElement('a');
+    link.href = fullUrl;
+    link.download = item.name;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showSuccessToast(`Downloading ${item.name}...`);
   };
 
   const getFileIcon = (type: string) => {
@@ -216,7 +254,7 @@
       }
 
       // Success - refresh media data without page reload to preserve view mode
-      alert(`Successfully uploaded ${selectedFiles.length} file(s)!`);
+      showSuccessToast(`Successfully uploaded ${selectedFiles.length} file(s)!`);
       const mediaResponse = await fetch('/api/media');
       if (mediaResponse.ok) {
         const updatedMedia = await mediaResponse.json();
@@ -356,7 +394,7 @@
                   class="btn btn-sm btn-circle btn-neutral"
                   onclick={(e) => {
                     e.stopPropagation();
-                    // Edit functionality
+                    editMedia(item);
                   }}
                 >
                   <Edit class="h-4 w-4" />
@@ -435,7 +473,7 @@
                       class="btn btn-ghost btn-sm btn-square"
                       onclick={(e) => {
                         e.stopPropagation();
-                        // Edit functionality
+                        editMedia(item);
                       }}
                     >
                       <Edit class="h-4 w-4" />
@@ -553,11 +591,11 @@
           </div>
           
           <div class="mt-8 flex flex-wrap gap-3">
-            <button class="btn btn-primary gap-2">
+            <button class="btn btn-primary gap-2" onclick={() => editMedia(selectedMedia)}>
               <Edit class="h-4 w-4" />
               {m.media_edit()}
             </button>
-            <button class="btn btn-outline gap-2">
+            <button class="btn btn-outline gap-2" onclick={() => downloadMedia(selectedMedia)}>
               <Download class="h-4 w-4" />
               {m.media_download()}
             </button>
@@ -721,5 +759,14 @@
       </div>
     </div>
     <button class="modal-backdrop" onclick={closeDeleteModal} onkeydown={(e) => e.key === 'Enter' || e.key === ' ' ? closeDeleteModal() : null} aria-label="Close delete confirmation"></button>
+  </div>
+{/if}
+
+<!-- Toast Notification -->
+{#if showToast}
+  <div class="toast toast-top toast-end">
+    <div class="alert alert-success">
+      <span>{toastMessage}</span>
+    </div>
   </div>
 {/if}
