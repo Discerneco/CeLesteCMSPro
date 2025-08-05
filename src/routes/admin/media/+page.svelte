@@ -129,7 +129,8 @@
     const target = event.target as HTMLInputElement;
     if (target.files) {
       const files = Array.from(target.files);
-      selectedFiles = files;
+      // If files already selected, append new ones; otherwise replace
+      selectedFiles = selectedFiles.length > 0 ? [...selectedFiles, ...files] : files;
     }
   };
 
@@ -149,7 +150,8 @@
     
     if (event.dataTransfer?.files) {
       const files = Array.from(event.dataTransfer.files);
-      selectedFiles = files;
+      // If files already selected, append new ones; otherwise replace
+      selectedFiles = selectedFiles.length > 0 ? [...selectedFiles, ...files] : files;
     }
   };
 
@@ -213,9 +215,17 @@
         uploadProgress = Math.round(((i + 1) / selectedFiles.length) * 100);
       }
 
-      // Success - refresh the page to show new files
+      // Success - refresh media data without page reload to preserve view mode
       alert(`Successfully uploaded ${selectedFiles.length} file(s)!`);
-      window.location.reload();
+      const mediaResponse = await fetch('/api/media');
+      if (mediaResponse.ok) {
+        const updatedMedia = await mediaResponse.json();
+        mediaData = updatedMedia; // Update reactive state
+        closeUploadModal(); // Close modal after successful upload
+      } else {
+        // Fallback to reload if refresh fails
+        window.location.reload();
+      }
       
     } catch (error) {
       console.error('Upload error:', error);
