@@ -3,11 +3,70 @@
   import { goto } from '$app/navigation';
   import * as m from '$lib/paraglide/messages';
   import type { PageData } from './$types';
+  import UserModal from '$lib/components/users/UserModal.svelte';
+  import DeleteUserModal from '$lib/components/users/DeleteUserModal.svelte';
 
   export let data: PageData;
 
   let searchQuery = $state(data.searchQuery || '');
   let debounceTimeout: ReturnType<typeof setTimeout>;
+
+  // Modal states
+  let userModal = $state({
+    isOpen: false,
+    mode: 'add' as 'add' | 'edit',
+    user: null as any
+  });
+  
+  let deleteModal = $state({
+    isOpen: false,
+    user: null as any
+  });
+
+  // Toast notifications
+  let toast = $state({
+    show: false,
+    message: '',
+    type: 'success' as 'success' | 'error'
+  });
+
+  function showToast(message: string, type: 'success' | 'error' = 'success') {
+    toast = { show: true, message, type };
+    setTimeout(() => {
+      toast.show = false;
+    }, 3000);
+  }
+
+  // Modal handlers
+  function openAddModal() {
+    userModal = { isOpen: true, mode: 'add', user: null };
+  }
+
+  function openEditModal(user: any) {
+    userModal = { isOpen: true, mode: 'edit', user };
+  }
+
+  function openDeleteModal(user: any) {
+    deleteModal = { isOpen: true, user };
+  }
+
+  function handleUserCreated(event: any) {
+    showToast(m.users_success_created());
+    // Refresh page to show new user
+    window.location.reload();
+  }
+
+  function handleUserUpdated(event: any) {
+    showToast(m.users_success_updated());
+    // Refresh page to show updated user
+    window.location.reload();
+  }
+
+  function handleUserDeleted(event: any) {
+    showToast(m.users_success_deleted());
+    // Refresh page to remove deleted user
+    window.location.reload();
+  }
 
   // Handle search with debouncing
   function handleSearch() {
@@ -106,7 +165,7 @@
         {m.users_filter()}
       </button>
       
-      <button class="btn btn-primary">
+      <button class="btn btn-primary" onclick={openAddModal}>
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
         </svg>
@@ -181,6 +240,7 @@
                       <button 
                         class="btn btn-ghost btn-xs" 
                         title={m.users_action_edit()}
+                        onclick={() => openEditModal(user)}
                       >
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
@@ -202,6 +262,7 @@
                         <button 
                           class="btn btn-ghost btn-xs text-error" 
                           title={m.users_action_delete()}
+                          onclick={() => openDeleteModal(user)}
                         >
                           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
@@ -274,7 +335,7 @@
             {searchQuery ? 'Try adjusting your search criteria' : 'Start by adding your first user to the system'}
           </p>
           {#if !searchQuery}
-            <button class="btn btn-primary">
+            <button class="btn btn-primary" onclick={openAddModal}>
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
               </svg>
@@ -286,3 +347,34 @@
     </div>
   </div>
 </div>
+
+<!-- Modals -->
+<UserModal 
+  bind:isOpen={userModal.isOpen}
+  mode={userModal.mode}
+  user={userModal.user}
+  on:userCreated={handleUserCreated}
+  on:userUpdated={handleUserUpdated}
+/>
+
+<DeleteUserModal 
+  bind:isOpen={deleteModal.isOpen}
+  user={deleteModal.user}
+  on:userDeleted={handleUserDeleted}
+/>
+
+<!-- Toast Notification -->
+{#if toast.show}
+  <div class="toast toast-top toast-end">
+    <div class="alert {toast.type === 'success' ? 'alert-success' : 'alert-error'}">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        {#if toast.type === 'success'}
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+        {:else}
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        {/if}
+      </svg>
+      <span>{toast.message}</span>
+    </div>
+  </div>
+{/if}
