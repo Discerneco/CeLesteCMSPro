@@ -10,6 +10,7 @@
 
   let searchQuery = $state(data.searchQuery || '');
   let debounceTimeout: ReturnType<typeof setTimeout>;
+  let activeTab = $state('users');
 
   // Modal states
   let userModal = $state({
@@ -140,8 +141,28 @@
     <p class="text-base-content/70 mt-2">{m.users_subtitle()}</p>
   </div>
 
-  <!-- Actions Bar -->
-  <div class="flex flex-col sm:flex-row gap-4 mb-6">
+  <!-- Tabs -->
+  <div class="tabs tabs-boxed mb-6">
+    <button 
+      class="tab"
+      class:tab-active={activeTab === 'users'}
+      onclick={() => activeTab = 'users'}
+    >
+      {m.users_title()}
+    </button>
+    <button 
+      class="tab"
+      class:tab-active={activeTab === 'roles'}
+      onclick={() => activeTab = 'roles'}
+    >
+      {m.users_roles_title()}
+    </button>
+  </div>
+
+  <!-- Users Tab Content -->
+  {#if activeTab === 'users'}
+    <!-- Actions Bar -->
+    <div class="flex flex-col sm:flex-row gap-4 mb-6">
     <div class="flex-1">
       <div class="relative">
         <input 
@@ -346,6 +367,319 @@
       {/if}
     </div>
   </div>
+  {/if}
+
+  <!-- Roles & Permissions Tab Content -->
+  {#if activeTab === 'roles'}
+    <div class="space-y-6">
+      <!-- Role Management Section -->
+      <div class="card bg-base-100 border border-base-300">
+        <div class="card-header border-b border-base-300 px-6 py-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <h2 class="text-lg font-semibold text-base-content">User Roles</h2>
+              <p class="text-sm text-base-content/60 mt-1">Manage user roles and their permissions</p>
+            </div>
+            <button class="btn btn-primary btn-sm">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+              </svg>
+              Add Role
+            </button>
+          </div>
+        </div>
+        <div class="card-body p-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <!-- Administrator Role -->
+            <div class="card bg-primary/10 border border-primary/20">
+              <div class="card-body p-4">
+                <div class="flex items-start justify-between mb-3">
+                  <div class="p-2 bg-primary/20 rounded-lg">
+                    <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                    </svg>
+                  </div>
+                  <div class="dropdown dropdown-end">
+                    <button class="btn btn-ghost btn-xs">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
+                      </svg>
+                    </button>
+                    <ul class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
+                      <li><a>Edit Role</a></li>
+                      <li><a>View Permissions</a></li>
+                    </ul>
+                  </div>
+                </div>
+                <h3 class="font-semibold text-base-content mb-1">{m.users_role_admin()}</h3>
+                <p class="text-sm text-base-content/60 mb-3">Full system access and control</p>
+                <div class="flex items-center justify-between text-sm">
+                  <span class="text-base-content/70">Users</span>
+                  <span class="badge badge-primary badge-sm">1</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Editor Role -->
+            <div class="card bg-secondary/10 border border-secondary/20">
+              <div class="card-body p-4">
+                <div class="flex items-start justify-between mb-3">
+                  <div class="p-2 bg-secondary/20 rounded-lg">
+                    <svg class="w-5 h-5 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                    </svg>
+                  </div>
+                  <div class="dropdown dropdown-end">
+                    <button class="btn btn-ghost btn-xs">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
+                      </svg>
+                    </button>
+                    <ul class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
+                      <li><a>Edit Role</a></li>
+                      <li><a>View Permissions</a></li>
+                    </ul>
+                  </div>
+                </div>
+                <h3 class="font-semibold text-base-content mb-1">{m.users_role_editor()}</h3>
+                <p class="text-sm text-base-content/60 mb-3">Edit and manage content</p>
+                <div class="flex items-center justify-between text-sm">
+                  <span class="text-base-content/70">Users</span>
+                  <span class="badge badge-secondary badge-sm">0</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Author Role -->
+            <div class="card bg-accent/10 border border-accent/20">
+              <div class="card-body p-4">
+                <div class="flex items-start justify-between mb-3">
+                  <div class="p-2 bg-accent/20 rounded-lg">
+                    <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                    </svg>
+                  </div>
+                  <div class="dropdown dropdown-end">
+                    <button class="btn btn-ghost btn-xs">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
+                      </svg>
+                    </button>
+                    <ul class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
+                      <li><a>Edit Role</a></li>
+                      <li><a>View Permissions</a></li>
+                    </ul>
+                  </div>
+                </div>
+                <h3 class="font-semibold text-base-content mb-1">{m.users_role_author()}</h3>
+                <p class="text-sm text-base-content/60 mb-3">Create and edit own content</p>
+                <div class="flex items-center justify-between text-sm">
+                  <span class="text-base-content/70">Users</span>
+                  <span class="badge badge-accent badge-sm">0</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Subscriber Role -->
+            <div class="card bg-base-200 border border-base-300">
+              <div class="card-body p-4">
+                <div class="flex items-start justify-between mb-3">
+                  <div class="p-2 bg-base-300 rounded-lg">
+                    <svg class="w-5 h-5 text-base-content/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                    </svg>
+                  </div>
+                  <div class="dropdown dropdown-end">
+                    <button class="btn btn-ghost btn-xs">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
+                      </svg>
+                    </button>
+                    <ul class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
+                      <li><a>Edit Role</a></li>
+                      <li><a>View Permissions</a></li>
+                    </ul>
+                  </div>
+                </div>
+                <h3 class="font-semibold text-base-content mb-1">{m.users_role_subscriber()}</h3>
+                <p class="text-sm text-base-content/60 mb-3">View content only</p>
+                <div class="flex items-center justify-between text-sm">
+                  <span class="text-base-content/70">Users</span>
+                  <span class="badge badge-outline badge-sm">0</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Permissions Matrix -->
+      <div class="card bg-base-100 border border-base-300">
+        <div class="card-header border-b border-base-300 px-6 py-4">
+          <div>
+            <h2 class="text-lg font-semibold text-base-content">Permissions Matrix</h2>
+            <p class="text-sm text-base-content/60 mt-1">Overview of permissions for each role</p>
+          </div>
+        </div>
+        <div class="card-body p-6">
+          <div class="overflow-x-auto">
+            <table class="table table-zebra">
+              <thead>
+                <tr>
+                  <th class="font-semibold text-base-content/70">Permission</th>
+                  <th class="text-center font-semibold text-base-content/70">{m.users_role_admin()}</th>
+                  <th class="text-center font-semibold text-base-content/70">{m.users_role_editor()}</th>
+                  <th class="text-center font-semibold text-base-content/70">{m.users_role_author()}</th>
+                  <th class="text-center font-semibold text-base-content/70">{m.users_role_subscriber()}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="font-medium">Manage Users</td>
+                  <td class="text-center">
+                    <svg class="w-5 h-5 text-success mx-auto" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                  </td>
+                  <td class="text-center">
+                    <svg class="w-5 h-5 text-error mx-auto" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                    </svg>
+                  </td>
+                  <td class="text-center">
+                    <svg class="w-5 h-5 text-error mx-auto" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                    </svg>
+                  </td>
+                  <td class="text-center">
+                    <svg class="w-5 h-5 text-error mx-auto" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                    </svg>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="font-medium">Create Posts</td>
+                  <td class="text-center">
+                    <svg class="w-5 h-5 text-success mx-auto" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                  </td>
+                  <td class="text-center">
+                    <svg class="w-5 h-5 text-success mx-auto" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                  </td>
+                  <td class="text-center">
+                    <svg class="w-5 h-5 text-success mx-auto" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                  </td>
+                  <td class="text-center">
+                    <svg class="w-5 h-5 text-error mx-auto" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                    </svg>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="font-medium">Edit All Posts</td>
+                  <td class="text-center">
+                    <svg class="w-5 h-5 text-success mx-auto" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                  </td>
+                  <td class="text-center">
+                    <svg class="w-5 h-5 text-success mx-auto" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                  </td>
+                  <td class="text-center">
+                    <svg class="w-5 h-5 text-warning mx-auto" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                    </svg>
+                    <div class="text-xs text-base-content/60 mt-1">Own only</div>
+                  </td>
+                  <td class="text-center">
+                    <svg class="w-5 h-5 text-error mx-auto" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                    </svg>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="font-medium">Publish Posts</td>
+                  <td class="text-center">
+                    <svg class="w-5 h-5 text-success mx-auto" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                  </td>
+                  <td class="text-center">
+                    <svg class="w-5 h-5 text-success mx-auto" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                  </td>
+                  <td class="text-center">
+                    <svg class="w-5 h-5 text-error mx-auto" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                    </svg>
+                  </td>
+                  <td class="text-center">
+                    <svg class="w-5 h-5 text-error mx-auto" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                    </svg>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="font-medium">Manage Media</td>
+                  <td class="text-center">
+                    <svg class="w-5 h-5 text-success mx-auto" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                  </td>
+                  <td class="text-center">
+                    <svg class="w-5 h-5 text-success mx-auto" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                  </td>
+                  <td class="text-center">
+                    <svg class="w-5 h-5 text-success mx-auto" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                  </td>
+                  <td class="text-center">
+                    <svg class="w-5 h-5 text-error mx-auto" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                    </svg>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="font-medium">System Settings</td>
+                  <td class="text-center">
+                    <svg class="w-5 h-5 text-success mx-auto" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                  </td>
+                  <td class="text-center">
+                    <svg class="w-5 h-5 text-error mx-auto" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                    </svg>
+                  </td>
+                  <td class="text-center">
+                    <svg class="w-5 h-5 text-error mx-auto" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                    </svg>
+                  </td>
+                  <td class="text-center">
+                    <svg class="w-5 h-5 text-error mx-auto" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                    </svg>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  {/if}
 </div>
 
 <!-- Modals -->
