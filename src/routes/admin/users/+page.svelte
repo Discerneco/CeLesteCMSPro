@@ -6,7 +6,7 @@
   import UserModal from '$lib/components/users/UserModal.svelte';
   import DeleteUserModal from '$lib/components/users/DeleteUserModal.svelte';
 
-  export let data: PageData;
+  let { data }: { data: PageData } = $props();
 
   let searchQuery = $state(data.searchQuery || '');
   let debounceTimeout: ReturnType<typeof setTimeout>;
@@ -50,19 +50,19 @@
     deleteModal = { isOpen: true, user };
   }
 
-  function handleUserCreated(event: any) {
+  function handleUserCreated(user: any) {
     showToast(m.users_success_created());
     // Refresh page to show new user
     window.location.reload();
   }
 
-  function handleUserUpdated(event: any) {
+  function handleUserUpdated(user: any) {
     showToast(m.users_success_updated());
     // Refresh page to show updated user
     window.location.reload();
   }
 
-  function handleUserDeleted(event: any) {
+  function handleUserDeleted(user: any) {
     showToast(m.users_success_deleted());
     // Refresh page to remove deleted user
     window.location.reload();
@@ -199,7 +199,7 @@
                       <div class="avatar placeholder">
                         <div class="bg-neutral text-neutral-content rounded-full w-10 h-10">
                           <span class="text-sm font-medium">
-                            {user.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
+                            {user.name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2)}
                           </span>
                         </div>
                       </div>
@@ -353,14 +353,14 @@
   bind:isOpen={userModal.isOpen}
   mode={userModal.mode}
   user={userModal.user}
-  on:userCreated={handleUserCreated}
-  on:userUpdated={handleUserUpdated}
+  onUserCreated={handleUserCreated}
+  onUserUpdated={handleUserUpdated}
 />
 
 <DeleteUserModal 
   bind:isOpen={deleteModal.isOpen}
   user={deleteModal.user}
-  on:userDeleted={handleUserDeleted}
+  onUserDeleted={handleUserDeleted}
 />
 
 <!-- Toast Notification -->

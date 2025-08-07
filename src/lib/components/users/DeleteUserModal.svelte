@@ -1,11 +1,15 @@
 <script lang="ts">
   import * as m from '$lib/paraglide/messages';
-  import { createEventDispatcher } from 'svelte';
 
-  export let isOpen = $state(false);
-  export let user: any = null;
-
-  const dispatch = createEventDispatcher();
+  let { 
+    isOpen = $bindable(false),
+    user = null,
+    onUserDeleted
+  }: {
+    isOpen?: boolean;
+    user?: any;
+    onUserDeleted?: (user: any) => void;
+  } = $props();
 
   let isLoading = $state(false);
   let error = $state('');
@@ -35,7 +39,9 @@
         return;
       }
 
-      dispatch('userDeleted', user);
+      if (onUserDeleted) {
+        onUserDeleted(user);
+      }
       isOpen = false;
 
     } catch (err) {
@@ -49,6 +55,17 @@
   function handleClose() {
     isOpen = false;
     error = '';
+  }
+
+  // Format role for display
+  function formatRole(role: string) {
+    switch (role) {
+      case 'admin': return m.users_role_admin();
+      case 'editor': return m.users_role_editor();
+      case 'author': return m.users_role_author();
+      case 'subscriber': return m.users_role_subscriber();
+      default: return role;
+    }
   }
 </script>
 
@@ -78,7 +95,7 @@
                 <div class="avatar placeholder">
                   <div class="bg-neutral text-neutral-content rounded-full w-12 h-12">
                     <span class="text-sm font-medium">
-                      {user.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
+                      {user.name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2)}
                     </span>
                   </div>
                 </div>
@@ -123,16 +140,3 @@
     <div class="modal-backdrop" onclick={handleClose}></div>
   </div>
 {/if}
-
-<script>
-  // Format role for display
-  function formatRole(role) {
-    switch (role) {
-      case 'admin': return m.users_role_admin();
-      case 'editor': return m.users_role_editor();
-      case 'author': return m.users_role_author();
-      case 'subscriber': return m.users_role_subscriber();
-      default: return role;
-    }
-  }
-</script>

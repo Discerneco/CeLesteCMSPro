@@ -50,7 +50,7 @@ export const load: PageServerLoad = async ({ url }) => {
       .offset(offset);
 
     // Format users data for display
-    const formattedUsers = userList.map(user => ({
+    const formattedUsers = userList.map((user: any) => ({
       ...user,
       name: `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username,
       status: user.active ? (user.verifiedEmail ? 'active' : 'pending') : 'inactive',

@@ -2,7 +2,7 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { db } from '$lib/server/db/index.js';
 import { users } from '$lib/server/db/schema.js';
-import { hash } from '@oslojs/crypto/sha256';
+import { sha256 } from '@oslojs/crypto/sha2';
 import { encodeBase64 } from '@oslojs/encoding';
 import { eq, count, desc, like, or } from 'drizzle-orm';
 import { createId } from '@paralleldrive/cuid2';
@@ -58,7 +58,7 @@ export const GET: RequestHandler = async ({ url }) => {
       .offset(offset);
 
     // Format users data
-    const formattedUsers = userList.map(user => ({
+    const formattedUsers = userList.map((user: any) => ({
       ...user,
       name: `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username,
       status: user.active ? (user.verifiedEmail ? 'active' : 'pending') : 'inactive',
@@ -123,7 +123,7 @@ export const POST: RequestHandler = async ({ request }) => {
     }
 
     // Hash password
-    const passwordHash = encodeBase64(hash(new TextEncoder().encode(data.password)));
+    const passwordHash = encodeBase64(await sha256(new TextEncoder().encode(data.password)));
 
     // Create user
     const newUser = await db

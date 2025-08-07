@@ -1,12 +1,19 @@
 <script lang="ts">
   import * as m from '$lib/paraglide/messages';
-  import { createEventDispatcher } from 'svelte';
 
-  export let isOpen = $state(false);
-  export let mode: 'add' | 'edit' = 'add';
-  export let user: any = null;
-
-  const dispatch = createEventDispatcher();
+  let { 
+    isOpen = $bindable(false),
+    mode = 'add', 
+    user = null,
+    onUserCreated,
+    onUserUpdated 
+  }: {
+    isOpen?: boolean;
+    mode?: 'add' | 'edit';
+    user?: any;
+    onUserCreated?: (user: any) => void;
+    onUserUpdated?: (user: any) => void;
+  } = $props();
 
   // Form state
   let formData = $state({
@@ -85,7 +92,8 @@
     return Object.keys(newErrors).length === 0;
   }
 
-  async function handleSubmit() {
+  async function handleSubmit(event: Event) {
+    event.preventDefault();
     if (!validateForm()) return;
 
     isLoading = true;
@@ -126,7 +134,11 @@
         return;
       }
 
-      dispatch(mode === 'add' ? 'userCreated' : 'userUpdated', result.user);
+      if (mode === 'add' && onUserCreated) {
+        onUserCreated(result.user);
+      } else if (mode === 'edit' && onUserUpdated) {
+        onUserUpdated(result.user);
+      }
       isOpen = false;
 
     } catch (error) {
@@ -150,7 +162,7 @@
         {mode === 'add' ? m.users_modal_add_title() : m.users_modal_edit_title()}
       </h3>
 
-      <form on:submit|preventDefault={handleSubmit}>
+      <form onsubmit={handleSubmit}>
         <!-- General Error -->
         {#if errors.general}
           <div class="alert alert-error mb-4">

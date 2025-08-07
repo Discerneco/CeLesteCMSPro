@@ -2,7 +2,7 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { db } from '$lib/server/db/index.js';
 import { users } from '$lib/server/db/schema.js';
-import { hash } from '@oslojs/crypto/sha256';
+import { sha256 } from '@oslojs/crypto/sha2';
 import { encodeBase64 } from '@oslojs/encoding';
 import { eq, or } from 'drizzle-orm';
 
@@ -127,7 +127,7 @@ export const PUT: RequestHandler = async ({ params, request }) => {
       if (data.password.length < 8) {
         return json({ error: 'Password must be at least 8 characters long' }, { status: 400 });
       }
-      updateData.passwordHash = encodeBase64(hash(new TextEncoder().encode(data.password)));
+      updateData.passwordHash = encodeBase64(await sha256(new TextEncoder().encode(data.password)));
     }
 
     // Update user
