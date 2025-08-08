@@ -137,6 +137,6 @@
         </button>
       </div>
     </div>
-    <div class="modal-backdrop" onclick={handleClose}></div>
+    <div class="modal-backdrop" onclick={handleClose} role="button" tabindex="0" onkeydown={(e) => e.key === 'Enter' && handleClose()}></div>
   </div>
 {/if}

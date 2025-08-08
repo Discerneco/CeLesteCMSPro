@@ -261,6 +261,7 @@
                       <button 
                         class="btn btn-ghost btn-xs" 
                         title={m.users_action_edit()}
+                        aria-label={m.users_action_edit()}
                         onclick={() => openEditModal(user)}
                       >
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -272,6 +273,7 @@
                         <button 
                           class="btn btn-ghost btn-xs text-info" 
                           title={m.users_action_send_invite()}
+                          aria-label={m.users_action_send_invite()}
                         >
                           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
@@ -283,6 +285,7 @@
                         <button 
                           class="btn btn-ghost btn-xs text-error" 
                           title={m.users_action_delete()}
+                          aria-label={m.users_action_delete()}
                           onclick={() => openDeleteModal(user)}
                         >
                           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -310,6 +313,7 @@
               <button 
                 class="join-item btn btn-sm"
                 class:btn-disabled={!data.pagination.hasPrevious}
+                aria-label="Previous page"
                 onclick={() => goToPage(data.pagination.page - 1)}
               >
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -333,6 +337,7 @@
               <button 
                 class="join-item btn btn-sm"
                 class:btn-disabled={!data.pagination.hasNext}
+                aria-label="Next page"
                 onclick={() => goToPage(data.pagination.page + 1)}
               >
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -400,14 +405,14 @@
                     </svg>
                   </div>
                   <div class="dropdown dropdown-end">
-                    <button class="btn btn-ghost btn-xs">
+                    <button class="btn btn-ghost btn-xs" aria-label="Administrator role options">
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
                       </svg>
                     </button>
                     <ul class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
-                      <li><a>Edit Role</a></li>
-                      <li><a>View Permissions</a></li>
+                      <li><a href="javascript:void(0)" role="menuitem">Edit Role</a></li>
+                      <li><a href="javascript:void(0)" role="menuitem">View Permissions</a></li>
                     </ul>
                   </div>
                 </div>
@@ -430,14 +435,14 @@
                     </svg>
                   </div>
                   <div class="dropdown dropdown-end">
-                    <button class="btn btn-ghost btn-xs">
+                    <button class="btn btn-ghost btn-xs" aria-label="Editor role options">
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
                       </svg>
                     </button>
                     <ul class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
-                      <li><a>Edit Role</a></li>
-                      <li><a>View Permissions</a></li>
+                      <li><a href="javascript:void(0)" role="menuitem">Edit Role</a></li>
+                      <li><a href="javascript:void(0)" role="menuitem">View Permissions</a></li>
                     </ul>
                   </div>
                 </div>
@@ -460,14 +465,14 @@
                     </svg>
                   </div>
                   <div class="dropdown dropdown-end">
-                    <button class="btn btn-ghost btn-xs">
+                    <button class="btn btn-ghost btn-xs" aria-label="Author role options">
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
                       </svg>
                     </button>
                     <ul class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
-                      <li><a>Edit Role</a></li>
-                      <li><a>View Permissions</a></li>
+                      <li><a href="javascript:void(0)" role="menuitem">Edit Role</a></li>
+                      <li><a href="javascript:void(0)" role="menuitem">View Permissions</a></li>
                     </ul>
                   </div>
                 </div>
@@ -490,14 +495,14 @@
                     </svg>
                   </div>
                   <div class="dropdown dropdown-end">
-                    <button class="btn btn-ghost btn-xs">
+                    <button class="btn btn-ghost btn-xs" aria-label="Subscriber role options">
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
                       </svg>
                     </button>
                     <ul class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
-                      <li><a>Edit Role</a></li>
-                      <li><a>View Permissions</a></li>
+                      <li><a href="javascript:void(0)" role="menuitem">Edit Role</a></li>
+                      <li><a href="javascript:void(0)" role="menuitem">View Permissions</a></li>
                     </ul>
                   </div>
                 </div>

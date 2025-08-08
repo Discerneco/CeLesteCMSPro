@@ -251,10 +251,11 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
           <!-- Site Title -->
           <div class="form-control">
-            <label class="label">
+            <label class="label" for="siteTitle">
               <span class="label-text">{m.settings_general_site_title()}</span>
             </label>
             <input 
+              id="siteTitle"
               type="text" 
               bind:value={siteTitle}
               class="input w-full" 
@@ -264,10 +265,10 @@
           
           <!-- Default Language -->
           <div class="form-control">
-            <label class="label">
+            <label class="label" for="defaultLanguage">
               <span class="label-text">{m.settings_general_language()}</span>
             </label>
-            <select bind:value={defaultLanguage} class="select w-full">
+            <select id="defaultLanguage" bind:value={defaultLanguage} class="select w-full">
               <option value="en">English</option>
               <option value="pt-br">Português (Brasil)</option>
             </select>
@@ -276,10 +277,11 @@
         
         <!-- Site Description -->
         <div class="form-control mt-6">
-          <label class="label">
+          <label class="label" for="siteDescription">
             <span class="label-text">{m.settings_general_site_description()}</span>
           </label>
           <textarea 
+            id="siteDescription"
             bind:value={siteDescription}
             class="textarea w-full" 
             rows="3"
@@ -289,10 +291,10 @@
         
         <!-- Timezone -->
         <div class="form-control mt-6">
-          <label class="label">
+          <label class="label" for="timezone">
             <span class="label-text">{m.settings_general_timezone()}</span>
           </label>
-          <select bind:value={timezone} class="select w-full max-w-xs">
+          <select id="timezone" bind:value={timezone} class="select w-full max-w-xs">
             <option value="UTC">UTC</option>
             <option value="America/New_York">Eastern Time (ET)</option>
             <option value="America/Chicago">Central Time (CT)</option>
@@ -337,11 +339,12 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
           <!-- Primary Color -->
           <div class="form-control">
-            <label class="label">
+            <label class="label" for="primaryColor">
               <span class="label-text">{m.settings_appearance_primary_color()}</span>
             </label>
             <div class="flex gap-2">
               <input 
+                id="primaryColor"
                 type="color" 
                 bind:value={primaryColor}
                 class="w-12 h-12 rounded-lg border border-base-300 cursor-pointer"
@@ -357,11 +360,12 @@
           
           <!-- Secondary Color -->
           <div class="form-control">
-            <label class="label">
+            <label class="label" for="secondaryColor">
               <span class="label-text">{m.settings_appearance_secondary_color()}</span>
             </label>
             <div class="flex gap-2">
               <input 
+                id="secondaryColor"
                 type="color" 
                 bind:value={secondaryColor}
                 class="w-12 h-12 rounded-lg border border-base-300 cursor-pointer"
@@ -377,11 +381,12 @@
           
           <!-- Accent Color -->
           <div class="form-control">
-            <label class="label">
+            <label class="label" for="accentColor">
               <span class="label-text">{m.settings_appearance_accent_color()}</span>
             </label>
             <div class="flex gap-2">
               <input 
+                id="accentColor"
                 type="color" 
                 bind:value={accentColor}
                 class="w-12 h-12 rounded-lg border border-base-300 cursor-pointer"
@@ -485,9 +490,9 @@
         
         <!-- Time Period Selector -->
         <div class="form-control mb-6">
-          <label class="label">
+          <div class="label">
             <span class="label-text font-medium">{m.settings_statistics_time_period()}</span>
-          </label>
+          </div>
           <div class="join">
             <button 
               class="join-item btn btn-sm {selectedTimeframe === 'total' ? 'btn-active' : 'btn-outline'}"

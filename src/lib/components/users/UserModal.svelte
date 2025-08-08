@@ -176,10 +176,11 @@
         <!-- Name Fields -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <div class="form-control">
-            <label class="label">
+            <label class="label" for="firstName">
               <span class="label-text">{m.users_form_first_name()}</span>
             </label>
             <input 
+              id="firstName"
               type="text" 
               class="input input-bordered"
               class:input-error={errors.firstName}
@@ -187,17 +188,18 @@
               bind:value={formData.firstName}
             />
             {#if errors.firstName}
-              <label class="label">
+              <div class="label">
                 <span class="label-text-alt text-error">{errors.firstName}</span>
-              </label>
+              </div>
             {/if}
           </div>
 
           <div class="form-control">
-            <label class="label">
+            <label class="label" for="lastName">
               <span class="label-text">{m.users_form_last_name()}</span>
             </label>
             <input 
+              id="lastName"
               type="text" 
               class="input input-bordered"
               class:input-error={errors.lastName}
@@ -205,9 +207,9 @@
               bind:value={formData.lastName}
             />
             {#if errors.lastName}
-              <label class="label">
+              <div class="label">
                 <span class="label-text-alt text-error">{errors.lastName}</span>
-              </label>
+              </div>
             {/if}
           </div>
         </div>
@@ -215,11 +217,12 @@
         <!-- Email and Username -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <div class="form-control">
-            <label class="label">
+            <label class="label" for="email">
               <span class="label-text">{m.users_form_email()}</span>
               <span class="label-text-alt text-error">*</span>
             </label>
             <input 
+              id="email"
               type="email" 
               class="input input-bordered"
               class:input-error={errors.email}
@@ -228,18 +231,19 @@
               required
             />
             {#if errors.email}
-              <label class="label">
+              <div class="label">
                 <span class="label-text-alt text-error">{errors.email}</span>
-              </label>
+              </div>
             {/if}
           </div>
 
           <div class="form-control">
-            <label class="label">
+            <label class="label" for="username">
               <span class="label-text">{m.users_form_username()}</span>
               <span class="label-text-alt text-error">*</span>
             </label>
             <input 
+              id="username"
               type="text" 
               class="input input-bordered"
               class:input-error={errors.username}
@@ -248,9 +252,9 @@
               required
             />
             {#if errors.username}
-              <label class="label">
+              <div class="label">
                 <span class="label-text-alt text-error">{errors.username}</span>
-              </label>
+              </div>
             {/if}
           </div>
         </div>
@@ -258,7 +262,7 @@
         <!-- Password Fields -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <div class="form-control">
-            <label class="label">
+            <label class="label" for="password">
               <span class="label-text">{m.users_form_password()}</span>
               {#if mode === 'add'}
                 <span class="label-text-alt text-error">*</span>
@@ -267,6 +271,7 @@
               {/if}
             </label>
             <input 
+              id="password"
               type="password" 
               class="input input-bordered"
               class:input-error={errors.password}
@@ -275,20 +280,21 @@
               required={mode === 'add'}
             />
             {#if errors.password}
-              <label class="label">
+              <div class="label">
                 <span class="label-text-alt text-error">{errors.password}</span>
-              </label>
+              </div>
             {/if}
           </div>
 
           <div class="form-control">
-            <label class="label">
+            <label class="label" for="confirmPassword">
               <span class="label-text">{m.users_form_confirm_password()}</span>
               {#if mode === 'add'}
                 <span class="label-text-alt text-error">*</span>
               {/if}
             </label>
             <input 
+              id="confirmPassword"
               type="password" 
               class="input input-bordered"
               class:input-error={errors.confirmPassword}
@@ -297,9 +303,9 @@
               required={mode === 'add'}
             />
             {#if errors.confirmPassword}
-              <label class="label">
+              <div class="label">
                 <span class="label-text-alt text-error">{errors.confirmPassword}</span>
-              </label>
+              </div>
             {/if}
           </div>
         </div>
@@ -307,10 +313,10 @@
         <!-- Role and Status -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <div class="form-control">
-            <label class="label">
+            <label class="label" for="role">
               <span class="label-text">{m.users_form_role()}</span>
             </label>
-            <select class="select select-bordered" bind:value={formData.role}>
+            <select id="role" class="select select-bordered" bind:value={formData.role}>
               <option value="subscriber">{m.users_role_subscriber()}</option>
               <option value="author">{m.users_role_author()}</option>
               <option value="editor">{m.users_role_editor()}</option>
@@ -319,9 +325,10 @@
           </div>
 
           <div class="form-control">
-            <label class="label cursor-pointer">
+            <label class="label cursor-pointer" for="active">
               <span class="label-text">{m.users_form_active()}</span>
               <input 
+                id="active"
                 type="checkbox" 
                 class="toggle toggle-primary" 
                 bind:checked={formData.active}
@@ -330,9 +337,10 @@
           </div>
 
           <div class="form-control">
-            <label class="label cursor-pointer">
+            <label class="label cursor-pointer" for="verified">
               <span class="label-text">{m.users_form_verified()}</span>
               <input 
+                id="verified"
                 type="checkbox" 
                 class="toggle toggle-success" 
                 bind:checked={formData.verifiedEmail}
@@ -366,6 +374,6 @@
         </div>
       </form>
     </div>
-    <div class="modal-backdrop" onclick={handleClose}></div>
+    <div class="modal-backdrop" onclick={handleClose} role="button" tabindex="0" onkeydown={(e) => e.key === 'Enter' && handleClose()}></div>
   </div>
 {/if}
