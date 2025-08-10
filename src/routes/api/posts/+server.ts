@@ -70,8 +70,9 @@ export const POST: RequestHandler = async (event) => {
   
   try {
     // Check if user is authenticated
+    console.log('User authentication status:', event.locals.user);
     if (!event.locals.user?.isAuthenticated) {
-      return json({ error: 'Authentication required' }, { status: 401 });
+      return json({ error: 'Authentication required. Please log in.' }, { status: 401 });
     }
 
     // Parse the request body
@@ -126,12 +127,24 @@ export const POST: RequestHandler = async (event) => {
 
   } catch (error) {
     console.error('Error creating post:', error);
+    console.error('Post data that failed:', postData);
     
     // Handle unique constraint violations (duplicate slug)
     if (error instanceof Error && error.message.includes('UNIQUE constraint failed')) {
       return json({ error: 'A post with this slug already exists' }, { status: 409 });
     }
     
-    return json({ error: 'Failed to create post' }, { status: 500 });
+    // Handle foreign key constraint violations
+    if (error instanceof Error && error.message.includes('FOREIGN KEY constraint failed')) {
+      return json({ error: 'Invalid author or content type reference' }, { status: 400 });
+    }
+    
+    // Return more detailed error information
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    return json({ 
+      error: 'Failed to create post', 
+      details: errorMessage,
+      debug: process.env.NODE_ENV === 'development' ? error : undefined
+    }, { status: 500 });
   }
 };

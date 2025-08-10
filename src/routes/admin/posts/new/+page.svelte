@@ -100,9 +100,16 @@
         // Success - redirect to posts list
         goto('/admin/posts');
       } else {
-        const error = await response.text();
-        console.error('Failed to save post:', error);
-        alert('Failed to save post. Please try again.');
+        try {
+          const errorData = await response.json();
+          console.error('Failed to save post:', errorData);
+          const errorMsg = errorData.details || errorData.error || 'Unknown error';
+          alert(`Failed to save post: ${errorMsg}`);
+        } catch (parseError) {
+          const errorText = await response.text();
+          console.error('Failed to save post (raw):', errorText);
+          alert(`Failed to save post. Status: ${response.status}`);
+        }
       }
     } catch (err) {
       console.error('Error saving post:', err);
