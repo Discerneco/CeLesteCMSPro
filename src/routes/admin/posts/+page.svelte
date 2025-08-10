@@ -127,7 +127,13 @@
       <div class="text-center">{m.posts_table_status()}</div>
       <div class="text-center">{m.posts_table_date()}</div>
       <div class="text-center">{m.posts_table_author()}</div>
-      <div class="text-right">{m.posts_table_actions()}</div>
+      <div class="flex justify-end">
+        <div class="flex items-center gap-1">
+          <div class="w-8 h-4"></div> <!-- Spacer for first icon -->
+          <div class="w-8 h-4 flex justify-center text-xs font-medium">{m.posts_table_actions()}</div> <!-- Text above middle icon -->
+          <div class="w-8 h-4"></div> <!-- Spacer for third icon -->
+        </div>
+      </div>
     </div>
   </div>
   
