@@ -93,6 +93,7 @@
 	"posts_status_published": "Publicado",
 	"posts_status_draft": "Rascunho",
 	"posts_status_archived": "Arquivado",
+	"posts_status_scheduled": "Agendado",
 	"posts_filter_all": "Todos",
 	"posts_filter_published": "Publicados",
 	"posts_filter_draft": "Rascunhos",

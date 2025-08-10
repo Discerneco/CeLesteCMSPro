@@ -93,6 +93,7 @@
 	"posts_status_published": "Published",
 	"posts_status_draft": "Draft",
 	"posts_status_archived": "Archived",
+	"posts_status_scheduled": "Scheduled",
 	"posts_filter_all": "All",
 	"posts_filter_published": "Published",
 	"posts_filter_draft": "Draft",

@@ -61,6 +61,8 @@
         return 'cms-status-draft';
       case 'archived':
         return 'cms-status-archived';
+      case 'scheduled':
+        return 'cms-status-scheduled';
       default:
         return 'cms-status-draft';
     }
@@ -74,6 +76,8 @@
         return m.posts_status_draft();
       case 'archived':
         return m.posts_status_archived();
+      case 'scheduled':
+        return m.posts_status_scheduled();
       default:
         return status;
     }
@@ -85,7 +89,7 @@
 <div class="cms-page-header">
   <div>
     <h1 class="cms-page-title">{m.posts_title()}</h1>
-    <p class="cms-page-subtitle">{m.posts_subtitle()}</p>
+    <p class="cms-page-subtitle">{m.posts_showing({ count: data.posts?.length || 0 })}</p>
   </div>
   <button 
     onclick={handleNewPost}
@@ -307,29 +311,25 @@
   </div>
 </div>
 
-<!-- Pagination and Stats -->
-<div class="flex items-center justify-between mt-6">
-  <div class="text-sm text-base-content/60">
-    {m.posts_showing({ count: data.posts?.length || 0 })}
+{#if data.posts && data.posts.length > 0}
+<!-- Pagination -->
+<div class="flex justify-end mt-6">
+  <div class="join">
+    <button 
+      class="join-item btn btn-sm"
+      disabled
+    >
+      <ChevronLeft class="h-4 w-4" />
+    </button>
+    <span class="join-item btn btn-sm text-sm text-base-content/60 cursor-default">
+      Page 1 of 1
+    </span>
+    <button 
+      class="join-item btn btn-sm"
+      disabled
+    >
+      <ChevronRight class="h-4 w-4" />
+    </button>
   </div>
-  
-  {#if data.posts && data.posts.length > 0}
-    <div class="join">
-      <button 
-        class="join-item btn btn-sm"
-        disabled
-      >
-        <ChevronLeft class="h-4 w-4" />
-      </button>
-      <span class="join-item btn btn-sm text-sm text-base-content/60 cursor-default">
-        Page 1 of 1
-      </span>
-      <button 
-        class="join-item btn btn-sm"
-        disabled
-      >
-        <ChevronRight class="h-4 w-4" />
-      </button>
-    </div>
-  {/if}
 </div>
+{/if}
