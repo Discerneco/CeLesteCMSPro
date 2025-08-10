@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Users, Shield, Search, Filter } from '@lucide/svelte';
+  import { Users, Shield, Search, Filter, Eye, Trash2, Edit } from '@lucide/svelte';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
   import * as m from '$lib/paraglide/messages';
@@ -50,6 +50,11 @@
 
   function openDeleteModal(user: any) {
     deleteModal = { isOpen: true, user };
+  }
+
+  function handleView(user: any) {
+    // Navigate to user detail view
+    goto(`/admin/users/${user.id}`);
   }
 
   function handleUserCreated(user: any) {
@@ -278,14 +283,20 @@
               <div>
                 <div class="flex items-center gap-1 justify-end">
                   <button 
-                    class="btn btn-ghost btn-xs" 
+                    onclick={() => openEditModal(user)}
+                    class="cms-btn-icon"
                     title={m.users_action_edit()}
                     aria-label={m.users_action_edit()}
-                    onclick={() => openEditModal(user)}
                   >
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                    </svg>
+                    <Edit class="h-4 w-4" />
+                  </button>
+                  <button 
+                    onclick={() => handleView(user)}
+                    class="cms-btn-icon"
+                    title={m.users_action_view()}
+                    aria-label={m.users_action_view()}
+                  >
+                    <Eye class="h-4 w-4" />
                   </button>
                   
                   {#if user.status === 'pending'}
@@ -300,16 +311,14 @@
                     </button>
                   {/if}
                   
-                  {#if user.role !== 'admin'}
+                  {#if user.id !== data.currentUser?.id}
                     <button 
-                      class="btn btn-ghost btn-xs text-error" 
+                      onclick={() => openDeleteModal(user)}
+                      class="cms-btn-icon-danger"
                       title={m.users_action_delete()}
                       aria-label={m.users_action_delete()}
-                      onclick={() => openDeleteModal(user)}
                     >
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                      </svg>
+                      <Trash2 class="h-4 w-4" />
                     </button>
                   {/if}
                 </div>

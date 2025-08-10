@@ -4,6 +4,7 @@ import { users } from '$lib/server/db/schema';
 import { like } from 'drizzle-orm';
 
 export const load: PageServerLoad = async (event) => {
+  const { locals } = event;
   const db = getDbFromEvent(event);
   const url = event.url;
   
@@ -48,6 +49,7 @@ export const load: PageServerLoad = async (event) => {
     
     return {
       users: paginatedUsers,
+      currentUser: locals.user,
       searchQuery: searchQuery,
       pagination: {
         page: currentPage,
@@ -63,6 +65,7 @@ export const load: PageServerLoad = async (event) => {
     // Return empty state with proper pagination structure
     return {
       users: [],
+      currentUser: locals.user,
       searchQuery: searchQuery,
       pagination: {
         page: 1,
