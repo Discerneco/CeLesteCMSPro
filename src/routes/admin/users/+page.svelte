@@ -135,13 +135,12 @@
   }
 </script>
 
-<div class="container mx-auto p-6">
-  <!-- Header -->
-  <div class="mb-8 flex items-center justify-between">
-    <div>
-      <h1 class="text-3xl font-bold text-base-content">{m.users_title()}</h1>
-      <p class="text-base-content/70 mt-2">{m.users_subtitle()}</p>
-    </div>
+<!-- Page Header -->
+<div class="cms-page-header">
+  <div>
+    <h1 class="cms-page-title">{m.users_title()}</h1>
+    <p class="cms-page-subtitle">{m.users_subtitle()}</p>
+  </div>
     <button class="btn btn-primary" onclick={openAddModal}>
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
@@ -151,18 +150,16 @@
   </div>
 
   <!-- Tabs -->
-  <div class="tabs tabs-boxed mb-6">
+  <div class="flex border-b border-base-200 mb-6">
     <button 
-      class="tab gap-2"
-      class:tab-active={activeTab === 'users'}
+      class="flex items-center gap-2 px-4 py-2 border-b-[3px] transition-colors duration-150 {activeTab === 'users' ? 'border-primary text-base-content' : 'border-transparent text-base-content/60 hover:text-base-content/80'}"
       onclick={() => activeTab = 'users'}
     >
       <Users class="h-4 w-4" />
       {m.users_title()}
     </button>
     <button 
-      class="tab gap-2"
-      class:tab-active={activeTab === 'roles'}
+      class="flex items-center gap-2 px-4 py-2 border-b-[3px] transition-colors duration-150 {activeTab === 'roles' ? 'border-primary text-base-content' : 'border-transparent text-base-content/60 hover:text-base-content/80'}"
       onclick={() => activeTab = 'roles'}
     >
       <Shield class="h-4 w-4" />
@@ -690,7 +687,6 @@
       </div>
     </div>
   {/if}
-</div>
 
 <!-- Modals -->
 <UserModal 
