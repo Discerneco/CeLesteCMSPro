@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Users, Shield } from '@lucide/svelte';
+  import { Users, Shield, Search, Filter } from '@lucide/svelte';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
   import * as m from '$lib/paraglide/messages';
@@ -129,7 +129,7 @@
       case 'admin': return 'badge-primary';
       case 'editor': return 'badge-secondary';
       case 'author': return 'badge-accent';
-      case 'subscriber': return 'badge-outline';
+      case 'subscriber': return 'badge-neutral';
       default: return 'badge-neutral';
     }
   }
@@ -169,37 +169,32 @@
 
   <!-- Users Tab Content -->
   {#if activeTab === 'users'}
-    <!-- Actions Bar -->
-    <div class="flex flex-col sm:flex-row gap-4 mb-6">
-    <div class="flex-1">
-      <div class="relative">
-        <input 
-          type="text" 
-          placeholder={m.users_search_placeholder()}
-          class="input input-bordered w-full pl-10"
-          bind:value={searchQuery}
-          oninput={handleSearch}
-        />
-        <svg class="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-base-content/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-        </svg>
+  <!-- Users Table -->
+  <div class="cms-table-container">
+    <!-- Search and Filter Bar -->
+    <div class="px-6 py-4 border-b border-base-200">
+      <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+        <!-- Search -->
+        <div class="cms-search-container">
+          <Search class="cms-search-icon" />
+          <input
+            type="text"
+            placeholder={m.users_search_placeholder()}
+            class="cms-search-input"
+            bind:value={searchQuery}
+            oninput={handleSearch}
+          />
+        </div>
+        
+        <!-- Filter -->
+        <div class="dropdown dropdown-end">
+          <div tabindex="0" role="button" class="cms-btn-utility">
+            <Filter class="h-4 w-4" />
+            {m.users_filter()}
+          </div>
+        </div>
       </div>
     </div>
-    
-    <div class="flex gap-2">
-      <button class="btn btn-outline">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.414A1 1 0 013 6.707V4z"></path>
-        </svg>
-        {m.users_filter()}
-      </button>
-      
-    </div>
-  </div>
-
-  <!-- Users Table -->
-  <div class="card bg-base-100 border border-base-300">
-    <div class="card-body p-0">
       {#if data.users.length > 0}
         <div class="overflow-x-auto">
           <table class="table table-zebra">
@@ -239,12 +234,12 @@
                     {/if}
                   </td>
                   <td>
-                    <span class="badge {getRoleBadgeClass(user.role)} badge-sm">
+                    <span class="badge badge-soft {getRoleBadgeClass(user.role)} badge-sm">
                       {formatRole(user.role)}
                     </span>
                   </td>
                   <td>
-                    <span class="badge {getStatusBadgeClass(user.status)} badge-sm">
+                    <span class="badge badge-soft {getStatusBadgeClass(user.status)} badge-sm">
                       {formatStatus(user.status)}
                     </span>
                   </td>
@@ -372,7 +367,6 @@
           {/if}
         </div>
       {/if}
-    </div>
   </div>
   {/if}
 
