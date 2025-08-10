@@ -260,6 +260,8 @@
 	"users_modal_form_permissions": "Permissions",
 	"users_modal_form_save": "Save User",
 	"users_modal_form_cancel": "Cancel",
+	"users_modal_form_active": "Active",
+	"users_modal_form_verified": "Email Verified",
 	"users_modal_form_first_name_placeholder": "Enter first name",
 	"users_modal_form_last_name_placeholder": "Enter last name",
 	"users_modal_form_email_placeholder": "Enter email address",
@@ -296,5 +298,14 @@
 	"users_table_created": "CREATED",
 	"users_never_logged_in": "Never",
 	"users_action_send_invite": "Send invite",
-	"users_page_info": "Page {current} of {total}"
+	"users_page_info": "Page {current} of {total}",
+	"users_details_title": "User Details",
+	"users_details_contact": "Contact Information",
+	"users_details_account": "Account Information", 
+	"users_details_activity": "Activity Information",
+	"users_details_full_name": "Full Name",
+	"users_details_account_type": "Account Type",
+	"users_details_verified_account": "Verified Account",
+	"users_details_unverified_account": "Unverified Account",
+	"users_details_close": "Close"
 }

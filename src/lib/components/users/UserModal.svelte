@@ -159,7 +159,7 @@
   <div class="modal modal-open">
     <div class="modal-box w-11/12 max-w-2xl">
       <h3 class="font-bold text-lg mb-6">
-        {mode === 'add' ? m.users_modal_add_title() : m.users_modal_edit_title()}
+        {mode === 'add' ? m.users_modal_new_title() : m.users_modal_edit_title()}
       </h3>
 
       <form onsubmit={handleSubmit}>
@@ -177,14 +177,14 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <div class="form-control">
             <label class="label" for="firstName">
-              <span class="label-text">{m.users_form_first_name()}</span>
+              <span class="label-text">{m.users_modal_form_first_name()}</span>
             </label>
             <input 
               id="firstName"
               type="text" 
               class="input input-bordered"
               class:input-error={errors.firstName}
-              placeholder={m.users_form_first_name_placeholder()}
+              placeholder={m.users_modal_form_first_name_placeholder()}
               bind:value={formData.firstName}
             />
             {#if errors.firstName}
@@ -196,14 +196,14 @@
 
           <div class="form-control">
             <label class="label" for="lastName">
-              <span class="label-text">{m.users_form_last_name()}</span>
+              <span class="label-text">{m.users_modal_form_last_name()}</span>
             </label>
             <input 
               id="lastName"
               type="text" 
               class="input input-bordered"
               class:input-error={errors.lastName}
-              placeholder={m.users_form_last_name_placeholder()}
+              placeholder={m.users_modal_form_last_name_placeholder()}
               bind:value={formData.lastName}
             />
             {#if errors.lastName}
@@ -218,7 +218,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <div class="form-control">
             <label class="label" for="email">
-              <span class="label-text">{m.users_form_email()}</span>
+              <span class="label-text">{m.users_modal_form_email()}</span>
               <span class="label-text-alt text-error">*</span>
             </label>
             <input 
@@ -226,7 +226,7 @@
               type="email" 
               class="input input-bordered"
               class:input-error={errors.email}
-              placeholder={m.users_form_email_placeholder()}
+              placeholder={m.users_modal_form_email_placeholder()}
               bind:value={formData.email}
               required
             />
@@ -239,7 +239,7 @@
 
           <div class="form-control">
             <label class="label" for="username">
-              <span class="label-text">{m.users_form_username()}</span>
+              <span class="label-text">{m.users_modal_form_username()}</span>
               <span class="label-text-alt text-error">*</span>
             </label>
             <input 
@@ -247,7 +247,7 @@
               type="text" 
               class="input input-bordered"
               class:input-error={errors.username}
-              placeholder={m.users_form_username_placeholder()}
+              placeholder={m.users_modal_form_username_placeholder()}
               bind:value={formData.username}
               required
             />
@@ -263,7 +263,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <div class="form-control">
             <label class="label" for="password">
-              <span class="label-text">{m.users_form_password()}</span>
+              <span class="label-text">{m.users_modal_form_password()}</span>
               {#if mode === 'add'}
                 <span class="label-text-alt text-error">*</span>
               {:else}
@@ -275,7 +275,7 @@
               type="password" 
               class="input input-bordered"
               class:input-error={errors.password}
-              placeholder={m.users_form_password_placeholder()}
+              placeholder={m.users_modal_form_password_placeholder()}
               bind:value={formData.password}
               required={mode === 'add'}
             />
@@ -288,7 +288,7 @@
 
           <div class="form-control">
             <label class="label" for="confirmPassword">
-              <span class="label-text">{m.users_form_confirm_password()}</span>
+              <span class="label-text">{m.users_modal_form_confirm_password()}</span>
               {#if mode === 'add'}
                 <span class="label-text-alt text-error">*</span>
               {/if}
@@ -298,7 +298,7 @@
               type="password" 
               class="input input-bordered"
               class:input-error={errors.confirmPassword}
-              placeholder={m.users_form_confirm_password_placeholder()}
+              placeholder={m.users_modal_form_confirm_password_placeholder()}
               bind:value={formData.confirmPassword}
               required={mode === 'add'}
             />
@@ -314,7 +314,7 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <div class="form-control">
             <label class="label" for="role">
-              <span class="label-text">{m.users_form_role()}</span>
+              <span class="label-text">{m.users_modal_form_role()}</span>
             </label>
             <select id="role" class="select select-bordered" bind:value={formData.role}>
               <option value="subscriber">{m.users_role_subscriber()}</option>
@@ -326,7 +326,7 @@
 
           <div class="form-control">
             <label class="label cursor-pointer" for="active">
-              <span class="label-text">{m.users_form_active()}</span>
+              <span class="label-text">{m.users_modal_form_active()}</span>
               <input 
                 id="active"
                 type="checkbox" 
@@ -338,7 +338,7 @@
 
           <div class="form-control">
             <label class="label cursor-pointer" for="verified">
-              <span class="label-text">{m.users_form_verified()}</span>
+              <span class="label-text">{m.users_modal_form_verified()}</span>
               <input 
                 id="verified"
                 type="checkbox" 
@@ -357,7 +357,7 @@
             onclick={handleClose}
             disabled={isLoading}
           >
-            {m.users_form_cancel()}
+            {m.users_modal_form_cancel()}
           </button>
           <button 
             type="submit" 
@@ -366,9 +366,9 @@
           >
             {#if isLoading}
               <span class="loading loading-spinner loading-sm"></span>
-              {m.users_form_saving()}
+              Saving...
             {:else}
-              {m.users_form_save()}
+              {m.users_modal_form_save()}
             {/if}
           </button>
         </div>

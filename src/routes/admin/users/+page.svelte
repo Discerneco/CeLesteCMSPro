@@ -1,11 +1,12 @@
 <script lang="ts">
-  import { Users, Shield, Search, Filter, Eye, Trash2, Edit } from '@lucide/svelte';
+  import { Users, Shield, Search, Filter, Eye, Trash2, Edit, Plus } from '@lucide/svelte';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
   import * as m from '$lib/paraglide/messages';
   import type { PageData } from './$types';
   import UserModal from '$lib/components/users/UserModal.svelte';
   import DeleteUserModal from '$lib/components/users/DeleteUserModal.svelte';
+  import UserDetailsModal from '$lib/components/users/UserDetailsModal.svelte';
 
   let { data }: { data: PageData } = $props();
 
@@ -21,6 +22,11 @@
   });
   
   let deleteModal = $state({
+    isOpen: false,
+    user: null as any
+  });
+
+  let viewModal = $state({
     isOpen: false,
     user: null as any
   });
@@ -52,9 +58,12 @@
     deleteModal = { isOpen: true, user };
   }
 
+  function openViewModal(user: any) {
+    viewModal = { isOpen: true, user };
+  }
+
   function handleView(user: any) {
-    // Navigate to user detail view
-    goto(`/admin/users/${user.id}`);
+    openViewModal(user);
   }
 
   function handleUserCreated(user: any) {
@@ -146,13 +155,11 @@
     <h1 class="cms-page-title">{m.users_title()}</h1>
     <p class="cms-page-subtitle">{m.users_subtitle()}</p>
   </div>
-    <button class="btn btn-primary" onclick={openAddModal}>
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-      </svg>
-      {m.users_add_user()}
-    </button>
-  </div>
+  <button class="btn btn-primary gap-2" onclick={openAddModal}>
+    <Plus class="h-4 w-4" />
+    {m.users_add_user()}
+  </button>
+</div>
 
   <!-- Tabs -->
   <div class="flex border-b border-base-200 mb-6">
@@ -438,8 +445,8 @@
                       </svg>
                     </button>
                     <ul class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
-                      <li><a href="javascript:void(0)" role="menuitem">Edit Role</a></li>
-                      <li><a href="javascript:void(0)" role="menuitem">View Permissions</a></li>
+                      <li><button onclick={(e) => e.preventDefault()} role="menuitem" class="w-full text-left">Edit Role</button></li>
+                      <li><button onclick={(e) => e.preventDefault()} role="menuitem" class="w-full text-left">View Permissions</button></li>
                     </ul>
                   </div>
                 </div>
@@ -468,8 +475,8 @@
                       </svg>
                     </button>
                     <ul class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
-                      <li><a href="javascript:void(0)" role="menuitem">Edit Role</a></li>
-                      <li><a href="javascript:void(0)" role="menuitem">View Permissions</a></li>
+                      <li><button onclick={(e) => e.preventDefault()} role="menuitem" class="w-full text-left">Edit Role</button></li>
+                      <li><button onclick={(e) => e.preventDefault()} role="menuitem" class="w-full text-left">View Permissions</button></li>
                     </ul>
                   </div>
                 </div>
@@ -498,8 +505,8 @@
                       </svg>
                     </button>
                     <ul class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
-                      <li><a href="javascript:void(0)" role="menuitem">Edit Role</a></li>
-                      <li><a href="javascript:void(0)" role="menuitem">View Permissions</a></li>
+                      <li><button onclick={(e) => e.preventDefault()} role="menuitem" class="w-full text-left">Edit Role</button></li>
+                      <li><button onclick={(e) => e.preventDefault()} role="menuitem" class="w-full text-left">View Permissions</button></li>
                     </ul>
                   </div>
                 </div>
@@ -528,8 +535,8 @@
                       </svg>
                     </button>
                     <ul class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
-                      <li><a href="javascript:void(0)" role="menuitem">Edit Role</a></li>
-                      <li><a href="javascript:void(0)" role="menuitem">View Permissions</a></li>
+                      <li><button onclick={(e) => e.preventDefault()} role="menuitem" class="w-full text-left">Edit Role</button></li>
+                      <li><button onclick={(e) => e.preventDefault()} role="menuitem" class="w-full text-left">View Permissions</button></li>
                     </ul>
                   </div>
                 </div>
@@ -726,6 +733,13 @@
   bind:isOpen={deleteModal.isOpen}
   user={deleteModal.user}
   onUserDeleted={handleUserDeleted}
+/>
+
+<UserDetailsModal 
+  bind:isOpen={viewModal.isOpen}
+  user={viewModal.user}
+  onEdit={openEditModal}
+  onDelete={openDeleteModal}
 />
 
 <!-- Toast Notification -->

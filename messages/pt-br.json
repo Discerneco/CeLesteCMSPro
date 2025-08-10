@@ -260,6 +260,8 @@
 	"users_modal_form_permissions": "Permissões",
 	"users_modal_form_save": "Salvar Usuário",
 	"users_modal_form_cancel": "Cancelar",
+	"users_modal_form_active": "Ativo",
+	"users_modal_form_verified": "Email Verificado",
 	"users_modal_form_first_name_placeholder": "Digite o primeiro nome",
 	"users_modal_form_last_name_placeholder": "Digite o sobrenome",
 	"users_modal_form_email_placeholder": "Digite o endereço de email",
@@ -296,5 +298,14 @@
 	"users_table_created": "CRIADO",
 	"users_never_logged_in": "Nunca",
 	"users_action_send_invite": "Enviar convite",
-	"users_page_info": "Página {current} de {total}"
+	"users_page_info": "Página {current} de {total}",
+	"users_details_title": "Detalhes do Usuário",
+	"users_details_contact": "Informações de Contato",
+	"users_details_account": "Informações da Conta", 
+	"users_details_activity": "Informações de Atividade",
+	"users_details_full_name": "Nome Completo",
+	"users_details_account_type": "Tipo de Conta",
+	"users_details_verified_account": "Conta Verificada",
+	"users_details_unverified_account": "Conta Não Verificada",
+	"users_details_close": "Fechar"
 }
