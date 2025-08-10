@@ -1,0 +1,103 @@
+# CeLesteCMS Pro - Restic Backup Exclusions
+# This file defines patterns for files and directories to exclude from Restic backups
+# Restic uses the same pattern syntax as .gitignore
+
+# =============================================================================
+# NODE.JS & PACKAGE MANAGERS
+# =============================================================================
+node_modules/
+.pnpm/
+.yarn/
+.npm/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+package-lock.json
+yarn.lock
+
+# =============================================================================
+# BUILD OUTPUTS & GENERATED FILES
+# =============================================================================
+.svelte-kit/
+build/
+dist/
+.output/
+.nuxt/
+.next/
+.vite/
+vite.config.js.timestamp-*
+
+# =============================================================================
+# DEVELOPMENT TOOLS & CACHE
+# =============================================================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# =============================================================================
+# LOGS & TEMPORARY FILES
+# =============================================================================
+*.log
+*.log.*
+logs/
+temp/
+tmp/
+*.tmp
+*.temp
+.cache/
+.parcel-cache/
+
+# =============================================================================
+# ENVIRONMENT & SECRETS
+# =============================================================================
+.env
+.env.*
+!.env.example
+secrets/
+*.key
+*.pem
+*.p12
+*.crt
+
+# =============================================================================
+# TESTING & COVERAGE
+# =============================================================================
+coverage/
+.nyc_output/
+.coverage/
+*.lcov
+
+# =============================================================================
+# BACKUP FILES (avoid recursive backups)
+# =============================================================================
+*.backup
+*.bak
+*~
+*.working-backup*
+local.db.working-backup*
+
+# =============================================================================
+# WHAT WE DO WANT TO BACKUP (these are INCLUDED):
+# =============================================================================
+# ✅ src/ - All source code
+# ✅ static/uploads/ - User uploaded media
+# ✅ messages/ - i18n translation files
+# ✅ drizzle/ - Database migrations
+# ✅ local.db - SQLite database
+# ✅ *.config.js - Configuration files
+# ✅ package.json - Dependencies list
+# ✅ Documentation/ - Project docs
+# ✅ README.md, *.md - Documentation
+# ✅ tailwind.config.js, postcss.config.js - CSS configs
+# ✅ svelte.config.js - Framework config
+# ✅ vite.config.ts - Build tool config

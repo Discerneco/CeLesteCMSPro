@@ -27,3 +27,17 @@ vite.config.ts.timestamp-*
 
 # Paraglide
 src/lib/paraglide
+
+# Backups
+backups/
+*-backup-*/
+backup_*/
+restoration_report_*.txt
+sync-status-*.txt
+bundle-manifest-*.txt
+*.git-bundle
+celestecms-bundle-*.git
+
+# Restic Backup System - exclude runtime files but keep scripts
+com.celestecms.backup.plist
+local.db.working-backup*

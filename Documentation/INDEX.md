@@ -20,6 +20,7 @@ This index provides an overview of all documentation available for CeLesteCMS Pr
 - **[AI Automation Add-On](Development/AI%20Automation%20Add-On%20(CeLesteCMS%20Pro%20Exclusive).md)** - AI features planning
 - **[DaisyUI Implementation](Development/DaisyUI_Implementation_Guide.md)** - UI component library guide
 - **[React to Svelte 5 Conversion](Development/React-to-Svelte5-conversion-guide.md)** - Migration guide
+- **[Backup System](BACKUP_SYSTEM.md)** - Comprehensive backup and recovery system
 
 ### 📖 User Guides
 - **[Getting Started](Guides/GETTING_STARTED.md)** - Quick start guide for new users
@@ -44,7 +45,8 @@ This index provides an overview of all documentation available for CeLesteCMS Pr
 
 ## 🔄 Documentation Status
 
-### ✅ Recently Updated (May 2025)
+### ✅ Recently Updated (August 2025)
+- Backup System Documentation - Complete backup and recovery system with automated scripts
 - Security Checklist - Reorganized to eliminate redundancy
 - Marketing Documentation - New competitive advantage analysis and content usage guides
 
