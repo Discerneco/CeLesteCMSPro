@@ -14,22 +14,16 @@
   let debounceTimeout: ReturnType<typeof setTimeout>;
   let activeTab = $state('users');
 
-  // Modal states
-  let userModal = $state({
-    isOpen: false,
-    mode: 'add' as 'add' | 'edit',
-    user: null as any
-  });
+  // Modal states - separate $state variables for proper Svelte 5 reactivity
+  let userModalOpen = $state(false);
+  let userModalMode = $state('add' as 'add' | 'edit');
+  let userModalUser = $state(null as any);
   
-  let deleteModal = $state({
-    isOpen: false,
-    user: null as any
-  });
+  let deleteModalOpen = $state(false);
+  let deleteModalUser = $state(null as any);
 
-  let viewModal = $state({
-    isOpen: false,
-    user: null as any
-  });
+  let viewModalOpen = $state(false);
+  let viewModalUser = $state(null as any);
 
   // Toast notifications
   let toast = $state({
@@ -47,19 +41,25 @@
 
   // Modal handlers
   function openAddModal() {
-    userModal = { isOpen: true, mode: 'add', user: null };
+    userModalMode = 'add';
+    userModalUser = null;
+    userModalOpen = true;
   }
 
   function openEditModal(user: any) {
-    userModal = { isOpen: true, mode: 'edit', user };
+    userModalMode = 'edit';
+    userModalUser = user;
+    userModalOpen = true;
   }
 
   function openDeleteModal(user: any) {
-    deleteModal = { isOpen: true, user };
+    deleteModalUser = user;
+    deleteModalOpen = true;
   }
 
   function openViewModal(user: any) {
-    viewModal = { isOpen: true, user };
+    viewModalUser = user;
+    viewModalOpen = true;
   }
 
   function handleView(user: any) {
@@ -318,16 +318,14 @@
                     </button>
                   {/if}
                   
-                  {#if user.id !== data.currentUser?.id}
-                    <button 
-                      onclick={() => openDeleteModal(user)}
-                      class="cms-btn-icon-danger"
-                      title={m.users_action_delete()}
-                      aria-label={m.users_action_delete()}
-                    >
-                      <Trash2 class="h-4 w-4" />
-                    </button>
-                  {/if}
+                  <button 
+                    onclick={() => openDeleteModal(user)}
+                    class="cms-btn-icon-danger"
+                    title={m.users_action_delete()}
+                    aria-label={m.users_action_delete()}
+                  >
+                    <Trash2 class="h-4 w-4" />
+                  </button>
                 </div>
               </div>
             </div>
@@ -722,22 +720,22 @@
 
 <!-- Modals -->
 <UserModal 
-  bind:isOpen={userModal.isOpen}
-  mode={userModal.mode}
-  user={userModal.user}
+  bind:isOpen={userModalOpen}
+  mode={userModalMode}
+  user={userModalUser}
   onUserCreated={handleUserCreated}
   onUserUpdated={handleUserUpdated}
 />
 
 <DeleteUserModal 
-  bind:isOpen={deleteModal.isOpen}
-  user={deleteModal.user}
+  bind:isOpen={deleteModalOpen}
+  user={deleteModalUser}
   onUserDeleted={handleUserDeleted}
 />
 
 <UserDetailsModal 
-  bind:isOpen={viewModal.isOpen}
-  user={viewModal.user}
+  bind:isOpen={viewModalOpen}
+  user={viewModalUser}
   onEdit={openEditModal}
   onDelete={openDeleteModal}
 />

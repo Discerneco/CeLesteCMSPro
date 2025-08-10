@@ -272,6 +272,7 @@
 	"users_modal_delete_confirm": "Tem certeza de que deseja excluir este usuário? Esta ação não pode ser desfeita.",
 	"users_modal_delete_button": "Excluir Usuário",
 	"users_modal_delete_cancel": "Cancelar",
+	"users_modal_delete_deleting": "Excluindo...",
 	"users_permission_create_posts": "Criar Posts",
 	"users_permission_edit_posts": "Editar Posts",
 	"users_permission_delete_posts": "Excluir Posts",
@@ -307,5 +308,8 @@
 	"users_details_account_type": "Tipo de Conta",
 	"users_details_verified_account": "Conta Verificada",
 	"users_details_unverified_account": "Conta Não Verificada",
-	"users_details_close": "Fechar"
+	"users_details_close": "Fechar",
+	"users_error_create_failed": "Falha ao criar usuário",
+	"users_error_update_failed": "Falha ao atualizar usuário",
+	"users_error_delete_failed": "Falha ao excluir usuário"
 }

@@ -16,13 +16,12 @@ export const GET: RequestHandler = async (event) => {
       id: users.id,
       firstName: users.firstName,
       lastName: users.lastName,
-      name: users.name,
       email: users.email,
       username: users.username,
       role: users.role,
       active: users.active,
       verifiedEmail: users.verifiedEmail,
-      lastLoginAt: users.lastLoginAt,
+      lastLogin: users.lastLogin,
       createdAt: users.createdAt,
       updatedAt: users.updatedAt
     }).from(users);
