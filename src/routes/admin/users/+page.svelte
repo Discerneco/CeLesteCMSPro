@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { Users, Shield } from '@lucide/svelte';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
   import * as m from '$lib/paraglide/messages';
@@ -136,25 +137,35 @@
 
 <div class="container mx-auto p-6">
   <!-- Header -->
-  <div class="mb-8">
-    <h1 class="text-3xl font-bold text-base-content">{m.users_title()}</h1>
-    <p class="text-base-content/70 mt-2">{m.users_subtitle()}</p>
+  <div class="mb-8 flex items-center justify-between">
+    <div>
+      <h1 class="text-3xl font-bold text-base-content">{m.users_title()}</h1>
+      <p class="text-base-content/70 mt-2">{m.users_subtitle()}</p>
+    </div>
+    <button class="btn btn-primary" onclick={openAddModal}>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+      </svg>
+      {m.users_add_user()}
+    </button>
   </div>
 
   <!-- Tabs -->
   <div class="tabs tabs-boxed mb-6">
     <button 
-      class="tab"
+      class="tab gap-2"
       class:tab-active={activeTab === 'users'}
       onclick={() => activeTab = 'users'}
     >
+      <Users class="h-4 w-4" />
       {m.users_title()}
     </button>
     <button 
-      class="tab"
+      class="tab gap-2"
       class:tab-active={activeTab === 'roles'}
       onclick={() => activeTab = 'roles'}
     >
+      <Shield class="h-4 w-4" />
       {m.users_roles_title()}
     </button>
   </div>
@@ -186,12 +197,6 @@
         {m.users_filter()}
       </button>
       
-      <button class="btn btn-primary" onclick={openAddModal}>
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-        </svg>
-        {m.users_add_user()}
-      </button>
     </div>
   </div>
 
