@@ -195,156 +195,128 @@
         </div>
       </div>
     </div>
-      {#if data.users.length > 0}
-        <div class="overflow-x-auto">
-          <table class="table table-zebra">
-            <thead>
-              <tr class="border-base-300">
-                <th class="font-semibold text-base-content/70">{m.users_table_name()}</th>
-                <th class="font-semibold text-base-content/70">{m.users_table_email()}</th>
-                <th class="font-semibold text-base-content/70">{m.users_table_role()}</th>
-                <th class="font-semibold text-base-content/70">{m.users_table_status()}</th>
-                <th class="font-semibold text-base-content/70">{m.users_table_last_login()}</th>
-                <th class="font-semibold text-base-content/70">{m.users_table_created()}</th>
-                <th class="font-semibold text-base-content/70">{m.users_table_actions()}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {#each data.users as user (user.id)}
-                <tr class="hover:bg-base-200/50">
-                  <td>
-                    <div class="flex items-center gap-3">
-                      <div class="avatar placeholder">
-                        <div class="bg-neutral text-neutral-content rounded-full w-10 h-10">
-                          <span class="text-sm font-medium">
-                            {user.name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2)}
-                          </span>
-                        </div>
-                      </div>
-                      <div>
-                        <div class="font-medium text-base-content">{user.name}</div>
-                        <div class="text-sm text-base-content/60">@{user.username}</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td>
-                    <div class="text-base-content">{user.email}</div>
-                    {#if !user.verifiedEmail}
-                      <div class="text-xs text-warning">Unverified</div>
-                    {/if}
-                  </td>
-                  <td>
-                    <span class="badge badge-soft {getRoleBadgeClass(user.role)} badge-sm">
-                      {formatRole(user.role)}
-                    </span>
-                  </td>
-                  <td>
-                    <span class="badge badge-soft {getStatusBadgeClass(user.status)} badge-sm">
-                      {formatStatus(user.status)}
-                    </span>
-                  </td>
-                  <td>
-                    <span class="text-base-content/70">
-                      {user.lastLoginFormatted || m.users_never_logged_in()}
-                    </span>
-                  </td>
-                  <td>
-                    <span class="text-base-content/70">
-                      {user.createdAtFormatted}
-                    </span>
-                  </td>
-                  <td>
-                    <div class="flex gap-1">
-                      <button 
-                        class="btn btn-ghost btn-xs" 
-                        title={m.users_action_edit()}
-                        aria-label={m.users_action_edit()}
-                        onclick={() => openEditModal(user)}
-                      >
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                        </svg>
-                      </button>
-                      
-                      {#if user.status === 'pending'}
-                        <button 
-                          class="btn btn-ghost btn-xs text-info" 
-                          title={m.users_action_send_invite()}
-                          aria-label={m.users_action_send_invite()}
-                        >
-                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                          </svg>
-                        </button>
-                      {/if}
-                      
-                      {#if user.role !== 'admin'}
-                        <button 
-                          class="btn btn-ghost btn-xs text-error" 
-                          title={m.users_action_delete()}
-                          aria-label={m.users_action_delete()}
-                          onclick={() => openDeleteModal(user)}
-                        >
-                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                          </svg>
-                        </button>
-                      {/if}
-                    </div>
-                  </td>
-                </tr>
-              {/each}
-            </tbody>
-          </table>
+    
+    <!-- Table Header -->
+    <div class="cms-table-header">
+      <div class="hidden md:grid items-center gap-2 cms-table-header-text" style="grid-template-columns: minmax(220px, 2fr) minmax(180px, 1.5fr) minmax(100px, 1fr) minmax(100px, 1fr) minmax(120px, 1fr) minmax(120px, 1fr) minmax(100px, 1fr);">
+        <div>{m.users_table_name()}</div>
+        <div>{m.users_table_email()}</div>
+        <div class="text-center">{m.users_table_role()}</div>
+        <div class="text-center">{m.users_table_status()}</div>
+        <div class="text-center">{m.users_table_last_login()}</div>
+        <div class="text-center">{m.users_table_created()}</div>
+        <div class="flex justify-end">
+          <div class="flex items-center gap-1">
+            <div class="w-8 h-4"></div> <!-- Spacer for first icon -->
+            <div class="w-8 h-4 flex justify-center text-xs font-medium">{m.users_table_actions()}</div> <!-- Text above middle icon -->
+            <div class="w-8 h-4"></div> <!-- Spacer for third icon -->
+          </div>
         </div>
-
-        <!-- Pagination -->
-        {#if data.pagination.totalPages > 1}
-          <div class="flex items-center justify-between p-4 border-t border-base-300">
-            <div class="text-sm text-base-content/70">
-              {m.users_showing({ count: data.users.length })} · 
-              {m.users_page_info({ current: data.pagination.page, total: data.pagination.totalPages })}
-            </div>
-            
-            <div class="join">
-              <button 
-                class="join-item btn btn-sm"
-                class:btn-disabled={!data.pagination.hasPrevious}
-                aria-label="Previous page"
-                onclick={() => goToPage(data.pagination.page - 1)}
-              >
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                </svg>
-              </button>
+      </div>
+    </div>
+    
+    <!-- Table Body - Desktop -->
+    <div class="hidden md:block divide-y divide-base-content/10">
+      {#if data.users.length > 0}
+        {#each data.users as user (user.id)}
+          <div class="cms-table-row">
+            <div class="grid items-center gap-2" style="grid-template-columns: minmax(220px, 2fr) minmax(180px, 1.5fr) minmax(100px, 1fr) minmax(100px, 1fr) minmax(120px, 1fr) minmax(120px, 1fr) minmax(100px, 1fr);">
+              <!-- Name -->
+              <div>
+                <div class="flex items-center gap-3">
+                  <div class="avatar placeholder">
+                    <div class="bg-neutral text-neutral-content rounded-full w-10 h-10">
+                      <span class="text-sm font-medium">
+                        {user.name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2)}
+                      </span>
+                    </div>
+                  </div>
+                  <div class="min-w-0">
+                    <div class="font-medium text-base-content">{user.name}</div>
+                    <div class="text-sm text-base-content/60">@{user.username}</div>
+                  </div>
+                </div>
+              </div>
               
-              {#each Array.from({ length: Math.min(5, data.pagination.totalPages) }, (_, i) => {
-                const startPage = Math.max(1, data.pagination.page - 2);
-                return startPage + i;
-              }).filter(p => p <= data.pagination.totalPages) as pageNum}
-                <button 
-                  class="join-item btn btn-sm"
-                  class:btn-active={pageNum === data.pagination.page}
-                  onclick={() => goToPage(pageNum)}
-                >
-                  {pageNum}
-                </button>
-              {/each}
+              <!-- Email -->
+              <div>
+                <div class="text-base-content">{user.email}</div>
+                {#if !user.verifiedEmail}
+                  <div class="text-xs text-warning">Unverified</div>
+                {/if}
+              </div>
               
-              <button 
-                class="join-item btn btn-sm"
-                class:btn-disabled={!data.pagination.hasNext}
-                aria-label="Next page"
-                onclick={() => goToPage(data.pagination.page + 1)}
-              >
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                </svg>
-              </button>
+              <!-- Role -->
+              <div class="text-center">
+                <span class="badge badge-soft {getRoleBadgeClass(user.role)} badge-sm">
+                  {formatRole(user.role)}
+                </span>
+              </div>
+              
+              <!-- Status -->
+              <div class="text-center">
+                <span class="badge badge-soft {getStatusBadgeClass(user.status)} badge-sm">
+                  {formatStatus(user.status)}
+                </span>
+              </div>
+              
+              <!-- Last Login -->
+              <div class="text-center">
+                <span class="text-base-content/70">
+                  {user.lastLoginFormatted || m.users_never_logged_in()}
+                </span>
+              </div>
+              
+              <!-- Created -->
+              <div class="text-center">
+                <span class="text-base-content/70">
+                  {user.createdAtFormatted}
+                </span>
+              </div>
+              
+              <!-- Actions -->
+              <div>
+                <div class="flex items-center gap-1 justify-end">
+                  <button 
+                    class="btn btn-ghost btn-xs" 
+                    title={m.users_action_edit()}
+                    aria-label={m.users_action_edit()}
+                    onclick={() => openEditModal(user)}
+                  >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                    </svg>
+                  </button>
+                  
+                  {#if user.status === 'pending'}
+                    <button 
+                      class="btn btn-ghost btn-xs text-info" 
+                      title={m.users_action_send_invite()}
+                      aria-label={m.users_action_send_invite()}
+                    >
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                      </svg>
+                    </button>
+                  {/if}
+                  
+                  {#if user.role !== 'admin'}
+                    <button 
+                      class="btn btn-ghost btn-xs text-error" 
+                      title={m.users_action_delete()}
+                      aria-label={m.users_action_delete()}
+                      onclick={() => openDeleteModal(user)}
+                    >
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                      </svg>
+                    </button>
+                  {/if}
+                </div>
+              </div>
             </div>
           </div>
-        {/if}
-
+        {/each}
       {:else}
         <!-- Empty State -->
         <div class="flex flex-col items-center justify-center py-12">
@@ -367,6 +339,56 @@
           {/if}
         </div>
       {/if}
+    </div>
+
+    {#if data.users.length > 0}
+      <!-- Pagination -->
+      {#if data.pagination.totalPages > 1}
+        <div class="flex items-center justify-between p-4 border-t border-base-300">
+          <div class="text-sm text-base-content/70">
+            {m.users_showing({ count: data.users.length })} · 
+            {m.users_page_info({ current: data.pagination.page, total: data.pagination.totalPages })}
+          </div>
+          
+          <div class="join">
+            <button 
+              class="join-item btn btn-sm"
+              class:btn-disabled={!data.pagination.hasPrevious}
+              aria-label="Previous page"
+              onclick={() => goToPage(data.pagination.page - 1)}
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+              </svg>
+            </button>
+            
+            {#each Array.from({ length: Math.min(5, data.pagination.totalPages) }, (_, i) => {
+              const startPage = Math.max(1, data.pagination.page - 2);
+              return startPage + i;
+            }).filter(p => p <= data.pagination.totalPages) as pageNum}
+              <button 
+                class="join-item btn btn-sm"
+                class:btn-active={pageNum === data.pagination.page}
+                onclick={() => goToPage(pageNum)}
+              >
+                {pageNum}
+              </button>
+            {/each}
+            
+            <button 
+              class="join-item btn btn-sm"
+              class:btn-disabled={!data.pagination.hasNext}
+              aria-label="Next page"
+              onclick={() => goToPage(data.pagination.page + 1)}
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+      {/if}
+    {/if}
   </div>
   {/if}
 
