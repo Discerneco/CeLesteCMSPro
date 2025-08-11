@@ -60,6 +60,30 @@
     // Basic markdown-like formatting
     return content.split('\n\n');
   };
+  
+  // Generate consistent random color for user avatar
+  const getAvatarColor = (userId: string) => {
+    const colors = [
+      'bg-primary text-primary-content',
+      'bg-secondary text-secondary-content', 
+      'bg-accent text-accent-content',
+      'bg-info text-info-content',
+      'bg-success text-success-content',
+      'bg-warning text-warning-content',
+      'bg-error text-error-content',
+      'bg-neutral text-neutral-content'
+    ];
+    
+    // Simple hash function to get consistent color based on userId
+    let hash = 0;
+    for (let i = 0; i < userId.length; i++) {
+      const char = userId.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash; // Convert to 32-bit integer
+    }
+    
+    return colors[Math.abs(hash) % colors.length];
+  };
 </script>
 
 <!-- Page Header -->
@@ -115,9 +139,19 @@
         <!-- Author -->
         <div>
           <div class="text-sm text-base-content/60 mb-1">Author</div>
-          <div class="flex items-center gap-2">
-            <User class="h-4 w-4 text-base-content/60" />
-            <span class="text-sm font-medium capitalize">{post.author}</span>
+          <div class="flex items-center gap-3">
+            {#if post.authorData}
+              <div class="{getAvatarColor(post.authorData.id)} rounded-full w-8 h-8 grid place-content-center">
+                {post.authorData.name.charAt(0).toUpperCase()}
+              </div>
+              <div>
+                <div class="text-sm font-medium">{post.authorData.name}</div>
+                <div class="text-xs text-base-content/60">@{post.authorData.username}</div>
+              </div>
+            {:else}
+              <User class="h-4 w-4 text-base-content/60" />
+              <span class="text-sm font-medium capitalize">{post.author}</span>
+            {/if}
           </div>
         </div>
         

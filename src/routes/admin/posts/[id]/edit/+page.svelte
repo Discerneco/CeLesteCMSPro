@@ -28,6 +28,7 @@
   // Svelte 5 runes for state management
   let activeTab = $state('en');
   let isFeatured = $state(data.post.featured || false);
+  let selectedAuthorId = $state(data.post.authorId || '');
   let previewMode = $state(false);
   let isLoading = $state(false);
   
@@ -94,6 +95,7 @@
         content: content.en.content || content.pt.content,
         status: status,
         featured: isFeatured,
+        authorId: selectedAuthorId,
         publishedAt: status === 'published' ? new Date(publicationDate).toISOString() : null,
         // Store the multilingual content
         metaData: JSON.stringify({
@@ -305,6 +307,21 @@
                 bind:checked={isFeatured}
               />
             </label>
+          </div>
+
+          <!-- Author Selection -->
+          <div class="form-control">
+            <label class="label">
+              <span class="label-text">Author</span>
+            </label>
+            <select class="select select-bordered" bind:value={selectedAuthorId}>
+              <option value="">Select author...</option>
+              {#each data.users as user}
+                <option value={user.id}>
+                  {[user.firstName, user.lastName].filter(Boolean).join(' ') || user.username} (@{user.username})
+                </option>
+              {/each}
+            </select>
           </div>
           
           <div class="divider"></div>

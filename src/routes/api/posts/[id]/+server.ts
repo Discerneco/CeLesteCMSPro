@@ -60,6 +60,11 @@ export const GET: RequestHandler = async (event) => {
       authorId: post.authorId,
       contentTypeId: post.contentTypeId,
       author: post.author?.username || 'Unknown',
+      authorData: post.author ? {
+        id: post.author.id,
+        username: post.author.username,
+        name: [post.author.firstName, post.author.lastName].filter(Boolean).join(' ') || post.author.username
+      } : null,
       createdAt: post.createdAt,
       updatedAt: post.updatedAt,
       publishedAt: post.publishedAt,
@@ -93,7 +98,7 @@ export const PUT: RequestHandler = async (event) => {
 
     // Parse the request body
     const body = await event.request.json();
-    const { title, slug, excerpt, content, status, featured, publishedAt, metaData } = body;
+    const { title, slug, excerpt, content, status, featured, publishedAt, metaData, authorId } = body;
 
     // Validate required fields
     if (!title || !content) {
@@ -127,6 +132,7 @@ export const PUT: RequestHandler = async (event) => {
       excerpt: excerpt || '',
       status: status || 'draft',
       featured: !!featured,
+      authorId: authorId || null,
       publishedAt: status === 'published' && publishedAt ? new Date(publishedAt) : null,
       metaData: metaData ? JSON.parse(typeof metaData === 'string' ? metaData : JSON.stringify(metaData)) : null,
       updatedAt: new Date()

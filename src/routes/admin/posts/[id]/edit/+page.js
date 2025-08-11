@@ -5,19 +5,29 @@ export async function load({ params, fetch }) {
   const postId = params.id;
   
   try {
-    const response = await fetch(`/api/posts/${postId}`);
+    // Load both post and users in parallel
+    const [postResponse, usersResponse] = await Promise.all([
+      fetch(`/api/posts/${postId}`),
+      fetch('/api/users')
+    ]);
     
-    if (!response.ok) {
-      if (response.status === 404) {
+    if (!postResponse.ok) {
+      if (postResponse.status === 404) {
         throw error(404, 'Post not found');
       }
-      throw error(response.status, 'Failed to load post');
+      throw error(postResponse.status, 'Failed to load post');
     }
     
-    const post = await response.json();
+    if (!usersResponse.ok) {
+      throw error(usersResponse.status, 'Failed to load users');
+    }
+    
+    const post = await postResponse.json();
+    const users = await usersResponse.json();
     
     return {
-      post
+      post,
+      users
     };
   } catch (err) {
     console.error('Error loading post:', err);
