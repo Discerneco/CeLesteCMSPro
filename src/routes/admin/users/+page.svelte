@@ -318,14 +318,25 @@
                     </button>
                   {/if}
                   
-                  <button 
-                    onclick={() => openDeleteModal(user)}
-                    class="cms-btn-icon-danger"
-                    title={m.users_action_delete()}
-                    aria-label={m.users_action_delete()}
-                  >
-                    <Trash2 class="h-4 w-4" />
-                  </button>
+                  {#if user.id !== data.currentUser?.id}
+                    <button 
+                      onclick={() => openDeleteModal(user)}
+                      class="cms-btn-icon-danger"
+                      title={m.users_action_delete()}
+                      aria-label={m.users_action_delete()}
+                    >
+                      <Trash2 class="h-4 w-4" />
+                    </button>
+                  {:else}
+                    <button 
+                      class="cms-btn-icon-danger opacity-50 cursor-not-allowed"
+                      title="You cannot delete yourself"
+                      aria-label="Cannot delete current user"
+                      disabled
+                    >
+                      <Trash2 class="h-4 w-4" />
+                    </button>
+                  {/if}
                 </div>
               </div>
             </div>
@@ -736,6 +747,7 @@
 <UserDetailsModal 
   bind:isOpen={viewModalOpen}
   user={viewModalUser}
+  currentUser={data.currentUser}
   onEdit={openEditModal}
   onDelete={openDeleteModal}
 />

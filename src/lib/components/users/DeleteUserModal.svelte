@@ -12,14 +12,44 @@
   } = $props();
 
   let isLoading = $state(false);
+  let isCheckingContent = $state(false);
   let error = $state('');
+  let linkedContent = $state(null);
+  let contentAction = $state('delete_all'); // 'delete_all', 'reassign', 'anonymous'
+  let selectedReassignUser = $state('');
 
-  // Reset error when modal opens/closes
+  // Reset state when modal opens/closes
   $effect(() => {
-    if (isOpen) {
+    if (isOpen && user) {
       error = '';
+      linkedContent = null;
+      contentAction = 'delete_all';
+      selectedReassignUser = '';
+      checkLinkedContent();
     }
   });
+
+  async function checkLinkedContent() {
+    if (!user) return;
+    
+    isCheckingContent = true;
+    try {
+      const response = await fetch(`/api/users/${user.id}/linked-content`);
+      const result = await response.json();
+      
+      if (!response.ok) {
+        error = result.error || 'Failed to check linked content';
+        return;
+      }
+      
+      linkedContent = result.linkedContent;
+    } catch (err) {
+      console.error('Error checking linked content:', err);
+      error = 'Failed to check linked content';
+    } finally {
+      isCheckingContent = false;
+    }
+  }
 
   async function handleDelete() {
     if (!user) return;
@@ -28,8 +58,19 @@
     error = '';
 
     try {
+      const deleteData: any = {};
+      
+      if (linkedContent?.hasContent) {
+        deleteData.contentAction = contentAction;
+        if (contentAction === 'reassign' && selectedReassignUser) {
+          deleteData.reassignToUserId = selectedReassignUser;
+        }
+      }
+
       const response = await fetch(`/api/users/${user.id}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(deleteData)
       });
 
       const result = await response.json();
@@ -67,11 +108,17 @@
       default: return role;
     }
   }
+
+  // Format count with localized text
+  function formatCount(count: number, type: 'posts' | 'media') {
+    const key = type === 'posts' ? m.users_delete_posts_count : m.users_delete_media_count;
+    return key().replace('{count}', count.toString());
+  }
 </script>
 
 {#if isOpen}
   <div class="modal modal-open">
-    <div class="modal-box">
+    <div class="modal-box max-w-2xl">
       <h3 class="font-bold text-lg mb-4">{m.users_modal_delete_title()}</h3>
       
       {#if error}
@@ -85,28 +132,97 @@
 
       {#if user}
         <div class="mb-6">
-          <p class="text-base-content/70 mb-4">
-            {m.users_modal_delete_confirm()}
-          </p>
-          
-          <div class="card bg-base-200 border border-base-300">
+          <!-- User Info -->
+          <div class="card bg-base-200 border border-base-300 mb-4">
             <div class="card-body p-4">
               <div class="flex items-center gap-3">
                 <div class="avatar placeholder">
                   <div class="bg-neutral text-neutral-content rounded-full w-12 h-12">
                     <span class="text-sm font-medium">
-                      {user.name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2)}
+                      {(user.name || user.username || '??').split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2)}
                     </span>
                   </div>
                 </div>
                 <div>
-                  <div class="font-medium text-base-content">{user.name}</div>
+                  <div class="font-medium text-base-content">{user.name || user.username}</div>
                   <div class="text-sm text-base-content/60">{user.email}</div>
                   <div class="text-xs text-base-content/50">@{user.username} • {formatRole(user.role)}</div>
                 </div>
               </div>
             </div>
           </div>
+
+          {#if isCheckingContent}
+            <!-- Loading state -->
+            <div class="flex items-center justify-center py-4">
+              <span class="loading loading-spinner loading-md mr-2"></span>
+              <span class="text-base-content/70">Checking linked content...</span>
+            </div>
+          {:else if linkedContent}
+            {#if linkedContent.hasContent}
+              <!-- Enhanced delete with content handling -->
+              <div class="alert alert-warning mb-4">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.694-.833-2.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                </svg>
+                <div>
+                  <div class="font-medium">{m.users_delete_has_content()}</div>
+                  <div class="mt-2 space-y-1">
+                    {#if linkedContent.posts.count > 0}
+                      <div class="text-sm">• {formatCount(linkedContent.posts.count, 'posts')}</div>
+                    {/if}
+                    {#if linkedContent.media.count > 0}
+                      <div class="text-sm">• {formatCount(linkedContent.media.count, 'media')}</div>
+                    {/if}
+                  </div>
+                </div>
+              </div>
+
+              <!-- Content action selection -->
+              <div class="form-control mb-4">
+                <label class="label">
+                  <span class="label-text font-medium">{m.users_delete_content_action()}</span>
+                </label>
+                <div class="space-y-2">
+                  <label class="label cursor-pointer justify-start gap-3">
+                    <input type="radio" name="contentAction" class="radio radio-primary" 
+                           bind:group={contentAction} value="delete_all" />
+                    <span class="label-text">{m.users_delete_action_delete_all()}</span>
+                  </label>
+                  <label class="label cursor-pointer justify-start gap-3">
+                    <input type="radio" name="contentAction" class="radio radio-primary" 
+                           bind:group={contentAction} value="reassign" />
+                    <span class="label-text">{m.users_delete_action_reassign()}</span>
+                  </label>
+                  <label class="label cursor-pointer justify-start gap-3">
+                    <input type="radio" name="contentAction" class="radio radio-primary" 
+                           bind:group={contentAction} value="anonymous" />
+                    <span class="label-text">{m.users_delete_action_anonymous()}</span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- User selection for reassignment -->
+              {#if contentAction === 'reassign'}
+                <div class="form-control mb-4">
+                  <label class="label">
+                    <span class="label-text">{m.users_delete_reassign_to()}</span>
+                  </label>
+                  <select class="select select-bordered" bind:value={selectedReassignUser}>
+                    <option value="">{m.users_delete_select_user()}</option>
+                    {#each linkedContent.reassignmentOptions as option}
+                      <option value={option.id}>{option.name} ({option.email})</option>
+                    {/each}
+                  </select>
+                </div>
+              {/if}
+            {:else}
+              <!-- Simple delete confirmation -->
+              <p class="text-base-content/70 mb-4">
+                {m.users_modal_delete_confirm()}
+              </p>
+            {/if}
+          {/if}
         </div>
       {/if}
 
@@ -123,7 +239,7 @@
           type="button" 
           class="btn btn-error"
           onclick={handleDelete}
-          disabled={isLoading}
+          disabled={isLoading || isCheckingContent || (contentAction === 'reassign' && !selectedReassignUser)}
         >
           {#if isLoading}
             <span class="loading loading-spinner loading-sm"></span>

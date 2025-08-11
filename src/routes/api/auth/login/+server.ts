@@ -29,6 +29,12 @@ export const POST: RequestHandler = async ({ request, platform, cookies }) => {
       return json({ success: false, message: 'Invalid credentials' }, { status: 401 });
     }
     
+    // Update last login timestamp
+    await db
+      .update(users)
+      .set({ lastLogin: new Date() })
+      .where(eq(users.id, user.id));
+    
     // Create session
     const sessionId = await createSession(user.id, platform);
     

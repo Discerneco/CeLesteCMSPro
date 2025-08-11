@@ -5,11 +5,13 @@
   let { 
     isOpen = $bindable(false),
     user = null,
+    currentUser = null,
     onEdit,
     onDelete 
   }: {
     isOpen?: boolean;
     user?: any;
+    currentUser?: any;
     onEdit?: (user: any) => void;
     onDelete?: (user: any) => void;
   } = $props();
@@ -22,12 +24,14 @@
     if (onEdit && user) {
       onEdit(user);
     }
+    isOpen = false;
   }
 
   function handleDelete() {
     if (onDelete && user) {
       onDelete(user);
     }
+    isOpen = false;
   }
 
   // Format role for display
@@ -225,8 +229,13 @@
             {m.users_action_edit()}
           </button>
           
-          {#if user.id}
+          {#if user.id && user.id !== currentUser?.id}
             <button class="btn btn-error gap-2" onclick={handleDelete}>
+              <Trash2 class="h-4 w-4" />
+              {m.users_action_delete()}
+            </button>
+          {:else if user.id === currentUser?.id}
+            <button class="btn btn-error gap-2 opacity-50 cursor-not-allowed" disabled title="You cannot delete yourself">
               <Trash2 class="h-4 w-4" />
               {m.users_action_delete()}
             </button>

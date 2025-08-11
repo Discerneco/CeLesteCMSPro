@@ -1,7 +1,7 @@
 import { json } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm';
 import { getDbFromEvent } from '$lib/server/db/utils';
-import { users } from '$lib/server/db/schema';
+import { users, posts, media } from '$lib/server/db/schema';
 import { hashPassword } from '$lib/server/auth-oslo';
 import type { RequestHandler } from './$types';
 
@@ -111,6 +111,10 @@ export const DELETE: RequestHandler = async (event) => {
   const { id } = event.params;
   
   try {
+    // Get request body for content handling options
+    const requestBody = await event.request.json().catch(() => ({}));
+    const { contentAction, reassignToUserId } = requestBody;
+    
     // Check if user exists
     const existingUser = await db
       .select()
@@ -134,7 +138,49 @@ export const DELETE: RequestHandler = async (event) => {
       }
     }
     
-    // Delete user
+    // Handle linked content based on the selected action
+    if (contentAction) {
+      if (contentAction === 'delete_all') {
+        // Delete all posts and media by this user
+        await db.delete(posts).where(eq(posts.authorId, id));
+        await db.delete(media).where(eq(media.uploaderId, id));
+        
+      } else if (contentAction === 'reassign' && reassignToUserId) {
+        // Validate reassignment user exists and is active
+        const reassignUser = await db
+          .select({ id: users.id })
+          .from(users)
+          .where(eq(users.id, reassignToUserId))
+          .limit(1);
+        
+        if (reassignUser.length === 0) {
+          return json({ error: 'Reassignment user not found' }, { status: 400 });
+        }
+        
+        // Reassign content to the selected user
+        await db
+          .update(posts)
+          .set({ authorId: reassignToUserId })
+          .where(eq(posts.authorId, id));
+        
+        await db
+          .update(media)
+          .set({ uploaderId: reassignToUserId })
+          .where(eq(media.uploaderId, id));
+        
+      } else if (contentAction === 'anonymous') {
+        // For posts: delete them since authorId cannot be null (notNull constraint)
+        // For media: set uploaderId to null (allowed)
+        await db.delete(posts).where(eq(posts.authorId, id));
+        
+        await db
+          .update(media)
+          .set({ uploaderId: null })
+          .where(eq(media.uploaderId, id));
+      }
+    }
+    
+    // Delete user (sessions will cascade delete automatically)
     const result = await db
       .delete(users)
       .where(eq(users.id, id))
