@@ -204,37 +204,37 @@
   </button>
 </div>
 
-<!-- Tab Navigation using DaisyUI tabs - Mobile responsive -->
-<div class="tabs tabs-bordered mb-6 overflow-x-auto">
+<!-- Tabs -->
+<div class="flex border-b border-base-200 mb-6 overflow-x-auto">
   <button 
-    class="tab tab-sm md:tab-md {activeTab === 'general' ? 'tab-active' : ''} whitespace-nowrap"
+    class="flex items-center gap-2 px-4 py-2 border-b-[3px] transition-colors duration-150 {activeTab === 'general' ? 'border-primary text-base-content' : 'border-transparent text-base-content/60 hover:text-base-content/80'} whitespace-nowrap"
     onclick={() => switchTab('general')}
   >
-    <Globe class="h-4 w-4 mr-1 md:mr-2" />
+    <Globe class="h-4 w-4" />
     <span class="hidden sm:inline">{m.settings_tab_general()}</span>
     <span class="sm:hidden">General</span>
   </button>
   <button 
-    class="tab tab-sm md:tab-md {activeTab === 'appearance' ? 'tab-active' : ''} whitespace-nowrap"
+    class="flex items-center gap-2 px-4 py-2 border-b-[3px] transition-colors duration-150 {activeTab === 'appearance' ? 'border-primary text-base-content' : 'border-transparent text-base-content/60 hover:text-base-content/80'} whitespace-nowrap"
     onclick={() => switchTab('appearance')}
   >
-    <Palette class="h-4 w-4 mr-1 md:mr-2" />
+    <Palette class="h-4 w-4" />
     <span class="hidden sm:inline">{m.settings_tab_appearance()}</span>
     <span class="sm:hidden">Theme</span>
   </button>
   <button 
-    class="tab tab-sm md:tab-md {activeTab === 'statistics' ? 'tab-active' : ''} whitespace-nowrap"
+    class="flex items-center gap-2 px-4 py-2 border-b-[3px] transition-colors duration-150 {activeTab === 'statistics' ? 'border-primary text-base-content' : 'border-transparent text-base-content/60 hover:text-base-content/80'} whitespace-nowrap"
     onclick={() => switchTab('statistics')}
   >
-    <BarChart3 class="h-4 w-4 mr-1 md:mr-2" />
+    <BarChart3 class="h-4 w-4" />
     <span class="hidden sm:inline">{m.settings_tab_statistics()}</span>
     <span class="sm:hidden">Stats</span>
   </button>
   <button 
-    class="tab tab-sm md:tab-md {activeTab === 'advanced' ? 'tab-active' : ''} whitespace-nowrap"
+    class="flex items-center gap-2 px-4 py-2 border-b-[3px] transition-colors duration-150 {activeTab === 'advanced' ? 'border-primary text-base-content' : 'border-transparent text-base-content/60 hover:text-base-content/80'} whitespace-nowrap"
     onclick={() => switchTab('advanced')}
   >
-    <Settings class="h-4 w-4 mr-1 md:mr-2" />
+    <Settings class="h-4 w-4" />
     <span class="hidden sm:inline">{m.settings_tab_advanced()}</span>
     <span class="sm:hidden">Advanced</span>
   </button>
