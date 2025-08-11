@@ -43,6 +43,7 @@
       }
       
       linkedContent = result.linkedContent;
+      console.log('Linked content received:', linkedContent);
     } catch (err) {
       console.error('Error checking linked content:', err);
       error = 'Failed to check linked content';
@@ -110,9 +111,10 @@
   }
 
   // Format count with localized text
-  function formatCount(count: number, type: 'posts' | 'media') {
+  function formatCount(count: number | undefined, type: 'posts' | 'media') {
+    const safeCount = count || 0;
     const key = type === 'posts' ? m.users_delete_posts_count : m.users_delete_media_count;
-    return key().replace('{count}', count.toString());
+    return key().replace('{count}', safeCount.toString());
   }
 
   // Generate consistent random color for user avatar
@@ -188,10 +190,10 @@
                 <div>
                   <div class="font-medium">{m.users_delete_has_content()}</div>
                   <div class="mt-2 space-y-1">
-                    {#if linkedContent.posts.count > 0}
+                    {#if linkedContent.posts && linkedContent.posts.count > 0}
                       <div class="text-sm">• {formatCount(linkedContent.posts.count, 'posts')}</div>
                     {/if}
-                    {#if linkedContent.media.count > 0}
+                    {#if linkedContent.media && linkedContent.media.count > 0}
                       <div class="text-sm">• {formatCount(linkedContent.media.count, 'media')}</div>
                     {/if}
                   </div>
