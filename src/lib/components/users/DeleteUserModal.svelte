@@ -20,7 +20,9 @@
 
   // Reset state when modal opens/closes
   $effect(() => {
+    console.log('Modal state effect triggered:', { isOpen, user: user?.id });
     if (isOpen && user) {
+      console.log('Resetting modal state and checking linked content');
       error = '';
       linkedContent = null;
       contentAction = 'delete_all';
@@ -30,24 +32,38 @@
   });
 
   async function checkLinkedContent() {
-    if (!user) return;
+    if (!user) {
+      console.log('No user provided to checkLinkedContent');
+      return;
+    }
     
+    console.log('Starting checkLinkedContent for user:', user.id);
     isCheckingContent = true;
+    error = ''; // Clear any previous errors
+    
     try {
+      console.log('Making API request to:', `/api/users/${user.id}/linked-content`);
       const response = await fetch(`/api/users/${user.id}/linked-content`);
+      console.log('API response status:', response.status, response.ok);
+      
       const result = await response.json();
+      console.log('API raw result:', result);
       
       if (!response.ok) {
+        console.error('API error response:', result);
         error = result.error || 'Failed to check linked content';
         return;
       }
       
+      console.log('Setting linkedContent to:', result.linkedContent);
       linkedContent = result.linkedContent;
-      console.log('Linked content received:', linkedContent);
+      console.log('linkedContent set successfully:', linkedContent);
+      
     } catch (err) {
-      console.error('Error checking linked content:', err);
-      error = 'Failed to check linked content';
+      console.error('Fetch error in checkLinkedContent:', err);
+      error = `Failed to check linked content: ${err instanceof Error ? err.message : 'Unknown error'}`;
     } finally {
+      console.log('checkLinkedContent completed, setting isCheckingContent to false');
       isCheckingContent = false;
     }
   }
