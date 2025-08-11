@@ -57,6 +57,11 @@ export const GET: RequestHandler = async (event) => {
       url: item.url,
       altText: item.altText || '',
       uploader: item.uploader?.username || 'Unknown',
+      uploaderData: item.uploader ? {
+        id: item.uploader.id,
+        username: item.uploader.username,
+        name: [item.uploader.firstName, item.uploader.lastName].filter(Boolean).join(' ') || item.uploader.username
+      } : null,
       createdAt: item.createdAt,
       // Format dates for display
       uploaded: item.createdAt ? new Date(item.createdAt).toLocaleDateString('pt-BR') : '',

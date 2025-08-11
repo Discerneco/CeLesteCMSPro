@@ -147,6 +147,30 @@
     }
   };
   
+  // Generate consistent random color for user avatar
+  function getAvatarColor(userId: string) {
+    const colors = [
+      'bg-primary text-primary-content',
+      'bg-secondary text-secondary-content', 
+      'bg-accent text-accent-content',
+      'bg-info text-info-content',
+      'bg-success text-success-content',
+      'bg-warning text-warning-content',
+      'bg-error text-error-content',
+      'bg-neutral text-neutral-content'
+    ];
+    
+    // Simple hash function to get consistent color based on userId
+    let hash = 0;
+    for (let i = 0; i < userId.length; i++) {
+      const char = userId.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash; // Convert to 32-bit integer
+    }
+    
+    return colors[Math.abs(hash) % colors.length];
+  }
+  
   const downloadMedia = (item: any) => {
     const fullUrl = getMediaUrl(item.url);
     const link = document.createElement('a');
@@ -575,6 +599,21 @@
               <span class="text-base-content/60">{m.media_uploaded()}:</span>
               <span class="col-span-2">{selectedMedia.uploaded}</span>
             </div>
+            
+            {#if selectedMedia.uploaderData}
+              <div class="grid grid-cols-3 gap-2">
+                <span class="text-base-content/60">Uploader:</span>
+                <div class="col-span-2 flex items-center gap-2">
+                  <div class="{getAvatarColor(selectedMedia.uploaderData.id)} rounded-full w-8 h-8 grid place-content-center text-xs">
+                    {selectedMedia.uploaderData.name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2)}
+                  </div>
+                  <div>
+                    <div class="text-sm font-medium">{selectedMedia.uploaderData.name}</div>
+                    <div class="text-xs text-base-content/60">@{selectedMedia.uploaderData.username}</div>
+                  </div>
+                </div>
+              </div>
+            {/if}
             
             <div class="grid grid-cols-3 gap-2">
               <span class="text-base-content/60">{m.media_url()}:</span>
