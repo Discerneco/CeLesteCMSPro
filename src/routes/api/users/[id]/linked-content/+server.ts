@@ -13,8 +13,6 @@ export const GET: RequestHandler = async (event) => {
   const { id } = event.params;
   
   try {
-    console.log(`Checking linked content for user ID: ${id}`);
-    
     // Check if user exists
     const userExists = await db
       .select({ id: users.id })
@@ -22,15 +20,11 @@ export const GET: RequestHandler = async (event) => {
       .where(eq(users.id, id))
       .limit(1);
     
-    console.log(`User exists check:`, userExists);
-    
     if (userExists.length === 0) {
-      console.log(`User not found: ${id}`);
       return json({ error: 'User not found' }, { status: 404 });
     }
     
     // Check for linked posts
-    console.log(`Querying posts for user: ${id}`);
     const userPosts = await db
       .select({
         id: posts.id,
@@ -41,10 +35,7 @@ export const GET: RequestHandler = async (event) => {
       .from(posts)
       .where(eq(posts.authorId, id));
     
-    console.log(`Found ${userPosts.length} posts for user: ${id}`, userPosts);
-    
     // Check for linked media
-    console.log(`Querying media for user: ${id}`);
     const userMedia = await db
       .select({
         id: media.id,
@@ -54,8 +45,6 @@ export const GET: RequestHandler = async (event) => {
       })
       .from(media)
       .where(eq(media.uploaderId, id));
-    
-    console.log(`Found ${userMedia.length} media files for user: ${id}`, userMedia);
     
     // Get list of other users for reassignment options (excluding the user being deleted)
     const otherUsers = await db
@@ -101,7 +90,6 @@ export const GET: RequestHandler = async (event) => {
       hasContent: userPosts.length > 0 || userMedia.length > 0
     };
     
-    console.log('Returning linked content:', linkedContent);
     return json({ linkedContent });
     
   } catch (error) {
