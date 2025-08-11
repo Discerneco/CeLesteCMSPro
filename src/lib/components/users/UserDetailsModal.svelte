@@ -86,6 +86,30 @@
       default: return User;
     }
   }
+
+  // Generate consistent random color for user avatar
+  function getAvatarColor(userId: string) {
+    const colors = [
+      'bg-primary text-primary-content',
+      'bg-secondary text-secondary-content', 
+      'bg-accent text-accent-content',
+      'bg-info text-info-content',
+      'bg-success text-success-content',
+      'bg-warning text-warning-content',
+      'bg-error text-error-content',
+      'bg-neutral text-neutral-content'
+    ];
+    
+    // Simple hash function to get consistent color based on userId
+    let hash = 0;
+    for (let i = 0; i < userId.length; i++) {
+      const char = userId.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash; // Convert to 32-bit integer
+    }
+    
+    return colors[Math.abs(hash) % colors.length];
+  }
 </script>
 
 {#if isOpen && user}
@@ -104,12 +128,8 @@
       <div class="space-y-6">
         <!-- User Avatar and Basic Info -->
         <div class="flex items-center gap-4 p-4 bg-base-200 rounded-lg">
-          <div class="avatar placeholder">
-            <div class="bg-neutral text-neutral-content rounded-full w-16 h-16">
-              <span class="text-xl font-medium">
-                {user.name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2)}
-              </span>
-            </div>
+          <div class="{getAvatarColor(user.id)} rounded-full w-16 h-16 grid place-content-center text-xl">
+            {user.name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2)}
           </div>
           <div class="flex-1">
             <h4 class="text-xl font-semibold">{user.name}</h4>

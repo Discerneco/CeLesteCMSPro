@@ -114,6 +114,30 @@
     const key = type === 'posts' ? m.users_delete_posts_count : m.users_delete_media_count;
     return key().replace('{count}', count.toString());
   }
+
+  // Generate consistent random color for user avatar
+  function getAvatarColor(userId: string) {
+    const colors = [
+      'bg-primary text-primary-content',
+      'bg-secondary text-secondary-content', 
+      'bg-accent text-accent-content',
+      'bg-info text-info-content',
+      'bg-success text-success-content',
+      'bg-warning text-warning-content',
+      'bg-error text-error-content',
+      'bg-neutral text-neutral-content'
+    ];
+    
+    // Simple hash function to get consistent color based on userId
+    let hash = 0;
+    for (let i = 0; i < userId.length; i++) {
+      const char = userId.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash; // Convert to 32-bit integer
+    }
+    
+    return colors[Math.abs(hash) % colors.length];
+  }
 </script>
 
 {#if isOpen}
@@ -136,12 +160,8 @@
           <div class="card bg-base-200 border border-base-300 mb-4">
             <div class="card-body p-4">
               <div class="flex items-center gap-3">
-                <div class="avatar placeholder">
-                  <div class="bg-neutral text-neutral-content rounded-full w-12 h-12">
-                    <span class="text-sm font-medium">
-                      {(user.name || user.username || '??').split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2)}
-                    </span>
-                  </div>
+                <div class="{getAvatarColor(user.id)} rounded-full w-12 h-12 grid place-content-center">
+                  {(user.name || user.username || '??').split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2)}
                 </div>
                 <div>
                   <div class="font-medium text-base-content">{user.name || user.username}</div>

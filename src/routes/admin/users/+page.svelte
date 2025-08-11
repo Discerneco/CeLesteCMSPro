@@ -147,6 +147,30 @@
       default: return 'badge-neutral';
     }
   }
+
+  // Generate consistent random color for user avatar
+  function getAvatarColor(userId: string) {
+    const colors = [
+      'bg-primary text-primary-content',
+      'bg-secondary text-secondary-content', 
+      'bg-accent text-accent-content',
+      'bg-info text-info-content',
+      'bg-success text-success-content',
+      'bg-warning text-warning-content',
+      'bg-error text-error-content',
+      'bg-neutral text-neutral-content'
+    ];
+    
+    // Simple hash function to get consistent color based on userId
+    let hash = 0;
+    for (let i = 0; i < userId.length; i++) {
+      const char = userId.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash; // Convert to 32-bit integer
+    }
+    
+    return colors[Math.abs(hash) % colors.length];
+  }
 </script>
 
 <!-- Page Header -->
@@ -236,12 +260,8 @@
               <!-- Name -->
               <div>
                 <div class="flex items-center gap-3">
-                  <div class="avatar placeholder">
-                    <div class="bg-neutral text-neutral-content rounded-full w-10 h-10">
-                      <span class="text-sm font-medium">
-                        {user.name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2)}
-                      </span>
-                    </div>
+                  <div class="{getAvatarColor(user.id)} rounded-full w-10 h-10 grid place-content-center">
+                    {user.name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2)}
                   </div>
                   <div class="min-w-0">
                     <div class="font-medium text-base-content">{user.name}</div>
