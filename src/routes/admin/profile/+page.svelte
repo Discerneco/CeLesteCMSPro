@@ -129,7 +129,7 @@
     <div class="space-y-8">
       <!-- User Avatar and Basic Info -->
       <div class="flex items-center gap-6 p-6 bg-base-200 rounded-lg">
-        <div class="{getAvatarColor(data.user.id)} rounded-full w-20 h-20 grid place-content-center text-2xl font-bold">
+        <div class="{getAvatarColor(data.user.id)} rounded-full w-16 h-16 grid place-content-center text-xl">
           {data.user.name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2)}
         </div>
         <div class="flex-1">
