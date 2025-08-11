@@ -14,7 +14,12 @@
   let isLoading = $state(false);
   let isCheckingContent = $state(false);
   let error = $state('');
-  let linkedContent = $state(null);
+  let linkedContent = $state({
+    hasContent: false,
+    posts: { count: 0 },
+    media: { count: 0 },
+    reassignmentOptions: []
+  });
   let contentAction = $state('delete_all'); // 'delete_all', 'reassign', 'anonymous'
   let selectedReassignUser = $state('');
 
@@ -24,7 +29,12 @@
     if (isOpen && user) {
       console.log('Resetting modal state and checking linked content');
       error = '';
-      linkedContent = null;
+      linkedContent = {
+        hasContent: false,
+        posts: { count: 0 },
+        media: { count: 0 },
+        reassignmentOptions: []
+      };
       contentAction = 'delete_all';
       selectedReassignUser = '';
       checkLinkedContent();
@@ -206,10 +216,10 @@
                 <div>
                   <div class="font-medium">{m.users_delete_has_content()}</div>
                   <div class="mt-2 space-y-1">
-                    {#if linkedContent.posts && linkedContent.posts.count > 0}
+                    {#if linkedContent.posts.count > 0}
                       <div class="text-sm">• {formatCount(linkedContent.posts.count, 'posts')}</div>
                     {/if}
-                    {#if linkedContent.media && linkedContent.media.count > 0}
+                    {#if linkedContent.media.count > 0}
                       <div class="text-sm">• {formatCount(linkedContent.media.count, 'media')}</div>
                     {/if}
                   </div>
