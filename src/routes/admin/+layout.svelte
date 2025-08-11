@@ -25,7 +25,7 @@
   import { page } from '$app/stores';
 
   // Svelte 5 children prop for slot replacement
-  let { children } = $props();
+  let { children, data } = $props();
 
   // Modern Svelte 5 runes state management
   let theme = $state('light');
@@ -59,6 +59,38 @@
   function isActiveRoute(route) {
     return $page.url.pathname === route || $page.url.pathname.startsWith(route === '/admin' ? '/admin' : route + '/');
   }
+
+  // Generate consistent random color for user avatar
+  function getAvatarColor(userId) {
+    const colors = [
+      'bg-primary text-primary-content',
+      'bg-secondary text-secondary-content', 
+      'bg-accent text-accent-content',
+      'bg-info text-info-content',
+      'bg-success text-success-content',
+      'bg-warning text-warning-content',
+      'bg-error text-error-content',
+      'bg-neutral text-neutral-content'
+    ];
+    
+    // Simple hash function to get consistent color based on userId
+    let hash = 0;
+    for (let i = 0; i < userId.length; i++) {
+      const char = userId.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash; // Convert to 32-bit integer
+    }
+    
+    return colors[Math.abs(hash) % colors.length];
+  }
+
+  // Get user initials (2 letters)
+  function getUserInitials(user) {
+    if (!user) return '??';
+    
+    const name = [user.firstName, user.lastName].filter(Boolean).join(' ') || user.username || user.email;
+    return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || '??';
+  }
 </script>
 
 <div class="h-screen flex flex-col bg-base-200" data-theme={theme}>
@@ -90,11 +122,16 @@
       
       <div class="dropdown dropdown-end">
         <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
-          <div class="bg-primary text-primary-content rounded-full w-8 h-8 grid place-content-center">
-            A
+          <div class="{data?.user ? getAvatarColor(data.user.id) : 'bg-primary text-primary-content'} rounded-full w-8 h-8 grid place-content-center">
+            {data?.user ? getUserInitials(data.user) : '??'}
           </div>
         </div>
         <ul tabindex="-1" class="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52">
+          {#if data?.user}
+            <li class="menu-title">
+              <span class="text-xs">{data.user.username ? '@' + data.user.username : data.user.email}</span>
+            </li>
+          {/if}
           <li><a href="/admin/profile">{m.user_menu_profile()}</a></li>
           <li><a href="/admin/settings">{m.user_menu_settings()}</a></li>
           <li><button onclick={handleLogout} class="w-full text-left px-4 py-2 hover:bg-base-200">{m.user_menu_logout()}</button></li>

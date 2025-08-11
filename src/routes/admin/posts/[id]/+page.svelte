@@ -142,7 +142,7 @@
           <div class="flex items-center gap-3">
             {#if post.authorData}
               <div class="{getAvatarColor(post.authorData.id)} rounded-full w-8 h-8 grid place-content-center">
-                {post.authorData.name.charAt(0).toUpperCase()}
+                {post.authorData.name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2)}
               </div>
               <div>
                 <div class="text-sm font-medium">{post.authorData.name}</div>
