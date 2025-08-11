@@ -28,6 +28,23 @@
   
   // Svelte 5 runes for state management
   let viewMode = $state('grid');
+  
+  // Load view mode from localStorage on mount
+  $effect(() => {
+    if (typeof window !== 'undefined') {
+      const savedViewMode = localStorage.getItem('media-view-mode');
+      if (savedViewMode === 'list' || savedViewMode === 'grid') {
+        viewMode = savedViewMode;
+      }
+    }
+  });
+  
+  // Save view mode to localStorage when changed
+  $effect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('media-view-mode', viewMode);
+    }
+  });
   let selectedMedia = $state(null);
   let searchQuery = $state('');
   let showUploadModal = $state(false);
@@ -113,26 +130,38 @@
       });
       
       if (response.ok) {
-        // Success - update local reactive state to trigger UI update
-        const mediaResponse = await fetch('/api/media');
-        if (mediaResponse.ok) {
-          const updatedMedia = await mediaResponse.json();
-          mediaData = updatedMedia; // Update reactive state
-          showSuccessToast(`Successfully deleted "${mediaToDelete.name}"`);
-        } else {
-          // Fallback to reload if refresh fails
+        // Close both modals immediately after successful deletion
+        const itemName = mediaToDelete.name;
+        closeDeleteModal();
+        closeMediaDetails(); // Also close the media view modal
+        
+        // Then update the media list
+        try {
+          const mediaResponse = await fetch('/api/media');
+          if (mediaResponse.ok) {
+            const updatedMedia = await mediaResponse.json();
+            mediaData = updatedMedia; // Update reactive state
+            showSuccessToast(`Successfully deleted "${itemName}"`);
+          } else {
+            // Fallback to reload if refresh fails
+            showSuccessToast(`Successfully deleted "${itemName}"`);
+            window.location.reload();
+          }
+        } catch (refreshErr) {
+          console.error('Error refreshing media list:', refreshErr);
+          showSuccessToast(`Successfully deleted "${itemName}"`);
           window.location.reload();
         }
       } else {
         const error = await response.text();
         console.error('Failed to delete media:', error);
         alert('Failed to delete media. Please try again.');
+        closeDeleteModal(); // Ensure modal closes even on API error
       }
     } catch (err) {
       console.error('Error deleting media:', err);
       alert('An error occurred while deleting. Please try again.');
-    } finally {
-      closeDeleteModal();
+      closeDeleteModal(); // Ensure modal closes even on network error
     }
   };
 
@@ -315,7 +344,7 @@
 <div class="cms-page-header">
   <div>
     <h1 class="cms-page-title">{m.media_title()}</h1>
-    <p class="cms-page-subtitle">{m.media_subtitle()}</p>
+    <p class="cms-page-subtitle">{m.media_item_count({ count: filteredMedia.length })}</p>
   </div>
   <button 
     onclick={openUploadModal}
@@ -326,12 +355,12 @@
   </button>
 </div>
 
-<!-- Media Display -->
-<div class="cms-card">
-  <div class="cms-card-body">
-    <!-- Search and Controls - integrated inside content card -->
-    <div class="flex flex-col md:flex-row gap-4 mb-6 pb-4 border-b border-base-200">
-      <div class="cms-search-container flex-1">
+<!-- Search and Filter Bar -->
+<div class="cms-table-container">
+  <div class="px-6 py-4 border-b border-base-200">
+    <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+      <!-- Search -->
+      <div class="cms-search-container">
         <Search class="cms-search-icon" />
         <input
           type="text"
@@ -341,6 +370,7 @@
         />
       </div>
       
+      <!-- Controls -->
       <div class="flex gap-2">
         <div class="dropdown dropdown-end">
           <div tabindex="0" role="button" class="cms-btn-utility">
@@ -367,21 +397,19 @@
         </div>
       </div>
     </div>
-    
-    <div class="flex justify-between mb-4">
-      <span class="text-sm text-base-content/60">
-        {m.media_item_count({ count: filteredMedia.length })}
-      </span>
+  </div>
+  
+  {#if filteredMedia.length === 0}
+    <!-- Empty State -->
+    <div class="flex flex-col items-center justify-center py-12">
+      <Image class="h-12 w-12 mx-auto text-base-content/40" />
+      <p class="mt-4 text-base-content/60">{m.media_no_results()}</p>
     </div>
-    
-    {#if filteredMedia.length === 0}
-      <div class="text-center py-12">
-        <Image class="h-12 w-12 mx-auto text-base-content/40" />
-        <p class="mt-4 text-base-content/60">{m.media_no_results()}</p>
-      </div>
-    {:else if viewMode === 'grid'}
-      <!-- Grid View -->
-      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+  {:else if viewMode === 'grid'}
+    <!-- Grid View -->
+    <div class="cms-card">
+      <div class="cms-card-body">
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {#each filteredMedia as item}
           <div 
             class="cursor-pointer group relative rounded-lg overflow-hidden border border-base-200 hover:border-base-300 transition-colors"
@@ -442,108 +470,102 @@
             </div>
           </div>
         {/each}
+        </div>
       </div>
-    {:else}
-      <!-- List View -->
-      <div class="overflow-x-auto">
-        <table class="table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Dimensions</th>
-              <th>Size</th>
-              <th>Uploaded</th>
-              <th class="text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {#each filteredMedia as item}
-              <tr 
-                class="hover cursor-pointer"
-                onclick={() => openMediaDetails(item)}
-              >
-                <td>
-                  <div class="flex items-center gap-3">
-                    <div class="h-10 w-10 bg-base-200 rounded overflow-hidden flex items-center justify-center">
-                      {#if item.type === 'image' && item.thumbnail}
-                        <img 
-                          src={item.thumbnail} 
-                          alt={item.altText || item.name} 
-                          class="w-full h-full object-cover"
-                        />
-                      {:else}
-                        {@const IconComponent = getFileIcon(item.type)}
-                        <IconComponent class="h-5 w-5 text-base-content/40" />
-                      {/if}
-                    </div>
-                    <span class="truncate">{item.name}</span>
-                  </div>
-                </td>
-                <td class="text-base-content/60">
-                  {item.dimensions || '-'}
-                </td>
-                <td class="text-base-content/60">
-                  {item.size}
-                </td>
-                <td class="text-base-content/60">
-                  {item.uploaded}
-                </td>
-                <td>
-                  <div class="flex justify-end gap-1">
-                    <button 
-                      class="btn btn-ghost btn-sm btn-square"
-                      onclick={(e) => {
-                        e.stopPropagation();
-                        openMediaDetails(item);
-                      }}
-                    >
-                      <Eye class="h-4 w-4" />
-                    </button>
-                    <button 
-                      class="btn btn-ghost btn-sm btn-square"
-                      onclick={(e) => {
-                        e.stopPropagation();
-                        editMedia(item);
-                      }}
-                    >
-                      <Edit class="h-4 w-4" />
-                    </button>
-                    <button 
-                      class="btn btn-ghost btn-sm btn-square text-error hover:bg-error hover:text-error-content"
-                      onclick={(e) => {
-                        e.stopPropagation();
-                        confirmDelete(item);
-                      }}
-                    >
-                      <Trash2 class="h-4 w-4" />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            {/each}
-          </tbody>
-        </table>
-      </div>
-    {/if}
-    
-    <!-- Pagination -->
-    <div class="flex justify-between items-center mt-6">
-      <button class="btn btn-outline btn-sm" disabled>
-        <ChevronLeft class="h-4 w-4" />
-        Previous
-      </button>
-      
-      <div class="flex items-center">
-        <span class="btn btn-sm btn-active">1</span>
-        <span class="px-3 text-sm text-base-content/60">of 1</span>
-      </div>
-      
-      <button class="btn btn-outline btn-sm" disabled>
-        Next
-        <ChevronRight class="h-4 w-4" />
-      </button>
     </div>
-  </div>
+  {:else}
+    <!-- List View -->
+    <!-- Table Header -->
+    <div class="cms-table-header">
+      <div class="hidden md:grid items-center gap-2 cms-table-header-text" style="grid-template-columns: minmax(200px, 2fr) minmax(100px, 1fr) minmax(80px, 1fr) minmax(100px, 1fr) minmax(100px, 1fr);">
+        <div>Name</div>
+        <div class="text-center">Dimensions</div>
+        <div class="text-center">Size</div>
+        <div class="text-center">Uploaded</div>
+        <div class="flex justify-end">
+          <div class="flex items-center gap-1">
+            <div class="w-8 h-4"></div> <!-- Spacer for first icon -->
+            <div class="w-8 h-4 flex justify-center text-xs font-medium">Actions</div> <!-- Text above middle icon -->
+            <div class="w-8 h-4"></div> <!-- Spacer for third icon -->
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Table Body - Desktop -->
+    <div class="hidden md:block divide-y divide-base-content/10">
+      {#each filteredMedia as item}
+        <div class="cms-table-row">
+          <div class="grid items-center gap-2" style="grid-template-columns: minmax(200px, 2fr) minmax(100px, 1fr) minmax(80px, 1fr) minmax(100px, 1fr) minmax(100px, 1fr);">
+            <!-- Name -->
+            <div class="flex items-center gap-3 cursor-pointer" onclick={() => openMediaDetails(item)}>
+              {#if item.type === 'image' && item.thumbnail}
+                <img 
+                  src={item.thumbnail} 
+                  alt={item.altText || item.name}
+                  class="w-10 h-10 object-cover rounded"
+                />
+              {:else}
+                {@const IconComponent = getFileIcon(item.type)}
+                <div class="w-10 h-10 flex items-center justify-center bg-base-200 rounded">
+                  <IconComponent class="h-5 w-5 text-base-content/60" />
+                </div>
+              {/if}
+              <div class="min-w-0">
+                <div class="font-medium text-base-content truncate">{item.name}</div>
+                <div class="text-sm text-base-content/60">ID: {item.id}</div>
+              </div>
+            </div>
+            
+            <!-- Dimensions -->
+            <div class="text-center">
+              <span class="text-base-content">{item.dimensions || 'N/A'}</span>
+            </div>
+            
+            <!-- Size -->
+            <div class="text-center">
+              <span class="text-base-content">{item.size}</span>
+            </div>
+            
+            <!-- Uploaded -->
+            <div class="text-center">
+              <span class="text-base-content/70">{item.uploaded}</span>
+            </div>
+            
+            <!-- Actions -->
+            <div>
+              <div class="flex items-center gap-1 justify-end">
+                <button 
+                  onclick={() => openMediaDetails(item)}
+                  class="cms-btn-icon"
+                  title="View"
+                  aria-label="View media"
+                >
+                  <Eye class="h-4 w-4" />
+                </button>
+                <button 
+                  onclick={() => editMedia(item)}
+                  class="cms-btn-icon"
+                  title="Edit"
+                  aria-label="Edit media"
+                >
+                  <Edit class="h-4 w-4" />
+                </button>
+                <button 
+                  onclick={() => confirmDelete(item)}
+                  class="cms-btn-icon-danger"
+                  title="Delete"
+                  aria-label="Delete media"
+                >
+                  <Trash2 class="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      {/each}
+    </div>
+  {/if}
 </div>
 
 <!-- Media Details Modal -->

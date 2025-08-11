@@ -1,0 +1,281 @@
+{
+  "systemInfo": {
+    "operatingSystem": "darwin",
+    "windsurfVersion": "1.8.2",
+    "ideName": "windsurf",
+    "timestamp": "2025-05-12T23:48:46.303Z",
+    "installationId": "450a3c68-90bf-4f45-a55d-0c2e148de038"
+  },
+  "userSettings": {
+    "openMostRecentChatConversation": false,
+    "lastSelectedModel": "MODEL_UNSPECIFIED",
+    "themePreference": "THEME_PREFERENCE_UNSPECIFIED",
+    "extensionPanelTab": "EXTENSION_PANEL_TAB_UNSPECIFIED",
+    "fontSize": "FONT_SIZE_UNSPECIFIED",
+    "autocompleteSpeed": "AUTOCOMPLETE_SPEED_UNSPECIFIED",
+    "rememberLastModelSelection": "REMEMBER_LAST_MODEL_SELECTION_UNSPECIFIED",
+    "lastSelectedModelName": "",
+    "lastSelectedCascadeModel": "MODEL_CLAUDE_3_7_SONNET_20250219_THINKING",
+    "cascadeNuxStates": [
+      {
+        "event": "CASCADE_NUX_EVENT_TOOL_CALL"
+      },
+      {
+        "event": "CASCADE_NUX_EVENT_WEB_SEARCH"
+      },
+      {
+        "event": "CASCADE_NUX_EVENT_MODEL_SELECTOR_NUX"
+      }
+    ],
+    "cascadePlannerMode": "CONVERSATIONAL_PLANNER_MODE_DEFAULT",
+    "cascadeAllowedCommands": [],
+    "cascadeDeniedCommands": [],
+    "userNuxStates": [],
+    "cascadeWebSearchDisabled": false,
+    "disableAutocomplete": false,
+    "disableSupercomplete": false,
+    "disableSelectionPopup": false,
+    "disableExplainProblemInlayHint": false,
+    "disableInlayHintShortcuts": false,
+    "disableOpenCascadeOnReload": false,
+    "disableAutoOpenEditedFiles": false,
+    "disableTabToJump": true,
+    "cascadeAutoExecutionPolicy": "CASCADE_COMMANDS_AUTO_EXECUTION_AUTO",
+    "lastSelectedCascadeId": "7f2e2488-ed50-4295-a102-2f7cce25e54d",
+    "explainAndFixInCurrentConversation": false,
+    "allowCascadeAccessGitignoreFiles": false,
+    "disableCascadeAutoFixLints": false,
+    "disableCascadeBrowserPreviews": false,
+    "detectProxy": false,
+    "disableTabToImport": false,
+    "useClipboardForCompletions": false,
+    "disableHighlightAfterAccept": false,
+    "lastSelectedNewConvoTab": "",
+    "disableAutoGenerateMemories": false,
+    "enableSoundsForSpecialEvents": false,
+    "enableTabSounds": false,
+    "allowCascadeInBackground": false,
+    "tabToJump": "TAB_TO_JUMP_UNSPECIFIED",
+    "cascadeWebSearch": "CASCADE_WEB_SEARCH_TOOL_UNSPECIFIED",
+    "enableTerminalCompletion": false,
+    "lastModelOverride": "MODEL_CHAT_GPT_4_1_2025_04_14",
+    "featureUsageData": {
+      "CASCADE_REVERT_TO_STEP": {
+        "hasUsed": true
+      },
+      "CASCADE_WEB_AT_MENTION": {
+        "hasUsed": true
+      },
+      "CASCADE_CLICK_MODEL_SELECTOR": {
+        "hasUsed": true
+      },
+      "CASCADE_MESSAGE_FEEDBACK": {
+        "hasUsed": true
+      },
+      "CASCADE_BROWSER": {
+        "hasUsed": true
+      }
+    },
+    "disableCascadeInBackground": false
+  },
+  "extensionLogs": [
+    "2025-05-12 19:47:53.843 [info] 2025/05/12 19:47:53 maxprocs: Leaving GOMAXPROCS=8: CPU quota undefined",
+    "2025-05-12 19:47:54.184 [info] I0512 19:47:54.184421  5034 main.go:585] Setting GOMAXPROCS to 4",
+    "2025-05-12 19:47:54.186 [info] I0512 19:47:54.185971  5034 main.go:800] Starting language server process with pid 5034",
+    "2025-05-12 19:47:54.187 [info] I0512 19:47:54.187386  5034 server.go:269] Language server will attempt to listen on host 127.0.0.1",
+    "2025-05-12 19:47:54.188 [info] I0512 19:47:54.188507  5034 server.go:276] Language server listening on random port at 59460",
+    "2025-05-12 19:47:55.044 [info] I0512 19:47:55.044005  5034 server.go:387] Created extension server client at port 59457",
+    "2025-05-12 19:47:59.930 [info] I0512 19:47:59.929974  5034 server.go:946] Local search is enabled, will index local files.",
+    "2025-05-12 19:47:59.930 [info] I0512 19:47:59.929999  5034 server.go:950] Using 2 indexer workers",
+    "2025-05-12 19:47:59.964 [info] (Windsurf) 2025-05-12 19:47:59.962 [INFO]: Language server started",
+    "2025-05-12 19:48:00.243 [info] (Windsurf) 2025-05-12 19:48:00.243 [INFO]: LS lspClient started successfully",
+    "2025-05-12 19:48:00.715 [info] E0512 19:48:00.714704  5034 interceptor.go:70] /exa.language_server_pb.LanguageServerService/GetUserStatus (unknown): api server wire error: ERROR: prepared statement \"stmtcache_05e38697e5146b036838093360a6128fac46ec4494993c1a\" already exists (SQLSTATE 42P05): ERROR: prepared statement \"stmtcache_05e38697e5146b036838093360a6128fac46ec4494993c1a\" already exists (SQLSTATE 42P05)",
+    "2025-05-12 19:48:18.908 [info] E0512 19:48:18.907288  5034 interceptor.go:70] /exa.language_server_pb.LanguageServerService/StreamCascadePanelReactiveUpdates (unknown): reactive component 720927e3-a3d6-4339-ba24-0ccff593a083 not found",
+    "2025-05-12 19:48:19.320 [info] E0512 19:48:19.320273  5034 interceptor.go:70] /exa.language_server_pb.LanguageServerService/GetUserStatus (unknown): api server wire error: ERROR: prepared statement \"stmtcache_05e38697e5146b036838093360a6128fac46ec4494993c1a\" already exists (SQLSTATE 42P05): ERROR: prepared statement \"stmtcache_05e38697e5146b036838093360a6128fac46ec4494993c1a\" already exists (SQLSTATE 42P05)",
+    "2025-05-12 19:48:19.533 [info] E0512 19:48:19.533251  5034 interceptor.go:70] /exa.language_server_pb.LanguageServerService/GetUserStatus (unknown): api server wire error: ERROR: prepared statement \"stmtcache_05e38697e5146b036838093360a6128fac46ec4494993c1a\" already exists (SQLSTATE 42P05): ERROR: prepared statement \"stmtcache_05e38697e5146b036838093360a6128fac46ec4494993c1a\" already exists (SQLSTATE 42P05)",
+    "2025-05-12 19:48:19.541 [info] E0512 19:48:19.541276  5034 interceptor.go:70] /exa.language_server_pb.LanguageServerService/GetCascadeModelConfigs (unknown): api server wire error: ERROR: prepared statement \"stmtcache_05e38697e5146b036838093360a6128fac46ec4494993c1a\" already exists (SQLSTATE 42P05): ERROR: prepared statement \"stmtcache_05e38697e5146b036838093360a6128fac46ec4494993c1a\" already exists (SQLSTATE 42P05)",
+    "2025-05-12 19:48:19.750 [info] E0512 19:48:19.749302  5034 interceptor.go:70] /exa.language_server_pb.LanguageServerService/GetCascadeModelConfigs (unknown): api server wire error: ERROR: prepared statement \"stmtcache_05e38697e5146b036838093360a6128fac46ec4494993c1a\" already exists (SQLSTATE 42P05): ERROR: prepared statement \"stmtcache_05e38697e5146b036838093360a6128fac46ec4494993c1a\" already exists (SQLSTATE 42P05)",
+    "2025-05-12 19:48:46.290 [info] E0512 19:48:46.289287  5034 interceptor.go:70] /exa.language_server_pb.LanguageServerService/GetUserStatus (unknown): api server wire error: ERROR: prepared statement \"stmtcache_05e38697e5146b036838093360a6128fac46ec4494993c1a\" already exists (SQLSTATE 42P05): ERROR: prepared statement \"stmtcache_05e38697e5146b036838093360a6128fac46ec4494993c1a\" already exists (SQLSTATE 42P05)"
+  ],
+  "languageServerDiagnostics": {
+    "logs": [
+      "I0512 19:47:54.184421  5034 main.go:585] Setting GOMAXPROCS to 4\n",
+      "I0512 19:47:54.185971  5034 main.go:800] Starting language server process with pid 5034\n",
+      "I0512 19:47:54.187386  5034 server.go:269] Language server will attempt to listen on host 127.0.0.1\n",
+      "I0512 19:47:54.188507  5034 server.go:276] Language server listening on random port at 59460\n",
+      "I0512 19:47:55.044005  5034 server.go:387] Created extension server client at port 59457\n",
+      "I0512 19:47:59.929974  5034 server.go:946] Local search is enabled, will index local files.\n",
+      "I0512 19:47:59.929999  5034 server.go:950] Using 2 indexer workers\n",
+      "E0512 19:48:00.714704  5034 interceptor.go:70] /exa.language_server_pb.LanguageServerService/GetUserStatus (unknown): api server wire error: ERROR: prepared statement \"stmtcache_05e38697e5146b036838093360a6128fac46ec4494993c1a\" already exists (SQLSTATE 42P05): ERROR: prepared statement \"stmtcache_05e38697e5146b036838093360a6128fac46ec4494993c1a\" already exists (SQLSTATE 42P05)\n",
+      "E0512 19:48:18.907288  5034 interceptor.go:70] /exa.language_server_pb.LanguageServerService/StreamCascadePanelReactiveUpdates (unknown): reactive component 720927e3-a3d6-4339-ba24-0ccff593a083 not found\n",
+      "E0512 19:48:19.320273  5034 interceptor.go:70] /exa.language_server_pb.LanguageServerService/GetUserStatus (unknown): api server wire error: ERROR: prepared statement \"stmtcache_05e38697e5146b036838093360a6128fac46ec4494993c1a\" already exists (SQLSTATE 42P05): ERROR: prepared statement \"stmtcache_05e38697e5146b036838093360a6128fac46ec4494993c1a\" already exists (SQLSTATE 42P05)\n",
+      "E0512 19:48:19.533251  5034 interceptor.go:70] /exa.language_server_pb.LanguageServerService/GetUserStatus (unknown): api server wire error: ERROR: prepared statement \"stmtcache_05e38697e5146b036838093360a6128fac46ec4494993c1a\" already exists (SQLSTATE 42P05): ERROR: prepared statement \"stmtcache_05e38697e5146b036838093360a6128fac46ec4494993c1a\" already exists (SQLSTATE 42P05)\n",
+      "E0512 19:48:19.541276  5034 interceptor.go:70] /exa.language_server_pb.LanguageServerService/GetCascadeModelConfigs (unknown): api server wire error: ERROR: prepared statement \"stmtcache_05e38697e5146b036838093360a6128fac46ec4494993c1a\" already exists (SQLSTATE 42P05): ERROR: prepared statement \"stmtcache_05e38697e5146b036838093360a6128fac46ec4494993c1a\" already exists (SQLSTATE 42P05)\n",
+      "E0512 19:48:19.749302  5034 interceptor.go:70] /exa.language_server_pb.LanguageServerService/GetCascadeModelConfigs (unknown): api server wire error: ERROR: prepared statement \"stmtcache_05e38697e5146b036838093360a6128fac46ec4494993c1a\" already exists (SQLSTATE 42P05): ERROR: prepared statement \"stmtcache_05e38697e5146b036838093360a6128fac46ec4494993c1a\" already exists (SQLSTATE 42P05)\n",
+      "E0512 19:48:46.289287  5034 interceptor.go:70] /exa.language_server_pb.LanguageServerService/GetUserStatus (unknown): api server wire error: ERROR: prepared statement \"stmtcache_05e38697e5146b036838093360a6128fac46ec4494993c1a\" already exists (SQLSTATE 42P05): ERROR: prepared statement \"stmtcache_05e38697e5146b036838093360a6128fac46ec4494993c1a\" already exists (SQLSTATE 42P05)\n"
+    ]
+  },
+  "recentTrajectories": [
+    {
+      "cascadeId": "ede453b8-d885-4657-a2b7-256c6b2553e4",
+      "trajectoryId": "488b1a39-c7f3-4f7b-b877-b03f3fb351b0",
+      "summary": "Cloudflare Setup for CeLesteCMS Pro",
+      "lastStepIndex": 219,
+      "lastModifiedTime": "2025-05-12T23:44:44.313Z"
+    },
+    {
+      "cascadeId": "dabcecd6-3a6c-4e22-a2ca-eda048624a8b",
+      "trajectoryId": "b5d0d854-4973-4ded-82ad-22362c076bd8",
+      "summary": "Implementing Authentication in CeLesteCMS Pro",
+      "lastStepIndex": 212,
+      "lastModifiedTime": "2025-05-12T22:09:10.337Z"
+    },
+    {
+      "cascadeId": "31ebe960-3a71-4be3-bdcf-fb11bdd3d44d",
+      "trajectoryId": "65ca0954-d0aa-43d0-b184-695612f41436",
+      "summary": "Adding Documentation for Security and Performance Checks",
+      "lastStepIndex": 42,
+      "lastModifiedTime": "2025-05-11T04:18:18.956Z"
+    },
+    {
+      "cascadeId": "54c2af81-efe8-49d3-ae42-772be402387f",
+      "trajectoryId": "489283c8-5e51-4c0e-9214-8a04f49db52d",
+      "summary": "Fixing Button Hover Issue  ",
+      "lastStepIndex": 42,
+      "lastModifiedTime": "2025-05-11T04:08:07.911Z"
+    },
+    {
+      "cascadeId": "307235cd-c140-42ea-95b8-3e4efb1b6458",
+      "trajectoryId": "e67b8af6-90dc-4d46-980c-81e25b01627e",
+      "summary": "Reverting Recent Merge Changes",
+      "lastStepIndex": 23,
+      "lastModifiedTime": "2025-05-11T03:57:03.376Z"
+    },
+    {
+      "cascadeId": "65084c87-dbf3-4a5a-bc98-2fde8154b821",
+      "trajectoryId": "b29841a5-9ad0-4647-a11d-060809ac454e",
+      "summary": "Merging Layout Branch Conflicts",
+      "lastStepIndex": 85,
+      "lastModifiedTime": "2025-05-11T03:52:49.284Z"
+    },
+    {
+      "cascadeId": "1a21d5c1-ebad-459f-ae3e-64e6ea1162a1",
+      "trajectoryId": "a6393046-e762-4b9f-b5f7-1f3aaa41491e",
+      "summary": "Checking Message File Changes",
+      "lastStepIndex": 58,
+      "lastModifiedTime": "2025-05-11T03:41:04.632Z"
+    },
+    {
+      "cascadeId": "9f6954f3-359f-44c8-915b-cf9f46194557",
+      "trajectoryId": "ca22dec6-80ac-448e-8371-f34460b55465",
+      "summary": "Implementing Localization in CeLesteCMS Pro",
+      "lastStepIndex": 310,
+      "lastModifiedTime": "2025-05-11T03:22:08.138Z"
+    },
+    {
+      "cascadeId": "419c2ffd-d044-4b8e-a47f-f52829883985",
+      "trajectoryId": "e71a9802-f5cb-4e60-9443-510bc24cd0ae",
+      "summary": "Diagnosing Login Page Crash",
+      "lastStepIndex": 97,
+      "lastModifiedTime": "2025-05-11T01:54:40.743Z"
+    },
+    {
+      "cascadeId": "ba862b67-f4c4-42cd-8eb8-908230f0b793",
+      "trajectoryId": "5e11ca57-ff9c-4294-bbf7-46344b4aff3c",
+      "summary": "Implementing Language Solution in CeLesteCMS Pro",
+      "lastStepIndex": 68,
+      "lastModifiedTime": "2025-05-11T00:50:08.201Z"
+    }
+  ],
+  "settingsSyncError": [
+    "USER SETTINGS SYNC",
+    "-------------",
+    "Differing fields: autocompleteSpeed, tabToJump, cascadeWebSearch",
+    "Note: Cascade NUX states have been omitted from the logs below",
+    "User settings (EXTENSION): {",
+    "  \"autocompleteSpeed\": \"AUTOCOMPLETE_SPEED_DEFAULT\",",
+    "  \"lastSelectedCascadeModel\": \"MODEL_CLAUDE_3_7_SONNET_20250219_THINKING\",",
+    "  \"cascadePlannerMode\": \"CONVERSATIONAL_PLANNER_MODE_DEFAULT\",",
+    "  \"disableTabToJump\": true,",
+    "  \"cascadeAutoExecutionPolicy\": \"CASCADE_COMMANDS_AUTO_EXECUTION_AUTO\",",
+    "  \"lastSelectedCascadeId\": \"7f2e2488-ed50-4295-a102-2f7cce25e54d\",",
+    "  \"tabToJump\": \"TAB_TO_JUMP_DISABLED\",",
+    "  \"cascadeWebSearch\": \"CASCADE_WEB_SEARCH_TOOL_DISABLED\",",
+    "  \"lastModelOverride\": \"MODEL_CHAT_GPT_4_1_2025_04_14\",",
+    "  \"featureUsageData\": {",
+    "    \"CASCADE_WEB_AT_MENTION\": {",
+    "      \"hasUsed\": true",
+    "    },",
+    "    \"CASCADE_CLICK_MODEL_SELECTOR\": {",
+    "      \"hasUsed\": true",
+    "    },",
+    "    \"CASCADE_MESSAGE_FEEDBACK\": {",
+    "      \"hasUsed\": true",
+    "    },",
+    "    \"CASCADE_BROWSER\": {",
+    "      \"hasUsed\": true",
+    "    },",
+    "    \"CASCADE_REVERT_TO_STEP\": {",
+    "      \"hasUsed\": true",
+    "    }",
+    "  }",
+    "}",
+    "User settings (MAIN THREAD): {",
+    "  \"autocompleteSpeed\": \"AUTOCOMPLETE_SPEED_FAST\",",
+    "  \"lastSelectedCascadeModel\": \"MODEL_CLAUDE_3_7_SONNET_20250219_THINKING\",",
+    "  \"cascadePlannerMode\": \"CONVERSATIONAL_PLANNER_MODE_DEFAULT\",",
+    "  \"disableTabToJump\": true,",
+    "  \"cascadeAutoExecutionPolicy\": \"CASCADE_COMMANDS_AUTO_EXECUTION_AUTO\",",
+    "  \"lastSelectedCascadeId\": \"7f2e2488-ed50-4295-a102-2f7cce25e54d\",",
+    "  \"tabToJump\": \"TAB_TO_JUMP_ENABLED\",",
+    "  \"cascadeWebSearch\": \"CASCADE_WEB_SEARCH_TOOL_ENABLED\",",
+    "  \"lastModelOverride\": \"MODEL_CHAT_GPT_4_1_2025_04_14\",",
+    "  \"featureUsageData\": {",
+    "    \"CASCADE_WEB_AT_MENTION\": {",
+    "      \"hasUsed\": true",
+    "    },",
+    "    \"CASCADE_CLICK_MODEL_SELECTOR\": {",
+    "      \"hasUsed\": true",
+    "    },",
+    "    \"CASCADE_MESSAGE_FEEDBACK\": {",
+    "      \"hasUsed\": true",
+    "    },",
+    "    \"CASCADE_BROWSER\": {",
+    "      \"hasUsed\": true",
+    "    },",
+    "    \"CASCADE_REVERT_TO_STEP\": {",
+    "      \"hasUsed\": true",
+    "    }",
+    "  }",
+    "}",
+    "User settings (LS): {",
+    "  \"autocompleteSpeed\": \"AUTOCOMPLETE_SPEED_DEFAULT\",",
+    "  \"lastSelectedCascadeModel\": \"MODEL_CLAUDE_3_7_SONNET_20250219_THINKING\",",
+    "  \"cascadePlannerMode\": \"CONVERSATIONAL_PLANNER_MODE_DEFAULT\",",
+    "  \"disableTabToJump\": true,",
+    "  \"cascadeAutoExecutionPolicy\": \"CASCADE_COMMANDS_AUTO_EXECUTION_AUTO\",",
+    "  \"lastSelectedCascadeId\": \"7f2e2488-ed50-4295-a102-2f7cce25e54d\",",
+    "  \"tabToJump\": \"TAB_TO_JUMP_DISABLED\",",
+    "  \"cascadeWebSearch\": \"CASCADE_WEB_SEARCH_TOOL_DISABLED\",",
+    "  \"lastModelOverride\": \"MODEL_CHAT_GPT_4_1_2025_04_14\",",
+    "  \"featureUsageData\": {",
+    "    \"CASCADE_REVERT_TO_STEP\": {",
+    "      \"hasUsed\": true",
+    "    },",
+    "    \"CASCADE_WEB_AT_MENTION\": {",
+    "      \"hasUsed\": true",
+    "    },",
+    "    \"CASCADE_CLICK_MODEL_SELECTOR\": {",
+    "      \"hasUsed\": true",
+    "    },",
+    "    \"CASCADE_MESSAGE_FEEDBACK\": {",
+    "      \"hasUsed\": true",
+    "    },",
+    "    \"CASCADE_BROWSER\": {",
+    "      \"hasUsed\": true",
+    "    }",
+    "  }",
+    "}",
+    "-------------"
+  ]
+}
