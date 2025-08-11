@@ -10,8 +10,7 @@
 
   let { data }: { data: PageData } = $props();
 
-  let searchQuery = $state(data.searchQuery || '');
-  let debounceTimeout: ReturnType<typeof setTimeout>;
+  let searchQuery = $state('');
   let activeTab = $state('users');
 
   // Modal states - separate $state variables for proper Svelte 5 reactivity
@@ -84,20 +83,17 @@
     window.location.reload();
   }
 
-  // Handle search with debouncing
-  function handleSearch() {
-    clearTimeout(debounceTimeout);
-    debounceTimeout = setTimeout(() => {
-      const url = new URL($page.url);
-      if (searchQuery.trim()) {
-        url.searchParams.set('search', searchQuery.trim());
-      } else {
-        url.searchParams.delete('search');
-      }
-      url.searchParams.set('page', '1'); // Reset to first page on search
-      goto(url.toString(), { replaceState: true });
-    }, 300);
-  }
+  // Filter users based on search query (client-side like media page)
+  let filteredUsers = $derived(
+    data.users?.filter((user: any) => {
+      const query = searchQuery.toLowerCase();
+      return (
+        user.name.toLowerCase().includes(query) ||
+        user.username.toLowerCase().includes(query) ||
+        user.email.toLowerCase().includes(query)
+      );
+    }) || []
+  );
 
   // Handle pagination
   function goToPage(pageNumber: number) {
@@ -218,7 +214,6 @@
             placeholder={m.users_search_placeholder()}
             class="cms-search-input"
             bind:value={searchQuery}
-            oninput={handleSearch}
           />
         </div>
         
@@ -253,8 +248,8 @@
     
     <!-- Table Body - Desktop -->
     <div class="hidden md:block divide-y divide-base-content/10">
-      {#if data.users.length > 0}
-        {#each data.users as user (user.id)}
+      {#if filteredUsers.length > 0}
+        {#each filteredUsers as user (user.id)}
           <div class="cms-table-row">
             <div class="grid items-center gap-2" style="grid-template-columns: minmax(220px, 2fr) minmax(180px, 1.5fr) minmax(100px, 1fr) minmax(100px, 1fr) minmax(120px, 1fr) minmax(120px, 1fr) minmax(100px, 1fr);">
               <!-- Name -->
@@ -386,12 +381,12 @@
       {/if}
     </div>
 
-    {#if data.users.length > 0}
+    {#if filteredUsers.length > 0}
       <!-- Pagination -->
       {#if data.pagination.totalPages > 1}
         <div class="flex items-center justify-between p-4 border-t border-base-300">
           <div class="text-sm text-base-content/70">
-            {m.users_showing({ count: data.users.length })} · 
+            {m.users_showing({ count: filteredUsers.length })} · 
             {m.users_page_info({ current: data.pagination.page, total: data.pagination.totalPages })}
           </div>
           
