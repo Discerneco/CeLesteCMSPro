@@ -1,6 +1,6 @@
 <script lang="ts">
   import * as m from '$lib/paraglide/messages';
-
+  
   let { 
     isOpen = $bindable(false),
     user = null,
@@ -11,70 +11,74 @@
     onUserDeleted?: (user: any) => void;
   } = $props();
 
+  // State management
   let isLoading = $state(false);
-  let isCheckingContent = $state(false);
+  let isLoadingContent = $state(false);
   let error = $state('');
-  let linkedContent = $state({
-    hasContent: false,
-    posts: { count: 0 },
-    media: { count: 0 },
-    reassignmentOptions: []
-  });
+  let loadError = $state('');
+  let linkedContent = $state<any>(null);
   let contentAction = $state('delete_all'); // 'delete_all', 'reassign', 'anonymous'
   let selectedReassignUser = $state('');
+  
+  // Track state to prevent duplicate fetches
+  let lastUserId = '';
 
-  // Reset state when modal opens/closes
+  // Handle modal open/close
   $effect(() => {
-    console.log('Modal state effect triggered:', { isOpen, user: user?.id });
-    if (isOpen && user) {
-      console.log('Resetting modal state and checking linked content');
+    if (isOpen && user?.id && user.id !== lastUserId) {
+      console.log('DeleteModal: Loading content for user:', user.id);
+      lastUserId = user.id;
+      loadLinkedContent();
+    } else if (!isOpen) {
+      // Reset state when modal closes
+      linkedContent = null;
+      loadError = '';
       error = '';
-      linkedContent = {
-        hasContent: false,
-        posts: { count: 0 },
-        media: { count: 0 },
-        reassignmentOptions: []
-      };
+      lastUserId = '';
       contentAction = 'delete_all';
       selectedReassignUser = '';
-      checkLinkedContent();
+      isLoadingContent = false;
     }
   });
 
-  async function checkLinkedContent() {
-    if (!user) {
-      console.log('No user provided to checkLinkedContent');
+  async function loadLinkedContent() {
+    if (!user?.id) {
+      console.error('DeleteModal: No user ID provided');
       return;
     }
     
-    console.log('Starting checkLinkedContent for user:', user.id);
-    isCheckingContent = true;
-    error = ''; // Clear any previous errors
+    isLoadingContent = true;
+    loadError = '';
     
     try {
-      console.log('Making API request to:', `/api/users/${user.id}/linked-content`);
+      console.log('DeleteModal: Fetching from API:', `/api/users/${user.id}/linked-content`);
       const response = await fetch(`/api/users/${user.id}/linked-content`);
-      console.log('API response status:', response.status, response.ok);
-      
       const result = await response.json();
-      console.log('API raw result:', result);
       
       if (!response.ok) {
-        console.error('API error response:', result);
-        error = result.error || 'Failed to check linked content';
-        return;
+        console.error('DeleteModal: API error:', result);
+        throw new Error(result.error || 'Failed to check linked content');
       }
       
-      console.log('Setting linkedContent to:', result.linkedContent);
-      linkedContent = result.linkedContent;
-      console.log('linkedContent set successfully:', linkedContent);
-      
+      console.log('DeleteModal: API success, data:', result.linkedContent);
+      linkedContent = result.linkedContent || {
+        hasContent: false,
+        posts: { count: 0, items: [] },
+        media: { count: 0, items: [] },
+        reassignmentOptions: []
+      };
     } catch (err) {
-      console.error('Fetch error in checkLinkedContent:', err);
-      error = `Failed to check linked content: ${err instanceof Error ? err.message : 'Unknown error'}`;
+      console.error('DeleteModal: Error loading content:', err);
+      loadError = err instanceof Error ? err.message : 'Failed to load linked content';
+      // Set default content on error so user can still delete
+      linkedContent = {
+        hasContent: false,
+        posts: { count: 0, items: [] },
+        media: { count: 0, items: [] },
+        reassignmentOptions: []
+      };
     } finally {
-      console.log('checkLinkedContent completed, setting isCheckingContent to false');
-      isCheckingContent = false;
+      isLoadingContent = false;
     }
   }
 
@@ -200,13 +204,30 @@
             </div>
           </div>
 
-          {#if isCheckingContent}
+          <!-- Linked Content Check -->
+          {#if isLoadingContent}
             <!-- Loading state -->
             <div class="flex items-center justify-center py-4">
               <span class="loading loading-spinner loading-md mr-2"></span>
               <span class="text-base-content/70">Checking linked content...</span>
             </div>
+          {:else if loadError}
+            <!-- Error state -->
+            <div class="alert alert-error mb-4">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.694-.833-2.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+              </svg>
+              <div>
+                <div>Failed to load linked content</div>
+                <div class="text-sm opacity-75">{loadError}</div>
+              </div>
+            </div>
+            <!-- Still show delete confirmation on error -->
+            <p class="text-base-content/70 mb-4">
+              {m.users_modal_delete_confirm()}
+            </p>
           {:else if linkedContent}
+            <!-- Success state -->
             {#if linkedContent.hasContent}
               <!-- Enhanced delete with content handling -->
               <div class="alert alert-warning mb-4">
@@ -216,10 +237,10 @@
                 <div>
                   <div class="font-medium">{m.users_delete_has_content()}</div>
                   <div class="mt-2 space-y-1">
-                    {#if linkedContent.posts.count > 0}
+                    {#if linkedContent.posts?.count > 0}
                       <div class="text-sm">• {formatCount(linkedContent.posts.count, 'posts')}</div>
                     {/if}
-                    {#if linkedContent.media.count > 0}
+                    {#if linkedContent.media?.count > 0}
                       <div class="text-sm">• {formatCount(linkedContent.media.count, 'media')}</div>
                     {/if}
                   </div>
@@ -228,9 +249,9 @@
 
               <!-- Content action selection -->
               <div class="form-control mb-4">
-                <label class="label">
+                <div class="label">
                   <span class="label-text font-medium">{m.users_delete_content_action()}</span>
-                </label>
+                </div>
                 <div class="space-y-2">
                   <label class="label cursor-pointer justify-start gap-3">
                     <input type="radio" name="contentAction" class="radio radio-primary" 
@@ -253,12 +274,12 @@
               <!-- User selection for reassignment -->
               {#if contentAction === 'reassign'}
                 <div class="form-control mb-4">
-                  <label class="label">
+                  <label class="label" for="reassign-user-select">
                     <span class="label-text">{m.users_delete_reassign_to()}</span>
                   </label>
-                  <select class="select select-bordered" bind:value={selectedReassignUser}>
+                  <select id="reassign-user-select" class="select select-bordered" bind:value={selectedReassignUser}>
                     <option value="">{m.users_delete_select_user()}</option>
-                    {#each linkedContent.reassignmentOptions as option}
+                    {#each linkedContent.reassignmentOptions || [] as option}
                       <option value={option.id}>{option.name} ({option.email})</option>
                     {/each}
                   </select>
@@ -270,6 +291,11 @@
                 {m.users_modal_delete_confirm()}
               </p>
             {/if}
+          {:else}
+            <!-- No data yet -->
+            <p class="text-base-content/70 mb-4">
+              {m.users_modal_delete_confirm()}
+            </p>
           {/if}
         </div>
       {/if}
@@ -287,7 +313,7 @@
           type="button" 
           class="btn btn-error"
           onclick={handleDelete}
-          disabled={isLoading || isCheckingContent || (contentAction === 'reassign' && !selectedReassignUser)}
+          disabled={isLoading || isLoadingContent || (contentAction === 'reassign' && !selectedReassignUser)}
         >
           {#if isLoading}
             <span class="loading loading-spinner loading-sm"></span>

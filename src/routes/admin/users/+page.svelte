@@ -5,7 +5,7 @@
   import * as m from '$lib/paraglide/messages';
   import type { PageData } from './$types';
   import UserModal from '$lib/components/users/UserModal.svelte';
-  import DeleteUserModal from '$lib/components/users/DeleteUserModal.svelte';
+  import SimpleDeleteModal from '$lib/components/users/SimpleDeleteModal.svelte';
   import UserDetailsModal from '$lib/components/users/UserDetailsModal.svelte';
 
   let { data }: { data: PageData } = $props();
@@ -753,7 +753,7 @@
   onUserUpdated={handleUserUpdated}
 />
 
-<DeleteUserModal 
+<SimpleDeleteModal 
   bind:isOpen={deleteModalOpen}
   user={deleteModalUser}
   onUserDeleted={handleUserDeleted}

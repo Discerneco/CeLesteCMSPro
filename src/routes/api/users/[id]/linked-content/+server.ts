@@ -46,6 +46,12 @@ export const GET: RequestHandler = async (event) => {
       .from(media)
       .where(eq(media.uploaderId, id));
     
+    // Debug: Log what we actually got from the queries
+    console.log('Posts query result type:', typeof userPosts, 'Is Array:', Array.isArray(userPosts));
+    console.log('Media query result type:', typeof userMedia, 'Is Array:', Array.isArray(userMedia));
+    console.log('Posts length:', userPosts?.length, 'First post:', userPosts?.[0]);
+    console.log('Media length:', userMedia?.length, 'First media:', userMedia?.[0]);
+    
     // Get list of other users for reassignment options (excluding the user being deleted)
     const otherUsers = await db
       .select({
@@ -67,10 +73,18 @@ export const GET: RequestHandler = async (event) => {
         email: user.email
       }));
     
+    // Ensure we have proper arrays and counts
+    const postsArray = Array.isArray(userPosts) ? userPosts : [];
+    const mediaArray = Array.isArray(userMedia) ? userMedia : [];
+    const postCount = postsArray.length || 0;
+    const mediaCount = mediaArray.length || 0;
+    
+    console.log('Final counts - Posts:', postCount, 'Media:', mediaCount);
+    
     const linkedContent = {
       posts: {
-        count: userPosts.length,
-        items: userPosts.map(post => ({
+        count: postCount,
+        items: postsArray.map(post => ({
           id: post.id,
           title: post.title,
           status: post.status,
@@ -78,18 +92,19 @@ export const GET: RequestHandler = async (event) => {
         }))
       },
       media: {
-        count: userMedia.length,
-        items: userMedia.map(file => ({
+        count: mediaCount,
+        items: mediaArray.map(file => ({
           id: file.id,
           filename: file.filename,
-          type: file.type,
+          type: file.type || file.mimeType,
           createdAt: file.createdAt
         }))
       },
       reassignmentOptions,
-      hasContent: userPosts.length > 0 || userMedia.length > 0
+      hasContent: postCount > 0 || mediaCount > 0
     };
     
+    console.log('API returning linkedContent:', JSON.stringify(linkedContent, null, 2));
     return json({ linkedContent });
     
   } catch (error) {
