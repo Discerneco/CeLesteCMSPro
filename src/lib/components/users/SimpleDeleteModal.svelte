@@ -11,32 +11,122 @@
     onUserDeleted?: (user: any) => void;
   } = $props();
 
-  // Simple state - no async for now
+  // State management
   let contentAction = $state('delete_all');
   let selectedTransferUser = $state('');
+  let isLoadingData = $state(false);
   
-  // Mock data for now - will be replaced with real data later
-  let contentCounts = {
-    posts: 1,
+  // Data that will be fetched
+  let contentCounts = $state({
+    posts: 0,
     media: 0,
     pages: 0,
     comments: 0
-  };
+  });
   
-  // Mock users for transfer dropdown
-  let availableUsers = [
-    { id: '1', name: 'Cesar Falcao', email: 'csfalcao@gmail.com' },
-    { id: '2', name: 'Admin User', email: 'admin@example.com' },
-    { id: '3', name: 'Pedro Falcao', email: 'pedro.amon.@gmail.com' }
-  ];
+  let availableUsers = $state<Array<{id: string, name: string, email: string}>>([]);
 
   // Watch for action changes using $derived
   let showTransferSelect = $derived(contentAction === 'transfer');
+  
+  // Track which user we're fetching for to prevent infinite loops
+  let fetchingForUserId = '';
+  let abortController: AbortController | null = null;
+  
+  // Fetch linked content when modal opens - using IIFE pattern for async in $effect
+  $effect(() => {
+    console.log('🔍 Effect triggered - isOpen:', isOpen, 'userId:', user?.id, 'fetchingForUserId:', fetchingForUserId);
+    
+    // Only fetch if modal is open, we have a user, and we haven't fetched for this user yet
+    if (isOpen && user?.id && fetchingForUserId !== user.id) {
+      console.log('✅ Conditions met - Starting fetch for user:', user.id);
+      // Mark that we're fetching for this user
+      fetchingForUserId = user.id;
+      
+      // Abort any previous request
+      if (abortController) {
+        abortController.abort();
+      }
+      
+      // Create new abort controller
+      abortController = new AbortController();
+      const { signal } = abortController;
+      
+      // Set loading state
+      isLoadingData = true;
+      
+      // Use IIFE to handle async operations in $effect
+      (async () => {
+        console.log('🚀 SimpleDeleteModal: Fetching linked content for user:', user.id);
+        
+        try {
+          const response = await fetch(`/api/users/${user.id}/linked-content`, { signal });
+          
+          // Check if request was aborted
+          if (signal.aborted) {
+            console.log('SimpleDeleteModal: Request aborted');
+            return;
+          }
+          
+          const result = await response.json();
+          
+          if (response.ok && result.linkedContent) {
+            console.log('✅ SimpleDeleteModal: Data loaded successfully:', result.linkedContent);
+            
+            // Update counts
+            contentCounts = {
+              posts: result.linkedContent.posts?.count || 0,
+              media: result.linkedContent.media?.count || 0,
+              pages: 0, // Not implemented yet
+              comments: 0 // Not implemented yet
+            };
+            
+            // Update available users for reassignment
+            if (result.linkedContent.reassignmentOptions) {
+              availableUsers = result.linkedContent.reassignmentOptions.map((opt: any) => ({
+                id: opt.id,
+                name: opt.name,
+                email: opt.email
+              }));
+            }
+            console.log('📊 Updated contentCounts:', contentCounts);
+            console.log('👥 Available users:', availableUsers);
+          } else {
+            console.error('❌ SimpleDeleteModal: API error:', result);
+          }
+        } catch (err: any) {
+          // Ignore abort errors
+          if (err?.name !== 'AbortError') {
+            console.error('❌ SimpleDeleteModal: Error fetching linked content:', err);
+          }
+          // Keep default values on error
+        } finally {
+          console.log('🏁 Fetch complete - Setting isLoadingData to false');
+          isLoadingData = false;
+        }
+      })(); // Execute the async function immediately
+    }
+    
+    // Reset when modal closes
+    if (!isOpen && fetchingForUserId) {
+      fetchingForUserId = '';
+      contentCounts = { posts: 0, media: 0, pages: 0, comments: 0 };
+      availableUsers = [];
+      isLoadingData = false;
+      
+      // Abort any pending request
+      if (abortController) {
+        abortController.abort();
+        abortController = null;
+      }
+    }
+  });
 
   function handleClose() {
     isOpen = false;
     contentAction = 'delete_all';
     selectedTransferUser = '';
+    // Data reset is handled in $effect when !isOpen
   }
 
   function handleDelete() {
@@ -112,91 +202,100 @@
       <!-- Linked Content Table -->
       <div class="mb-6">
         <h4 class="text-sm font-medium text-base-content/70 mb-3">Linked Content:</h4>
-        <div class="overflow-x-auto">
-          <table class="table table-compact w-full">
-            <thead>
-              <tr class="border-base-300">
-                <th class="text-center">Posts</th>
-                <th class="text-center">Media Files</th>
-                <th class="text-center">Pages</th>
-                <th class="text-center">Comments</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr class="border-base-300">
-                <td class="text-center font-medium text-lg">
-                  {#if contentCounts.posts > 0}
-                    <span class="text-warning">{contentCounts.posts}</span>
-                  {:else}
-                    <span class="text-base-content/30">0</span>
-                  {/if}
-                </td>
-                <td class="text-center font-medium text-lg">
-                  {#if contentCounts.media > 0}
-                    <span class="text-warning">{contentCounts.media}</span>
-                  {:else}
-                    <span class="text-base-content/30">0</span>
-                  {/if}
-                </td>
-                <td class="text-center font-medium text-lg">
-                  {#if contentCounts.pages > 0}
-                    <span class="text-warning">{contentCounts.pages}</span>
-                  {:else}
-                    <span class="text-base-content/30">0</span>
-                  {/if}
-                </td>
-                <td class="text-center font-medium text-lg">
-                  {#if contentCounts.comments > 0}
-                    <span class="text-warning">{contentCounts.comments}</span>
-                  {:else}
-                    <span class="text-base-content/30">0</span>
-                  {/if}
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- Action Selection -->
-      {#if contentCounts.posts > 0 || contentCounts.media > 0 || contentCounts.pages > 0 || contentCounts.comments > 0}
-        <div class="form-control mb-6">
-          <label class="label">
-            <span class="label-text font-medium">Content Action:</span>
-          </label>
-          <select class="select select-bordered w-full" bind:value={contentAction}>
-            <option value="delete_all">Delete all content</option>
-            <option value="transfer">Transfer content to another user</option>
-            <option value="anonymous">Make content anonymous</option>
-          </select>
-        </div>
-
-        <!-- Transfer User Selection (shown when transfer is selected) -->
-        {#if showTransferSelect}
-          <div class="form-control mb-6">
-            <label class="label">
-              <span class="label-text">Transfer to:</span>
-            </label>
-            <select class="select select-bordered w-full" bind:value={selectedTransferUser}>
-              <option value="">Select a user...</option>
-              {#each availableUsers as availableUser}
-                {#if availableUser.id !== user.id}
-                  <option value={availableUser.id}>
-                    {availableUser.name} ({availableUser.email})
-                  </option>
-                {/if}
-              {/each}
-            </select>
+        {#if isLoadingData}
+          <div class="flex items-center justify-center py-4">
+            <span class="loading loading-spinner loading-sm mr-2"></span>
+            <span class="text-base-content/60 text-sm">Loading content...</span>
+          </div>
+        {:else}
+          <div class="overflow-x-auto">
+            <table class="table table-compact w-full">
+              <thead>
+                <tr class="border-base-300">
+                  <th class="text-center">Posts</th>
+                  <th class="text-center">Media Files</th>
+                  <th class="text-center">Pages</th>
+                  <th class="text-center">Comments</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="border-base-300">
+                  <td class="text-center font-medium text-lg">
+                    {#if contentCounts.posts > 0}
+                      <span class="text-warning">{contentCounts.posts}</span>
+                    {:else}
+                      <span class="text-base-content/30">0</span>
+                    {/if}
+                  </td>
+                  <td class="text-center font-medium text-lg">
+                    {#if contentCounts.media > 0}
+                      <span class="text-warning">{contentCounts.media}</span>
+                    {:else}
+                      <span class="text-base-content/30">0</span>
+                    {/if}
+                  </td>
+                  <td class="text-center font-medium text-lg">
+                    {#if contentCounts.pages > 0}
+                      <span class="text-warning">{contentCounts.pages}</span>
+                    {:else}
+                      <span class="text-base-content/30">0</span>
+                    {/if}
+                  </td>
+                  <td class="text-center font-medium text-lg">
+                    {#if contentCounts.comments > 0}
+                      <span class="text-warning">{contentCounts.comments}</span>
+                    {:else}
+                      <span class="text-base-content/30">0</span>
+                    {/if}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         {/if}
-      {:else}
-        <!-- No linked content message -->
-        <div class="alert alert-info mb-6">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-          </svg>
-          <span>This user has no linked content.</span>
-        </div>
+      </div>
+
+      <!-- Action Selection - Only show after loading is complete -->
+      {#if !isLoadingData}
+        {#if contentCounts.posts > 0 || contentCounts.media > 0 || contentCounts.pages > 0 || contentCounts.comments > 0}
+          <div class="form-control mb-6">
+            <label class="label">
+              <span class="label-text font-medium">Content Action:</span>
+            </label>
+            <select class="select select-bordered w-full" bind:value={contentAction}>
+              <option value="delete_all">Delete all content</option>
+              <option value="transfer">Transfer content to another user</option>
+              <option value="anonymous">Make content anonymous</option>
+            </select>
+          </div>
+
+          <!-- Transfer User Selection (shown when transfer is selected) -->
+          {#if showTransferSelect}
+            <div class="form-control mb-6">
+              <label class="label">
+                <span class="label-text">Transfer to:</span>
+              </label>
+              <select class="select select-bordered w-full" bind:value={selectedTransferUser}>
+                <option value="">Select a user...</option>
+                {#each availableUsers as availableUser}
+                  {#if availableUser.id !== user.id}
+                    <option value={availableUser.id}>
+                      {availableUser.name} ({availableUser.email})
+                    </option>
+                  {/if}
+                {/each}
+              </select>
+            </div>
+          {/if}
+        {:else}
+          <!-- No linked content message -->
+          <div class="alert alert-info mb-6">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span>This user has no linked content.</span>
+          </div>
+        {/if}
       {/if}
 
       <!-- Confirmation Message -->
