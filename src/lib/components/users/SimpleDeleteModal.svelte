@@ -35,11 +35,8 @@
   
   // Fetch linked content when modal opens - using IIFE pattern for async in $effect
   $effect(() => {
-    console.log('🔍 Effect triggered - isOpen:', isOpen, 'userId:', user?.id, 'fetchingForUserId:', fetchingForUserId);
-    
     // Only fetch if modal is open, we have a user, and we haven't fetched for this user yet
     if (isOpen && user?.id && fetchingForUserId !== user.id) {
-      console.log('✅ Conditions met - Starting fetch for user:', user.id);
       // Mark that we're fetching for this user
       fetchingForUserId = user.id;
       
@@ -57,22 +54,18 @@
       
       // Use IIFE to handle async operations in $effect
       (async () => {
-        console.log('🚀 SimpleDeleteModal: Fetching linked content for user:', user.id);
         
         try {
           const response = await fetch(`/api/users/${user.id}/linked-content`, { signal });
           
           // Check if request was aborted
           if (signal.aborted) {
-            console.log('SimpleDeleteModal: Request aborted');
             return;
           }
           
           const result = await response.json();
           
           if (response.ok && result.linkedContent) {
-            console.log('✅ SimpleDeleteModal: Data loaded successfully:', result.linkedContent);
-            
             // Update counts
             contentCounts = {
               posts: result.linkedContent.posts?.count || 0,
@@ -89,19 +82,16 @@
                 email: opt.email
               }));
             }
-            console.log('📊 Updated contentCounts:', contentCounts);
-            console.log('👥 Available users:', availableUsers);
           } else {
-            console.error('❌ SimpleDeleteModal: API error:', result);
+            console.error('SimpleDeleteModal: Failed to load linked content:', result);
           }
         } catch (err: any) {
           // Ignore abort errors
           if (err?.name !== 'AbortError') {
-            console.error('❌ SimpleDeleteModal: Error fetching linked content:', err);
+            console.error('SimpleDeleteModal: Error fetching linked content:', err);
           }
           // Keep default values on error
         } finally {
-          console.log('🏁 Fetch complete - Setting isLoadingData to false');
           isLoadingData = false;
         }
       })(); // Execute the async function immediately
@@ -130,16 +120,14 @@
   }
 
   function handleDelete() {
-    console.log('Delete user with action:', contentAction);
-    if (contentAction === 'transfer') {
-      console.log('Transfer to user:', selectedTransferUser);
-    }
-    // For now just close the modal
+    // TODO: Implement actual delete functionality
+    // Will be implemented in Step 3
     handleClose();
   }
 
   function handleViewDetails() {
-    console.log('View details clicked');
+    // TODO: Implement view details functionality
+    // Will be implemented in Step 2
   }
 
   // Format role for display
@@ -259,10 +247,10 @@
       {#if !isLoadingData}
         {#if contentCounts.posts > 0 || contentCounts.media > 0 || contentCounts.pages > 0 || contentCounts.comments > 0}
           <div class="form-control mb-6">
-            <label class="label">
+            <label class="label" for="content-action-select">
               <span class="label-text font-medium">Content Action:</span>
             </label>
-            <select class="select select-bordered w-full" bind:value={contentAction}>
+            <select id="content-action-select" class="select select-bordered w-full" bind:value={contentAction}>
               <option value="delete_all">Delete all content</option>
               <option value="transfer">Transfer content to another user</option>
               <option value="anonymous">Make content anonymous</option>
@@ -272,10 +260,10 @@
           <!-- Transfer User Selection (shown when transfer is selected) -->
           {#if showTransferSelect}
             <div class="form-control mb-6">
-              <label class="label">
+              <label class="label" for="transfer-user-select">
                 <span class="label-text">Transfer to:</span>
               </label>
-              <select class="select select-bordered w-full" bind:value={selectedTransferUser}>
+              <select id="transfer-user-select" class="select select-bordered w-full" bind:value={selectedTransferUser}>
                 <option value="">Select a user...</option>
                 {#each availableUsers as availableUser}
                   {#if availableUser.id !== user.id}
