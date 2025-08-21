@@ -15,6 +15,7 @@
   let contentAction = $state('delete_all');
   let selectedTransferUser = $state('');
   let isLoadingData = $state(false);
+  let showDetails = $state(false);
   
   // Data that will be fetched
   let contentCounts = $state({
@@ -22,6 +23,15 @@
     media: 0,
     pages: 0,
     comments: 0
+  });
+  
+  // Detailed items for View Details
+  let contentItems = $state<{
+    posts: Array<{id: string, title: string, status: string, createdAt: Date}>,
+    media: Array<{id: string, filename: string, type: string, createdAt: Date}>
+  }>({
+    posts: [],
+    media: []
   });
   
   let availableUsers = $state<Array<{id: string, name: string, email: string}>>([]);
@@ -74,6 +84,12 @@
               comments: 0 // Not implemented yet
             };
             
+            // Update detailed items
+            contentItems = {
+              posts: result.linkedContent.posts?.items || [],
+              media: result.linkedContent.media?.items || []
+            };
+            
             // Update available users for reassignment
             if (result.linkedContent.reassignmentOptions) {
               availableUsers = result.linkedContent.reassignmentOptions.map((opt: any) => ({
@@ -101,8 +117,10 @@
     if (!isOpen && fetchingForUserId) {
       fetchingForUserId = '';
       contentCounts = { posts: 0, media: 0, pages: 0, comments: 0 };
+      contentItems = { posts: [], media: [] };
       availableUsers = [];
       isLoadingData = false;
+      showDetails = false;
       
       // Abort any pending request
       if (abortController) {
@@ -126,8 +144,7 @@
   }
 
   function handleViewDetails() {
-    // TODO: Implement view details functionality
-    // Will be implemented in Step 2
+    showDetails = !showDetails;
   }
 
   // Format role for display
@@ -138,6 +155,26 @@
       case 'author': return m.users_role_author();
       case 'subscriber': return m.users_role_subscriber();
       default: return role;
+    }
+  }
+  
+  // Format date for display
+  function formatDate(date: Date | string) {
+    const d = typeof date === 'string' ? new Date(date) : date;
+    return d.toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'short', 
+      day: 'numeric' 
+    });
+  }
+  
+  // Get status badge color
+  function getStatusColor(status: string) {
+    switch (status) {
+      case 'published': return 'badge-success';
+      case 'draft': return 'badge-warning';
+      case 'archived': return 'badge-neutral';
+      default: return 'badge-ghost';
     }
   }
 
@@ -240,6 +277,62 @@
               </tbody>
             </table>
           </div>
+          
+          <!-- Detailed View (shown when View Details is clicked) -->
+          {#if showDetails && !isLoadingData}
+            <div class="mt-4 space-y-4">
+              <!-- Posts Details -->
+              {#if contentItems.posts.length > 0}
+                <div class="collapse collapse-arrow border border-base-300 bg-base-200">
+                  <input type="checkbox" checked />
+                  <div class="collapse-title font-medium">
+                    Posts ({contentItems.posts.length})
+                  </div>
+                  <div class="collapse-content">
+                    <div class="space-y-2 pt-2">
+                      {#each contentItems.posts as post}
+                        <div class="flex items-center justify-between p-2 bg-base-100 rounded">
+                          <div class="flex-1">
+                            <span class="font-medium">{post.title}</span>
+                            <div class="text-xs text-base-content/60 mt-1">
+                              {formatDate(post.createdAt)}
+                            </div>
+                          </div>
+                          <span class="badge {getStatusColor(post.status)} badge-sm">
+                            {post.status}
+                          </span>
+                        </div>
+                      {/each}
+                    </div>
+                  </div>
+                </div>
+              {/if}
+              
+              <!-- Media Details -->
+              {#if contentItems.media.length > 0}
+                <div class="collapse collapse-arrow border border-base-300 bg-base-200">
+                  <input type="checkbox" checked />
+                  <div class="collapse-title font-medium">
+                    Media Files ({contentItems.media.length})
+                  </div>
+                  <div class="collapse-content">
+                    <div class="space-y-2 pt-2">
+                      {#each contentItems.media as file}
+                        <div class="flex items-center justify-between p-2 bg-base-100 rounded">
+                          <div class="flex-1">
+                            <span class="font-medium">{file.filename}</span>
+                            <div class="text-xs text-base-content/60 mt-1">
+                              {file.type} • {formatDate(file.createdAt)}
+                            </div>
+                          </div>
+                        </div>
+                      {/each}
+                    </div>
+                  </div>
+                </div>
+              {/if}
+            </div>
+          {/if}
         {/if}
       </div>
 
@@ -297,13 +390,17 @@
 
       <!-- Action Buttons -->
       <div class="modal-action justify-between">
-        <button 
-          type="button" 
-          class="btn btn-sm btn-ghost"
-          onclick={handleViewDetails}
-        >
-          View Details
-        </button>
+        {#if (contentCounts.posts > 0 || contentCounts.media > 0) && !isLoadingData}
+          <button 
+            type="button" 
+            class="btn btn-sm btn-ghost"
+            onclick={handleViewDetails}
+          >
+            {showDetails ? 'Hide Details' : 'View Details'}
+          </button>
+        {:else}
+          <div></div>
+        {/if}
         <div class="flex gap-2">
           <button 
             type="button" 
