@@ -16,6 +16,8 @@
   let selectedTransferUser = $state('');
   let isLoadingData = $state(false);
   let showDetails = $state(false);
+  let isDeleting = $state(false);
+  let deleteError = $state('');
   
   // Data that will be fetched
   let contentCounts = $state({
@@ -134,13 +136,54 @@
     isOpen = false;
     contentAction = 'delete_all';
     selectedTransferUser = '';
+    deleteError = '';
     // Data reset is handled in $effect when !isOpen
   }
 
-  function handleDelete() {
-    // TODO: Implement actual delete functionality
-    // Will be implemented in Step 3
-    handleClose();
+  async function handleDelete() {
+    if (!user?.id) return;
+    
+    isDeleting = true;
+    deleteError = '';
+    
+    try {
+      // Prepare request body based on content action
+      const requestBody: any = {};
+      
+      if (contentCounts.posts > 0 || contentCounts.media > 0) {
+        requestBody.contentAction = contentAction;
+        
+        if (contentAction === 'transfer' && selectedTransferUser) {
+          requestBody.reassignToUserId = selectedTransferUser;
+        }
+      }
+      
+      const response = await fetch(`/api/users/${user.id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(requestBody)
+      });
+      
+      const result = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to delete user');
+      }
+      
+      // Success! Call the callback and close modal
+      if (onUserDeleted) {
+        onUserDeleted(user);
+      }
+      
+      handleClose();
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      deleteError = error instanceof Error ? error.message : 'Failed to delete user';
+    } finally {
+      isDeleting = false;
+    }
   }
 
   function handleViewDetails() {
@@ -223,6 +266,16 @@
           </div>
         </div>
       </div>
+      
+      <!-- Error Display -->
+      {#if deleteError}
+        <div class="alert alert-error mb-4">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <span>{deleteError}</span>
+        </div>
+      {/if}
 
       <!-- Linked Content Table -->
       <div class="mb-6">
@@ -406,6 +459,7 @@
             type="button" 
             class="btn btn-ghost" 
             onclick={handleClose}
+            disabled={isDeleting}
           >
             Cancel
           </button>
@@ -413,9 +467,14 @@
             type="button" 
             class="btn btn-error"
             onclick={handleDelete}
-            disabled={showTransferSelect && !selectedTransferUser}
+            disabled={isDeleting || (showTransferSelect && !selectedTransferUser)}
           >
-            Delete User
+            {#if isDeleting}
+              <span class="loading loading-spinner loading-sm"></span>
+              Deleting...
+            {:else}
+              Delete User
+            {/if}
           </button>
         </div>
       </div>
