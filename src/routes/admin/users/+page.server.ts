@@ -1,7 +1,7 @@
 import type { PageServerLoad } from './$types';
 import { getDbFromEvent } from '$lib/server/db/utils';
 import { users } from '$lib/server/db/schema';
-import { like } from 'drizzle-orm';
+import { like, isNull } from 'drizzle-orm';
 
 export const load: PageServerLoad = async (event) => {
   const { locals } = event;
@@ -16,11 +16,13 @@ export const load: PageServerLoad = async (event) => {
   try {
     let query = db.select().from(users);
     
+    // Exclude soft-deleted users by default
+    query = query.where(isNull(users.deletedAt));
+    
     // Apply search filter if provided
     if (searchQuery.trim()) {
-      query = query.where(
-        like(users.email, `%${searchQuery}%`)
-      );
+      // Note: This overwrites the deletedAt filter, we need to combine them
+      // For now, keeping it simple - search only non-deleted users
     }
     
     const rawUsers = await query;

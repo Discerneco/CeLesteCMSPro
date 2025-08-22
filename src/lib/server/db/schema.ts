@@ -32,6 +32,8 @@ export const users = sqliteTable('users', {
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
   updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
   lastLogin: integer('last_login', { mode: 'timestamp' }),
+  deletedAt: integer('deleted_at', { mode: 'timestamp' }),
+  deletedBy: text('deleted_by'),
   preferences: text('preferences', { mode: 'json' }).$type<{
     language?: string,
     theme?: string,
@@ -93,11 +95,13 @@ export const posts = sqliteTable('posts', {
   featuredImageId: text('featured_image_id').references(() => media.id),
   authorId: text('author_id').notNull().references(() => users.id),
   contentTypeId: text('content_type_id').notNull().references(() => contentTypes.id),
-  status: text('status', { enum: ['draft', 'published', 'archived'] }).notNull().default('draft'),
+  status: text('status', { enum: ['draft', 'published', 'archived', 'trash'] }).notNull().default('draft'),
   featured: integer('featured', { mode: 'boolean' }).notNull().default(false),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
   updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
   publishedAt: integer('published_at', { mode: 'timestamp' }),
+  trashedAt: integer('trashed_at', { mode: 'timestamp' }),
+  trashedBy: text('trashed_by').references(() => users.id),
   metaData: text('meta_data', { mode: 'json' }).$type<{
     title?: string,
     description?: string,

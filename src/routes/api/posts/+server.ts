@@ -1,7 +1,7 @@
 import { json } from '@sveltejs/kit';
 import { getDbFromEvent } from '$lib/server/db/utils';
 import { posts, users, contentTypes } from '$lib/server/db/schema';
-import { eq } from 'drizzle-orm';
+import { eq, ne } from 'drizzle-orm';
 import type { RequestHandler } from './$types';
 
 /**
@@ -36,6 +36,7 @@ export const GET: RequestHandler = async (event) => {
       })
       .from(posts)
       .leftJoin(users, eq(posts.authorId, users.id))
+      .where(ne(posts.status, 'trash')) // Exclude trashed posts
       .orderBy(posts.createdAt);
 
     // Transform the data to match our UI expectations

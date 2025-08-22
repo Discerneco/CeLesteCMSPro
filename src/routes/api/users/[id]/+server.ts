@@ -1,7 +1,7 @@
 import { json } from '@sveltejs/kit';
 import { eq, inArray } from 'drizzle-orm';
 import { getDbFromEvent } from '$lib/server/db/utils';
-import { users, posts, media, postCategories, postTags } from '$lib/server/db/schema';
+import { users, posts, media, postCategories, postTags, sessions } from '$lib/server/db/schema';
 import { hashPassword } from '$lib/server/auth-oslo';
 import type { RequestHandler } from './$types';
 
@@ -141,25 +141,21 @@ export const DELETE: RequestHandler = async (event) => {
     // Handle linked content based on the selected action
     if (contentAction) {
       if (contentAction === 'delete_all') {
-        // First, get all post IDs for this user
-        const userPosts = await db
-          .select({ id: posts.id })
-          .from(posts)
+        // Move posts to trash instead of deleting
+        await db
+          .update(posts)
+          .set({ 
+            status: 'trash',
+            trashedAt: new Date(),
+            trashedBy: event.locals.user?.id // Current user doing the deletion
+          })
           .where(eq(posts.authorId, id));
         
-        if (userPosts.length > 0) {
-          const postIds = userPosts.map(p => p.id);
-          
-          // Delete from junction tables first (many-to-many relationships)
-          await db.delete(postCategories).where(inArray(postCategories.postId, postIds));
-          await db.delete(postTags).where(inArray(postTags.postId, postIds));
-          
-          // Now delete the posts
-          await db.delete(posts).where(eq(posts.authorId, id));
-        }
-        
-        // Delete media files
-        await db.delete(media).where(eq(media.uploaderId, id));
+        // Media: Set uploaderId to null (anonymous)
+        await db
+          .update(media)
+          .set({ uploaderId: null })
+          .where(eq(media.uploaderId, id));
         
       } else if (contentAction === 'transfer' && reassignToUserId) {
         // Validate reassignment user exists and is active
@@ -185,23 +181,15 @@ export const DELETE: RequestHandler = async (event) => {
           .where(eq(media.uploaderId, id));
         
       } else if (contentAction === 'anonymous') {
-        // For posts: delete them since authorId cannot be null (notNull constraint)
-        // First, get all post IDs for this user
-        const userPosts = await db
-          .select({ id: posts.id })
-          .from(posts)
+        // For posts: move to trash (can't have null author)
+        await db
+          .update(posts)
+          .set({ 
+            status: 'trash',
+            trashedAt: new Date(),
+            trashedBy: event.locals.user?.id
+          })
           .where(eq(posts.authorId, id));
-        
-        if (userPosts.length > 0) {
-          const postIds = userPosts.map(p => p.id);
-          
-          // Delete from junction tables first
-          await db.delete(postCategories).where(inArray(postCategories.postId, postIds));
-          await db.delete(postTags).where(inArray(postTags.postId, postIds));
-          
-          // Now delete the posts
-          await db.delete(posts).where(eq(posts.authorId, id));
-        }
         
         // For media: set uploaderId to null (allowed)
         await db
@@ -211,15 +199,23 @@ export const DELETE: RequestHandler = async (event) => {
       }
     }
     
-    // Delete user (sessions will cascade delete automatically)
+    // Soft delete user (mark as deleted instead of removing)
     const result = await db
-      .delete(users)
+      .update(users)
+      .set({ 
+        deletedAt: new Date(),
+        deletedBy: event.locals.user?.id,
+        active: false // Also deactivate to prevent login
+      })
       .where(eq(users.id, id))
       .returning();
     
     if (result.length === 0) {
       return json({ error: 'Failed to delete user' }, { status: 500 });
     }
+    
+    // Delete sessions to force logout
+    await db.delete(sessions).where(eq(sessions.userId, id));
     
     return json({ message: 'User deleted successfully' });
   } catch (error) {
