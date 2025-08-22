@@ -1,7 +1,7 @@
 import { json } from '@sveltejs/kit';
-import { eq } from 'drizzle-orm';
+import { eq, inArray } from 'drizzle-orm';
 import { getDbFromEvent } from '$lib/server/db/utils';
-import { users, posts, media } from '$lib/server/db/schema';
+import { users, posts, media, postCategories, postTags } from '$lib/server/db/schema';
 import { hashPassword } from '$lib/server/auth-oslo';
 import type { RequestHandler } from './$types';
 
@@ -141,11 +141,27 @@ export const DELETE: RequestHandler = async (event) => {
     // Handle linked content based on the selected action
     if (contentAction) {
       if (contentAction === 'delete_all') {
-        // Delete all posts and media by this user
-        await db.delete(posts).where(eq(posts.authorId, id));
+        // First, get all post IDs for this user
+        const userPosts = await db
+          .select({ id: posts.id })
+          .from(posts)
+          .where(eq(posts.authorId, id));
+        
+        if (userPosts.length > 0) {
+          const postIds = userPosts.map(p => p.id);
+          
+          // Delete from junction tables first (many-to-many relationships)
+          await db.delete(postCategories).where(inArray(postCategories.postId, postIds));
+          await db.delete(postTags).where(inArray(postTags.postId, postIds));
+          
+          // Now delete the posts
+          await db.delete(posts).where(eq(posts.authorId, id));
+        }
+        
+        // Delete media files
         await db.delete(media).where(eq(media.uploaderId, id));
         
-      } else if (contentAction === 'reassign' && reassignToUserId) {
+      } else if (contentAction === 'transfer' && reassignToUserId) {
         // Validate reassignment user exists and is active
         const reassignUser = await db
           .select({ id: users.id })
@@ -170,9 +186,24 @@ export const DELETE: RequestHandler = async (event) => {
         
       } else if (contentAction === 'anonymous') {
         // For posts: delete them since authorId cannot be null (notNull constraint)
-        // For media: set uploaderId to null (allowed)
-        await db.delete(posts).where(eq(posts.authorId, id));
+        // First, get all post IDs for this user
+        const userPosts = await db
+          .select({ id: posts.id })
+          .from(posts)
+          .where(eq(posts.authorId, id));
         
+        if (userPosts.length > 0) {
+          const postIds = userPosts.map(p => p.id);
+          
+          // Delete from junction tables first
+          await db.delete(postCategories).where(inArray(postCategories.postId, postIds));
+          await db.delete(postTags).where(inArray(postTags.postId, postIds));
+          
+          // Now delete the posts
+          await db.delete(posts).where(eq(posts.authorId, id));
+        }
+        
+        // For media: set uploaderId to null (allowed)
         await db
           .update(media)
           .set({ uploaderId: null })
