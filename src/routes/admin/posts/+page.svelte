@@ -10,7 +10,8 @@
     ChevronRight,
     Star
   } from '@lucide/svelte';
-  import { goto } from '$app/navigation';
+  import { goto, replaceState } from '$app/navigation';
+  import { page } from '$app/stores';
   
   // Import i18n with modern Paraglide pattern
   import * as m from '$lib/paraglide/messages';
@@ -18,35 +19,134 @@
   // Get data from load function (Svelte 5 runes mode)
   let { data } = $props();
   
+  // State for active tab - initialize from URL
+  let activeTab = $state($page.url.searchParams.get('tab') || 'all'); // 'all' or 'trash'
+  let trashedPosts = $state([]);
+  let loadingTrash = $state(false);
+  
+  // State for delete confirmation modal
+  let showDeleteModal = $state(false);
+  let postToDelete = $state(null);
+  let deleteIsPermanent = $state(false);
+  
+  // Function to switch tabs and update URL
+  function switchTab(tab) {
+    activeTab = tab;
+    const url = new URL($page.url);
+    if (tab === 'trash') {
+      url.searchParams.set('tab', 'trash');
+    } else {
+      url.searchParams.delete('tab');
+    }
+    // Use SvelteKit's replaceState instead of window.history.replaceState
+    replaceState(url.toString(), {});
+  }
+  
+  // Load trashed posts when switching to trash tab
+  async function loadTrashedPosts() {
+    loadingTrash = true;
+    try {
+      const response = await fetch('/api/posts/trash');
+      if (response.ok) {
+        trashedPosts = await response.json();
+      }
+    } catch (err) {
+      console.error('Error loading trashed posts:', err);
+    } finally {
+      loadingTrash = false;
+    }
+  }
+  
+  // Restore a post from trash
+  async function handleRestore(postId) {
+    try {
+      const response = await fetch(`/api/posts/${postId}/restore`, {
+        method: 'PUT'
+      });
+      
+      if (response.ok) {
+        // Reload both lists to ensure data is fresh
+        await loadTrashedPosts();
+        // Also reload the main page to get updated posts
+        window.location.reload();
+      } else {
+        console.error('Failed to restore post');
+      }
+    } catch (err) {
+      console.error('Error restoring post:', err);
+    }
+  }
+  
+  // Load trash posts on mount to get the count
+  $effect(() => {
+    // Always load trash posts on mount to show correct count
+    loadTrashedPosts();
+  });
+  
   // Simple functions for handling actions
   function handleEdit(postId) {
-    goto(`/admin/posts/${postId}/edit`);
+    // Preserve tab state in return URL
+    const returnUrl = activeTab === 'trash' ? '?tab=trash' : '';
+    goto(`/admin/posts/${postId}/edit?return=/admin/posts${returnUrl}`);
   }
   
   function handleView(postId) {
-    goto(`/admin/posts/${postId}`);
+    // For trashed posts, just show them in a simple view mode
+    // We'll pass the tab state in the URL
+    const tabParam = activeTab === 'trash' ? '?tab=trash' : '';
+    goto(`/admin/posts/${postId}/view${tabParam}`);
   }
   
-  async function handleDelete(postId) {
-    if (confirm(m.posts_delete_confirm())) {
-      try {
-        const response = await fetch(`/api/posts/${postId}`, {
-          method: 'DELETE'
-        });
-        
-        if (response.ok) {
-          // Success - reload posts data
-          window.location.reload();
-        } else {
-          const error = await response.text();
-          console.error('Failed to delete post:', error);
-          alert('Failed to delete post. Please try again.');
+  function handleDelete(postId) {
+    postToDelete = postId;
+    deleteIsPermanent = activeTab === 'trash';
+    showDeleteModal = true;
+  }
+  
+  async function confirmDelete() {
+    if (!postToDelete) return;
+    
+    try {
+      const endpoint = deleteIsPermanent
+        ? `/api/posts/${postToDelete}?permanent=true`
+        : `/api/posts/${postToDelete}`;
+      
+      
+      const response = await fetch(endpoint, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
         }
-      } catch (err) {
-        console.error('Error deleting post:', err);
-        alert('An error occurred while deleting. Please try again.');
+      });
+      
+      const result = await response.json();
+      
+      if (response.ok) {
+        // Success - reload both lists to update counts
+        if (activeTab === 'trash') {
+          // If deleting from trash, just reload trash
+          await loadTrashedPosts();
+        } else {
+          // If moving to trash, reload both lists
+          await loadTrashedPosts();
+          window.location.reload();
+        }
+      } else {
+        console.error('Failed to delete post:', result);
+        alert(`Failed to delete post: ${result.error || 'Unknown error'}`);
       }
+    } catch (err) {
+      console.error('Error deleting post:', err);
+      alert('An error occurred while deleting. Please try again.');
+    } finally {
+      showDeleteModal = false;
+      postToDelete = null;
     }
+  }
+  
+  function cancelDelete() {
+    showDeleteModal = false;
+    postToDelete = null;
   }
   
   function handleNewPost() {
@@ -89,7 +189,13 @@
 <div class="cms-page-header">
   <div>
     <h1 class="cms-page-title">{m.posts_title()}</h1>
-    <p class="cms-page-subtitle">{m.posts_showing({ count: data.posts?.length || 0 })}</p>
+    <p class="cms-page-subtitle">
+      {#if activeTab === 'all'}
+        {m.posts_showing({ count: data.posts?.length || 0 })}
+      {:else}
+        Showing {trashedPosts.length} trashed post{trashedPosts.length !== 1 ? 's' : ''}
+      {/if}
+    </p>
   </div>
   <button 
     onclick={handleNewPost}
@@ -97,6 +203,22 @@
   >
     <Plus class="h-4 w-4" />
     {m.posts_new_post()}
+  </button>
+</div>
+
+<!-- Tabs -->
+<div class="flex gap-1 mb-4 border-b border-base-300">
+  <button 
+    class="px-4 py-2 font-medium transition-colors {activeTab === 'all' ? 'border-b-2 border-primary text-primary' : 'text-base-content/70 hover:text-base-content'}"
+    onclick={() => switchTab('all')}
+  >
+    All Posts ({data.posts?.length || 0})
+  </button>
+  <button 
+    class="px-4 py-2 font-medium transition-colors {activeTab === 'trash' ? 'border-b-2 border-primary text-primary' : 'text-base-content/70 hover:text-base-content'}"
+    onclick={() => switchTab('trash')}
+  >
+    Trash ({trashedPosts.length})
   </button>
 </div>
 
@@ -144,7 +266,7 @@
   <!-- Table Body - Desktop -->
   <div class="hidden md:block divide-y divide-base-content/10">
     {#if data.posts && data.posts.length > 0}
-      {#each data.posts as post}
+      {#each (activeTab === 'all' ? data.posts : trashedPosts) as post}
         <div class="cms-table-row">
           <div class="grid items-center gap-2" style="grid-template-columns: minmax(200px, 2fr) minmax(80px, 1fr) minmax(100px, 1fr) minmax(100px, 1fr) minmax(80px, 1fr);">
             <!-- Title -->
@@ -186,24 +308,46 @@
             <!-- Actions -->
             <div>
               <div class="flex items-center gap-1 justify-end">
-                <button 
-                  onclick={() => handleEdit(post.id)}
-                  class="cms-btn-icon"
-                  title={m.posts_action_edit()}
-                >
-                  <Edit class="h-4 w-4" />
-                </button>
-                <button 
-                  onclick={() => handleView(post.id)}
-                  class="cms-btn-icon"
-                  title={m.posts_action_view()}
-                >
-                  <Eye class="h-4 w-4" />
-                </button>
+                {#if activeTab === 'trash'}
+                  <!-- View and Restore buttons for trashed posts -->
+                  <button 
+                    onclick={() => handleView(post.id)}
+                    class="cms-btn-icon"
+                    title="View"
+                  >
+                    <Eye class="h-4 w-4" />
+                  </button>
+                  <button 
+                    onclick={() => handleRestore(post.id)}
+                    class="cms-btn-icon text-success"
+                    title="Restore"
+                    aria-label="Restore post"
+                  >
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                    </svg>
+                  </button>
+                {:else}
+                  <!-- Edit and View buttons for normal posts -->
+                  <button 
+                    onclick={() => handleEdit(post.id)}
+                    class="cms-btn-icon"
+                    title={m.posts_action_edit()}
+                  >
+                    <Edit class="h-4 w-4" />
+                  </button>
+                  <button 
+                    onclick={() => handleView(post.id)}
+                    class="cms-btn-icon"
+                    title={m.posts_action_view()}
+                  >
+                    <Eye class="h-4 w-4" />
+                  </button>
+                {/if}
                 <button 
                   onclick={() => handleDelete(post.id)}
                   class="cms-btn-icon-danger"
-                  title={m.posts_action_delete()}
+                  title={activeTab === 'trash' ? 'Delete Permanently' : m.posts_action_delete()}
                 >
                   <Trash2 class="h-4 w-4" />
                 </button>
@@ -235,7 +379,7 @@
   <!-- Mobile Card Layout -->
   <div class="md:hidden space-y-4">
     {#if data.posts && data.posts.length > 0}
-      {#each data.posts as post}
+      {#each (activeTab === 'all' ? data.posts : trashedPosts) as post}
         <div class="bg-base-100 rounded-lg border border-base-200 p-4">
           <!-- Card Header -->
           <div class="flex items-start justify-between mb-3">
@@ -265,29 +409,51 @@
           
           <!-- Card Actions -->
           <div class="flex items-center justify-end gap-1 pt-2 border-t border-base-200">
-            <button 
-              onclick={() => handleEdit(post.id)}
-              class="cms-btn-icon"
-              title={m.posts_action_edit()}
-            >
-              <Edit class="h-4 w-4" />
-              <span class="sr-only">{m.posts_action_edit()}</span>
-            </button>
-            <button 
-              onclick={() => handleView(post.id)}
-              class="cms-btn-icon"
-              title={m.posts_action_view()}
-            >
-              <Eye class="h-4 w-4" />
-              <span class="sr-only">{m.posts_action_view()}</span>
-            </button>
+            {#if activeTab === 'trash'}
+              <button 
+                onclick={() => handleView(post.id)}
+                class="cms-btn-icon"
+                title="View"
+              >
+                <Eye class="h-4 w-4" />
+                <span class="sr-only">View</span>
+              </button>
+              <button 
+                onclick={() => handleRestore(post.id)}
+                class="cms-btn-icon text-success"
+                title="Restore"
+                aria-label="Restore post"
+              >
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                </svg>
+                <span class="sr-only">Restore</span>
+              </button>
+            {:else}
+              <button 
+                onclick={() => handleEdit(post.id)}
+                class="cms-btn-icon"
+                title={m.posts_action_edit()}
+              >
+                <Edit class="h-4 w-4" />
+                <span class="sr-only">{m.posts_action_edit()}</span>
+              </button>
+              <button 
+                onclick={() => handleView(post.id)}
+                class="cms-btn-icon"
+                title={m.posts_action_view()}
+              >
+                <Eye class="h-4 w-4" />
+                <span class="sr-only">{m.posts_action_view()}</span>
+              </button>
+            {/if}
             <button 
               onclick={() => handleDelete(post.id)}
               class="cms-btn-icon-danger"
-              title={m.posts_action_delete()}
+              title={activeTab === 'trash' ? 'Delete Permanently' : m.posts_action_delete()}
             >
               <Trash2 class="h-4 w-4" />
-              <span class="sr-only">{m.posts_action_delete()}</span>
+              <span class="sr-only">{activeTab === 'trash' ? 'Delete Permanently' : m.posts_action_delete()}</span>
             </button>
           </div>
         </div>
@@ -331,5 +497,36 @@
       <ChevronRight class="h-4 w-4" />
     </button>
   </div>
+</div>
+{/if}
+
+<!-- Delete Confirmation Modal -->
+{#if showDeleteModal}
+<div class="modal modal-open">
+  <div class="modal-box">
+    <h3 class="font-bold text-lg">
+      {deleteIsPermanent ? 'Permanently Delete Post' : 'Delete Post'}
+    </h3>
+    <p class="py-4">
+      {deleteIsPermanent 
+        ? 'This action cannot be undone. The post will be permanently deleted.'
+        : m.posts_delete_confirm()}
+    </p>
+    <div class="modal-action">
+      <button 
+        onclick={cancelDelete}
+        class="btn btn-outline"
+      >
+        Cancel
+      </button>
+      <button 
+        onclick={confirmDelete}
+        class="btn btn-error"
+      >
+        {deleteIsPermanent ? 'Delete Permanently' : 'Move to Trash'}
+      </button>
+    </div>
+  </div>
+  <div class="modal-backdrop" onclick={cancelDelete}></div>
 </div>
 {/if}

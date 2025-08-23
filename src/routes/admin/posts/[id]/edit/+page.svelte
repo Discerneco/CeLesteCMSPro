@@ -291,6 +291,8 @@
                 <option value="draft">{m.posts_form_status_draft()}</option>
                 <option value="published">{m.posts_form_status_published()}</option>
                 <option value="scheduled">{m.posts_form_status_scheduled()}</option>
+                <option value="archived">Archived</option>
+                <option value="trash">Trash</option>
               </select>
             </div>
           </div>

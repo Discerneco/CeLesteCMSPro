@@ -169,12 +169,19 @@ export const PUT: RequestHandler = async (event) => {
 export const DELETE: RequestHandler = async (event) => {
   const db = getDbFromEvent(event);
   const postId = event.params.id;
+  const url = new URL(event.request.url);
+  const permanent = url.searchParams.get('permanent') === 'true';
+  
+  console.log('DELETE endpoint called:', { postId, permanent, url: url.toString() });
   
   try {
     // Check if user is authenticated
     if (!event.locals.user?.isAuthenticated) {
+      console.log('User not authenticated');
       return json({ error: 'Authentication required' }, { status: 401 });
     }
+
+    console.log('User authenticated:', event.locals.user?.id);
 
     // Check if post exists
     const existingPost = await db
@@ -183,21 +190,46 @@ export const DELETE: RequestHandler = async (event) => {
       .where(eq(posts.id, postId))
       .limit(1);
 
+    console.log('Existing post found:', existingPost.length > 0, existingPost[0]?.status);
+
     if (existingPost.length === 0) {
       return json({ error: 'Post not found' }, { status: 404 });
     }
 
-    // Delete the post
-    await db
-      .delete(posts)
-      .where(eq(posts.id, postId));
+    if (permanent) {
+      console.log('Attempting permanent deletion for post:', postId);
+      // Permanent deletion (from trash)
+      const deleteResult = await db
+        .delete(posts)
+        .where(eq(posts.id, postId))
+        .returning();
+      console.log('Delete result:', deleteResult);
+    } else {
+      console.log('Moving post to trash:', postId);
+      // Move to trash
+      const updateResult = await db
+        .update(posts)
+        .set({ 
+          status: 'trash',
+          trashedAt: new Date(),
+          trashedBy: event.locals.user?.id
+        })
+        .where(eq(posts.id, postId))
+        .returning();
+      console.log('Update result:', updateResult);
+    }
 
+    const message = permanent ? 'Post permanently deleted' : 'Post moved to trash';
+    console.log('Success:', message);
+    
     return json({ 
-      message: 'Post deleted successfully' 
+      message,
+      success: true 
     });
 
   } catch (error) {
-    console.error('Error deleting post:', error);
+    console.error('Error deleting post - Full error:', error);
+    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack');
     return json({ error: 'Failed to delete post' }, { status: 500 });
   }
 };
