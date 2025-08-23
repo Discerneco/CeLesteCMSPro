@@ -1,7 +1,8 @@
 import { json } from '@sveltejs/kit';
 import { getDbFromEvent } from '$lib/server/db/utils';
 import { users } from '$lib/server/db/schema';
-import { isNotNull } from 'drizzle-orm';
+import { isNotNull, eq } from 'drizzle-orm';
+import { alias } from 'drizzle-orm/sqlite-core';
 import type { RequestHandler } from './$types';
 
 /**
@@ -28,7 +29,10 @@ export const GET: RequestHandler = async (event) => {
 
     console.log('Starting database query...');
 
-    // Fetch deleted users (those with deletedAt set)
+    // Create alias for the deleting user table
+    const deletingUser = alias(users, 'deleting_user');
+
+    // Fetch deleted users with the username of who deleted them
     const deletedUsers = await db
       .select({
         id: users.id,
@@ -39,10 +43,13 @@ export const GET: RequestHandler = async (event) => {
         role: users.role,
         active: users.active,
         createdAt: users.createdAt,
+        lastLogin: users.lastLogin,
         deletedAt: users.deletedAt,
-        deletedBy: users.deletedBy
+        deletedBy: users.deletedBy,
+        deletedByUsername: deletingUser.username
       })
       .from(users)
+      .leftJoin(deletingUser, eq(users.deletedBy, deletingUser.id))
       .where(isNotNull(users.deletedAt))
       .orderBy(users.deletedAt);
 
@@ -63,7 +70,9 @@ export const GET: RequestHandler = async (event) => {
       createdAtFormatted: user.createdAt ? new Date(user.createdAt).toLocaleDateString('pt-BR') : '',
       deletedAt: user.deletedAt,
       deletedAtFormatted: user.deletedAt ? new Date(user.deletedAt).toLocaleDateString('pt-BR') : '',
-      deletedBy: user.deletedBy
+      lastLoginFormatted: user.lastLogin ? new Date(user.lastLogin).toLocaleDateString('pt-BR') : null,
+      // Use the resolved username, with fallbacks for edge cases
+      deletedBy: user.deletedByUsername || (user.deletedBy ? 'Unknown User' : 'System')
     }));
 
     console.log('Returning', transformedUsers.length, 'transformed users');
