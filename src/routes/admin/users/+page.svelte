@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Users, Shield, Search, Filter, Eye, Trash2, Edit, Plus, RotateCcw } from '@lucide/svelte';
+  import { Users, Shield, Search, Filter, Eye, Trash2, Edit, Plus } from '@lucide/svelte';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
   import * as m from '$lib/paraglide/messages';
@@ -7,6 +7,7 @@
   import UserModal from '$lib/components/users/UserModal.svelte';
   import SimpleDeleteModal from '$lib/components/users/SimpleDeleteModal.svelte';
   import UserDetailsModal from '$lib/components/users/UserDetailsModal.svelte';
+  import ConfirmDeleteModal from '$lib/components/ConfirmDeleteModal.svelte';
 
   let { data }: { data: PageData } = $props();
 
@@ -22,6 +23,9 @@
   
   let deleteModalOpen = $state(false);
   let deleteModalUser = $state(null as any);
+
+  let confirmDeleteModalOpen = $state(false);
+  let confirmDeleteUser = $state(null as any);
 
   let viewModalOpen = $state(false);
   let viewModalUser = $state(null as any);
@@ -56,6 +60,11 @@
   function openDeleteModal(user: any) {
     deleteModalUser = user;
     deleteModalOpen = true;
+  }
+
+  function openPermanentDeleteModal(user: any) {
+    confirmDeleteUser = user;
+    confirmDeleteModalOpen = true;
   }
 
   function openViewModal(user: any) {
@@ -121,6 +130,32 @@
     } catch (err) {
       console.error('Error restoring user:', err);
       showToast('Error restoring user', 'error');
+    }
+  }
+
+  // Permanently delete a user
+  async function handlePermanentDelete() {
+    if (!confirmDeleteUser?.id) return;
+    
+    try {
+      const response = await fetch(`/api/users/${confirmDeleteUser.id}?permanent=true`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (response.ok) {
+        showToast('User permanently deleted');
+        // Reload deleted users list
+        await loadDeletedUsers();
+      } else {
+        const result = await response.json();
+        showToast(result.error || 'Failed to delete user permanently', 'error');
+      }
+    } catch (err) {
+      console.error('Error permanently deleting user:', err);
+      showToast('Error permanently deleting user', 'error');
     }
   }
 
@@ -526,13 +561,13 @@
     
     <!-- Table Header -->
     <div class="cms-table-header">
-      <div class="hidden md:grid items-center gap-2 cms-table-header-text" style="grid-template-columns: minmax(220px, 2fr) minmax(180px, 1.5fr) minmax(100px, 1fr) minmax(100px, 1fr) minmax(120px, 1fr) minmax(120px, 1fr) minmax(100px, 1fr);">
+      <div class="hidden md:grid items-center gap-2 cms-table-header-text" style="grid-template-columns: minmax(220px, 2fr) minmax(180px, 1.5fr) minmax(100px, 1fr) minmax(120px, 1fr) minmax(120px, 1fr) minmax(120px, 1fr) minmax(100px, 1fr);">
         <div>{m.users_table_name()}</div>
         <div>{m.users_table_email()}</div>
         <div class="text-center">{m.users_table_role()}</div>
-        <div class="text-center">{m.users_table_status()}</div>
         <div class="text-center">{m.users_table_last_login()}</div>
-        <div class="text-center">{m.users_table_created()}</div>
+        <div class="text-center">Deleted When</div>
+        <div class="text-center">Deleted By</div>
         <div class="flex justify-end">
           <div class="flex items-center gap-1">
             <div class="w-8 h-4"></div> <!-- Spacer for first icon -->
@@ -548,7 +583,7 @@
       {#if filteredUsers.length > 0}
         {#each filteredUsers as user (user.id)}
           <div class="cms-table-row">
-            <div class="grid items-center gap-2" style="grid-template-columns: minmax(220px, 2fr) minmax(180px, 1.5fr) minmax(100px, 1fr) minmax(100px, 1fr) minmax(120px, 1fr) minmax(120px, 1fr) minmax(100px, 1fr);">
+            <div class="grid items-center gap-2" style="grid-template-columns: minmax(220px, 2fr) minmax(180px, 1.5fr) minmax(100px, 1fr) minmax(120px, 1fr) minmax(120px, 1fr) minmax(120px, 1fr) minmax(100px, 1fr);">
               <!-- Name -->
               <div>
                 <div class="flex items-center gap-3">
@@ -577,13 +612,6 @@
                 </span>
               </div>
               
-              <!-- Status -->
-              <div class="text-center">
-                <span class="badge badge-soft badge-error badge-sm">
-                  Deleted
-                </span>
-              </div>
-              
               <!-- Last Login -->
               <div class="text-center">
                 <span class="text-base-content/50">
@@ -591,10 +619,17 @@
                 </span>
               </div>
               
-              <!-- Created -->
+              <!-- Deleted When -->
               <div class="text-center">
-                <span class="text-base-content/50">
-                  {user.createdAtFormatted}
+                <span class="text-sm text-base-content/70">
+                  {user.deletedAtFormatted || 'Unknown'}
+                </span>
+              </div>
+              
+              <!-- Deleted By -->
+              <div class="text-center">
+                <span class="text-sm text-base-content/70">
+                  {user.deletedBy || 'System'}
                 </span>
               </div>
               
@@ -615,10 +650,12 @@
                     title="Restore user"
                     aria-label="Restore user"
                   >
-                    <RotateCcw class="h-4 w-4" />
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                    </svg>
                   </button>
                   <button 
-                    onclick={() => openDeleteModal(user)}
+                    onclick={() => openPermanentDeleteModal(user)}
                     class="cms-btn-icon-danger"
                     title="Permanently delete user"
                     aria-label="Permanently delete user"
@@ -981,6 +1018,14 @@
   currentUser={data.currentUser}
   onEdit={openEditModal}
   onDelete={openDeleteModal}
+/>
+
+<ConfirmDeleteModal 
+  bind:isOpen={confirmDeleteModalOpen}
+  title="Permanently Delete User"
+  message="Are you sure you want to permanently delete this user? This action cannot be undone and all user data will be lost forever."
+  confirmText="Delete Permanently"
+  onConfirm={handlePermanentDelete}
 />
 
 <!-- Toast Notification -->

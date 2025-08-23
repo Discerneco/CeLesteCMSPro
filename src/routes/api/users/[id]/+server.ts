@@ -109,6 +109,8 @@ export const PUT: RequestHandler = async (event) => {
 export const DELETE: RequestHandler = async (event) => {
   const db = getDbFromEvent(event);
   const { id } = event.params;
+  const url = new URL(event.request.url);
+  const permanent = url.searchParams.get('permanent') === 'true';
   
   try {
     // Get request body for content handling options
@@ -199,25 +201,43 @@ export const DELETE: RequestHandler = async (event) => {
       }
     }
     
-    // Soft delete user (mark as deleted instead of removing)
-    const result = await db
-      .update(users)
-      .set({ 
-        deletedAt: new Date(),
-        deletedBy: event.locals.user?.id,
-        active: false // Also deactivate to prevent login
-      })
-      .where(eq(users.id, id))
-      .returning();
-    
-    if (result.length === 0) {
-      return json({ error: 'Failed to delete user' }, { status: 500 });
+    if (permanent) {
+      // Permanently delete user (hard delete)
+      // First delete all sessions
+      await db.delete(sessions).where(eq(sessions.userId, id));
+      
+      // Then permanently delete the user record
+      const result = await db
+        .delete(users)
+        .where(eq(users.id, id))
+        .returning();
+      
+      if (result.length === 0) {
+        return json({ error: 'Failed to permanently delete user' }, { status: 500 });
+      }
+      
+      return json({ message: 'User permanently deleted successfully' });
+    } else {
+      // Soft delete user (mark as deleted instead of removing)
+      const result = await db
+        .update(users)
+        .set({ 
+          deletedAt: new Date(),
+          deletedBy: event.locals.user?.id,
+          active: false // Also deactivate to prevent login
+        })
+        .where(eq(users.id, id))
+        .returning();
+      
+      if (result.length === 0) {
+        return json({ error: 'Failed to delete user' }, { status: 500 });
+      }
+      
+      // Delete sessions to force logout
+      await db.delete(sessions).where(eq(sessions.userId, id));
+      
+      return json({ message: 'User deleted successfully' });
     }
-    
-    // Delete sessions to force logout
-    await db.delete(sessions).where(eq(sessions.userId, id));
-    
-    return json({ message: 'User deleted successfully' });
   } catch (error) {
     console.error('Error deleting user:', error);
     return json({ error: 'Failed to delete user' }, { status: 500 });
