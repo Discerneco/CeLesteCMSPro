@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Users, Shield, Search, Filter, Eye, Trash2, Edit, Plus } from '@lucide/svelte';
+  import { Users, Shield, Search, Filter, Eye, Trash2, Edit, Plus, RotateCcw } from '@lucide/svelte';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
   import * as m from '$lib/paraglide/messages';
@@ -12,6 +12,8 @@
 
   let searchQuery = $state('');
   let activeTab = $state('users');
+  let deletedUsers = $state([]);
+  let loadingDeleted = $state(false);
 
   // Modal states - separate $state variables for proper Svelte 5 reactivity
   let userModalOpen = $state(false);
@@ -79,20 +81,75 @@
 
   function handleUserDeleted(user: any) {
     showToast(m.users_success_deleted());
-    // Refresh page to remove deleted user
+    // Reload both lists to update counts
+    loadDeletedUsers();
     window.location.reload();
   }
 
-  // Filter users based on search query (client-side like media page)
+  // Load deleted users
+  async function loadDeletedUsers() {
+    loadingDeleted = true;
+    try {
+      const response = await fetch('/api/users/deleted');
+      if (response.ok) {
+        deletedUsers = await response.json();
+      } else {
+        console.error('Failed to load deleted users');
+      }
+    } catch (err) {
+      console.error('Error loading deleted users:', err);
+    } finally {
+      loadingDeleted = false;
+    }
+  }
+
+  // Restore a user from deleted
+  async function handleRestore(userId: string) {
+    try {
+      const response = await fetch(`/api/users/${userId}/restore`, {
+        method: 'PUT'
+      });
+      
+      if (response.ok) {
+        showToast('User restored successfully');
+        // Reload both lists
+        await loadDeletedUsers();
+        window.location.reload();
+      } else {
+        showToast('Failed to restore user', 'error');
+      }
+    } catch (err) {
+      console.error('Error restoring user:', err);
+      showToast('Error restoring user', 'error');
+    }
+  }
+
+  // Load deleted users on mount to get the count
+  $effect(() => {
+    loadDeletedUsers();
+  });
+
+  // Filter users based on search query and active tab
   let filteredUsers = $derived(
-    data.users?.filter((user: any) => {
-      const query = searchQuery.toLowerCase();
-      return (
-        user.name.toLowerCase().includes(query) ||
-        user.username.toLowerCase().includes(query) ||
-        user.email.toLowerCase().includes(query)
-      );
-    }) || []
+    activeTab === 'users' 
+      ? (data.users?.filter((user: any) => {
+          const query = searchQuery.toLowerCase();
+          return (
+            user.name.toLowerCase().includes(query) ||
+            user.username.toLowerCase().includes(query) ||
+            user.email.toLowerCase().includes(query)
+          );
+        }) || [])
+      : activeTab === 'deleted'
+      ? (deletedUsers.filter((user: any) => {
+          const query = searchQuery.toLowerCase();
+          return (
+            user.name.toLowerCase().includes(query) ||
+            user.username.toLowerCase().includes(query) ||
+            user.email.toLowerCase().includes(query)
+          );
+        }) || [])
+      : []
   );
 
   // Handle pagination
@@ -188,7 +245,14 @@
       onclick={() => activeTab = 'users'}
     >
       <Users class="h-4 w-4" />
-      {m.users_title()}
+      {m.users_title()} ({data.users?.length || 0})
+    </button>
+    <button 
+      class="flex items-center gap-2 px-4 py-2 border-b-[3px] transition-colors duration-150 {activeTab === 'deleted' ? 'border-primary text-base-content' : 'border-transparent text-base-content/60 hover:text-base-content/80'}"
+      onclick={() => activeTab = 'deleted'}
+    >
+      <Trash2 class="h-4 w-4" />
+      Deleted ({deletedUsers.length})
     </button>
     <button 
       class="flex items-center gap-2 px-4 py-2 border-b-[3px] transition-colors duration-150 {activeTab === 'roles' ? 'border-primary text-base-content' : 'border-transparent text-base-content/60 hover:text-base-content/80'}"
@@ -429,6 +493,158 @@
         </div>
       {/if}
     {/if}
+  </div>
+  {/if}
+
+  <!-- Deleted Users Tab Content -->
+  {#if activeTab === 'deleted'}
+  <!-- Deleted Users Table -->
+  <div class="cms-table-container">
+    <!-- Search and Filter Bar -->
+    <div class="px-6 py-4 border-b border-base-200">
+      <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+        <!-- Search -->
+        <div class="cms-search-container">
+          <Search class="cms-search-icon" />
+          <input
+            type="text"
+            placeholder={m.users_search_placeholder()}
+            class="cms-search-input"
+            bind:value={searchQuery}
+          />
+        </div>
+        
+        <!-- Filter -->
+        <div class="dropdown dropdown-end">
+          <div tabindex="0" role="button" class="cms-btn-utility">
+            <Filter class="h-4 w-4" />
+            {m.users_filter()}
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Table Header -->
+    <div class="cms-table-header">
+      <div class="hidden md:grid items-center gap-2 cms-table-header-text" style="grid-template-columns: minmax(220px, 2fr) minmax(180px, 1.5fr) minmax(100px, 1fr) minmax(100px, 1fr) minmax(120px, 1fr) minmax(120px, 1fr) minmax(100px, 1fr);">
+        <div>{m.users_table_name()}</div>
+        <div>{m.users_table_email()}</div>
+        <div class="text-center">{m.users_table_role()}</div>
+        <div class="text-center">{m.users_table_status()}</div>
+        <div class="text-center">{m.users_table_last_login()}</div>
+        <div class="text-center">{m.users_table_created()}</div>
+        <div class="flex justify-end">
+          <div class="flex items-center gap-1">
+            <div class="w-8 h-4"></div> <!-- Spacer for first icon -->
+            <div class="w-8 h-4 flex justify-center text-xs font-medium">{m.users_table_actions()}</div> <!-- Text above middle icon -->
+            <div class="w-8 h-4"></div> <!-- Spacer for third icon -->
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Table Body - Desktop -->
+    <div class="hidden md:block divide-y divide-base-content/10">
+      {#if filteredUsers.length > 0}
+        {#each filteredUsers as user (user.id)}
+          <div class="cms-table-row">
+            <div class="grid items-center gap-2" style="grid-template-columns: minmax(220px, 2fr) minmax(180px, 1.5fr) minmax(100px, 1fr) minmax(100px, 1fr) minmax(120px, 1fr) minmax(120px, 1fr) minmax(100px, 1fr);">
+              <!-- Name -->
+              <div>
+                <div class="flex items-center gap-3">
+                  <div class="{getAvatarColor(user.id)} rounded-full w-10 h-10 grid place-content-center opacity-60">
+                    {user.name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2)}
+                  </div>
+                  <div class="min-w-0">
+                    <div class="font-medium text-base-content/70">{user.name}</div>
+                    <div class="text-sm text-base-content/50">@{user.username}</div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Email -->
+              <div>
+                <div class="text-base-content/70">{user.email}</div>
+                {#if !user.verifiedEmail}
+                  <div class="text-xs text-warning/70">Unverified</div>
+                {/if}
+              </div>
+              
+              <!-- Role -->
+              <div class="text-center">
+                <span class="badge badge-soft {getRoleBadgeClass(user.role)} badge-sm opacity-60">
+                  {formatRole(user.role)}
+                </span>
+              </div>
+              
+              <!-- Status -->
+              <div class="text-center">
+                <span class="badge badge-soft badge-error badge-sm">
+                  Deleted
+                </span>
+              </div>
+              
+              <!-- Last Login -->
+              <div class="text-center">
+                <span class="text-base-content/50">
+                  {user.lastLoginFormatted || m.users_never_logged_in()}
+                </span>
+              </div>
+              
+              <!-- Created -->
+              <div class="text-center">
+                <span class="text-base-content/50">
+                  {user.createdAtFormatted}
+                </span>
+              </div>
+              
+              <!-- Actions -->
+              <div>
+                <div class="flex items-center gap-1 justify-end">
+                  <button 
+                    onclick={() => handleView(user)}
+                    class="cms-btn-icon"
+                    title={m.users_action_view()}
+                    aria-label={m.users_action_view()}
+                  >
+                    <Eye class="h-4 w-4" />
+                  </button>
+                  <button 
+                    onclick={() => handleRestore(user.id)}
+                    class="cms-btn-icon text-success"
+                    title="Restore user"
+                    aria-label="Restore user"
+                  >
+                    <RotateCcw class="h-4 w-4" />
+                  </button>
+                  <button 
+                    onclick={() => openDeleteModal(user)}
+                    class="cms-btn-icon-danger"
+                    title="Permanently delete user"
+                    aria-label="Permanently delete user"
+                  >
+                    <Trash2 class="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        {/each}
+      {:else}
+        <!-- Empty State -->
+        <div class="flex flex-col items-center justify-center py-12">
+          <svg class="w-16 h-16 text-base-content/30 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+          </svg>
+          <h3 class="text-lg font-medium text-base-content/70 mb-2">
+            No deleted users
+          </h3>
+          <p class="text-base-content/50 text-center mb-4">
+            {searchQuery ? 'Try adjusting your search criteria' : 'Deleted users will appear here'}
+          </p>
+        </div>
+      {/if}
+    </div>
   </div>
   {/if}
 
