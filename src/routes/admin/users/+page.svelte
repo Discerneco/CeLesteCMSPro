@@ -120,16 +120,16 @@
       });
       
       if (response.ok) {
-        showToast('User restored successfully');
+        showToast(m.users_restore_success());
         // Reload both lists
         await loadDeletedUsers();
         window.location.reload();
       } else {
-        showToast('Failed to restore user', 'error');
+        showToast(m.users_restore_error(), 'error');
       }
     } catch (err) {
       console.error('Error restoring user:', err);
-      showToast('Error restoring user', 'error');
+      showToast(m.users_restore_error(), 'error');
     }
   }
 
@@ -146,16 +146,16 @@
       });
       
       if (response.ok) {
-        showToast('User permanently deleted');
+        showToast(m.users_permanent_delete_success());
         // Reload deleted users list
         await loadDeletedUsers();
       } else {
         const result = await response.json();
-        showToast(result.error || 'Failed to delete user permanently', 'error');
+        showToast(result.error || m.users_permanent_delete_error(), 'error');
       }
     } catch (err) {
       console.error('Error permanently deleting user:', err);
-      showToast('Error permanently deleting user', 'error');
+      showToast(m.users_permanent_delete_error(), 'error');
     }
   }
 
@@ -287,7 +287,7 @@
       onclick={() => activeTab = 'deleted'}
     >
       <Trash2 class="h-4 w-4" />
-      Deleted ({deletedUsers.length})
+      {m.users_deleted_tab()} ({deletedUsers.length})
     </button>
     <button 
       class="flex items-center gap-2 px-4 py-2 border-b-[3px] transition-colors duration-150 {activeTab === 'roles' ? 'border-primary text-base-content' : 'border-transparent text-base-content/60 hover:text-base-content/80'}"
@@ -566,8 +566,8 @@
         <div>{m.users_table_email()}</div>
         <div class="text-center">{m.users_table_role()}</div>
         <div class="text-center">{m.users_table_last_login()}</div>
-        <div class="text-center">Deleted When</div>
-        <div class="text-center">Deleted By</div>
+        <div class="text-center">{m.users_table_deleted_when()}</div>
+        <div class="text-center">{m.users_table_deleted_by()}</div>
         <div class="flex justify-end">
           <div class="flex items-center gap-1">
             <div class="w-8 h-4"></div> <!-- Spacer for first icon -->
@@ -647,8 +647,8 @@
                   <button 
                     onclick={() => handleRestore(user.id)}
                     class="cms-btn-icon text-success"
-                    title="Restore user"
-                    aria-label="Restore user"
+                    title={m.users_action_restore()}
+                    aria-label={m.users_action_restore()}
                   >
                     <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
@@ -657,8 +657,8 @@
                   <button 
                     onclick={() => openPermanentDeleteModal(user)}
                     class="cms-btn-icon-danger"
-                    title="Permanently delete user"
-                    aria-label="Permanently delete user"
+                    title={m.users_action_delete_permanently()}
+                    aria-label={m.users_action_delete_permanently()}
                   >
                     <Trash2 class="h-4 w-4" />
                   </button>
@@ -674,10 +674,10 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
           </svg>
           <h3 class="text-lg font-medium text-base-content/70 mb-2">
-            No deleted users
+            {m.users_no_deleted_users()}
           </h3>
           <p class="text-base-content/50 text-center mb-4">
-            {searchQuery ? 'Try adjusting your search criteria' : 'Deleted users will appear here'}
+            {searchQuery ? 'Try adjusting your search criteria' : m.users_deleted_users_description()}
           </p>
         </div>
       {/if}

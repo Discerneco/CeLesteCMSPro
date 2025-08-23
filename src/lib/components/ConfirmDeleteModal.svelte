@@ -29,10 +29,19 @@
   function handleBackdropClick() {
     isOpen = false;
   }
+
+  function handleKeydown(e: KeyboardEvent) {
+    if (e.key === 'Escape') {
+      isOpen = false;
+    } else if (e.key === 'Enter') {
+      handleConfirm();
+    }
+  }
 </script>
 
 {#if isOpen}
-<div class="modal modal-open">
+<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+<div class="modal modal-open" onkeydown={handleKeydown}>
   <div class="modal-box">
     <h3 class="font-bold text-lg">
       {title}
@@ -44,6 +53,7 @@
       <button 
         onclick={handleCancel}
         class="btn btn-outline"
+        autofocus
       >
         {cancelText}
       </button>

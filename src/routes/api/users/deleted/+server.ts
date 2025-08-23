@@ -13,21 +13,14 @@ export const GET: RequestHandler = async (event) => {
   const db = getDbFromEvent(event);
 
   try {
-    console.log('Deleted users API called');
-    console.log('User:', event.locals.user?.username, 'Role:', event.locals.user?.role);
-
     // Check if user is authenticated and is admin
     if (!event.locals.user?.isAuthenticated) {
-      console.log('Authentication failed');
       return json({ error: 'Authentication required' }, { status: 401 });
     }
     
     if (event.locals.user.role !== 'admin') {
-      console.log('Admin access failed, user role:', event.locals.user.role);
       return json({ error: 'Admin access required' }, { status: 403 });
     }
-
-    console.log('Starting database query...');
 
     // Create alias for the deleting user table
     const deletingUser = alias(users, 'deleting_user');
@@ -53,8 +46,6 @@ export const GET: RequestHandler = async (event) => {
       .where(isNotNull(users.deletedAt))
       .orderBy(users.deletedAt);
 
-    console.log('Query completed, found', deletedUsers.length, 'deleted users');
-
     // Transform the data for UI
     const transformedUsers = deletedUsers.map((user: any) => ({
       id: user.id,
@@ -75,7 +66,6 @@ export const GET: RequestHandler = async (event) => {
       deletedBy: user.deletedByUsername || (user.deletedBy ? 'Unknown User' : 'System')
     }));
 
-    console.log('Returning', transformedUsers.length, 'transformed users');
     return json(transformedUsers);
   } catch (error) {
     console.error('Error fetching deleted users - Full error:', error);

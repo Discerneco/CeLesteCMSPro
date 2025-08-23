@@ -243,10 +243,17 @@
     
     return colors[Math.abs(hash) % colors.length];
   }
+
+  function handleKeydown(e: KeyboardEvent) {
+    if (e.key === 'Escape') {
+      handleClose();
+    }
+  }
 </script>
 
 {#if isOpen && user}
-  <div class="modal modal-open">
+  <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+  <div class="modal modal-open" onkeydown={handleKeydown}>
     <div class="modal-box max-w-2xl">
       <!-- Header -->
       <h3 class="font-bold text-lg mb-4">{m.users_modal_delete_title()}</h3>
@@ -279,21 +286,21 @@
 
       <!-- Linked Content Table -->
       <div class="mb-6">
-        <h4 class="text-sm font-medium text-base-content/70 mb-3">Linked Content:</h4>
+        <h4 class="text-sm font-medium text-base-content/70 mb-3">{m.users_delete_linked_content()}</h4>
         {#if isLoadingData}
           <div class="flex items-center justify-center py-4">
             <span class="loading loading-spinner loading-sm mr-2"></span>
-            <span class="text-base-content/60 text-sm">Loading content...</span>
+            <span class="text-base-content/60 text-sm">{m.settings_statistics_loading()}</span>
           </div>
         {:else}
           <div class="overflow-x-auto">
             <table class="table table-compact w-full">
               <thead>
                 <tr class="border-base-300">
-                  <th class="text-center">Posts</th>
-                  <th class="text-center">Media Files</th>
-                  <th class="text-center">Pages</th>
-                  <th class="text-center">Comments</th>
+                  <th class="text-center">{m.posts_title()}</th>
+                  <th class="text-center">{m.media_title()}</th>
+                  <th class="text-center">{m.users_delete_pages()}</th>
+                  <th class="text-center">{m.users_delete_comments()}</th>
                 </tr>
               </thead>
               <tbody>
@@ -339,7 +346,7 @@
                 <div class="collapse collapse-arrow border border-base-300 bg-base-200">
                   <input type="checkbox" checked />
                   <div class="collapse-title font-medium">
-                    Posts ({contentItems.posts.length})
+                    {m.posts_title()} ({contentItems.posts.length})
                   </div>
                   <div class="collapse-content">
                     <div class="space-y-2 pt-2">
@@ -366,7 +373,7 @@
                 <div class="collapse collapse-arrow border border-base-300 bg-base-200">
                   <input type="checkbox" checked />
                   <div class="collapse-title font-medium">
-                    Media Files ({contentItems.media.length})
+                    {m.media_title()} ({contentItems.media.length})
                   </div>
                   <div class="collapse-content">
                     <div class="space-y-2 pt-2">
@@ -394,12 +401,12 @@
         {#if contentCounts.posts > 0 || contentCounts.media > 0 || contentCounts.pages > 0 || contentCounts.comments > 0}
           <div class="form-control mb-6">
             <label class="label" for="content-action-select">
-              <span class="label-text font-medium">Content Action:</span>
+              <span class="label-text font-medium">{m.users_delete_content_action_label()}</span>
             </label>
             <select id="content-action-select" class="select select-bordered w-full" bind:value={contentAction}>
-              <option value="delete_all">Delete all content</option>
-              <option value="transfer">Transfer content to another user</option>
-              <option value="anonymous">Make content anonymous</option>
+              <option value="delete_all">{m.users_delete_action_delete_all()}</option>
+              <option value="transfer">{m.users_delete_action_reassign()}</option>
+              <option value="anonymous">{m.users_delete_action_anonymous()}</option>
             </select>
           </div>
 
@@ -407,10 +414,10 @@
           {#if showTransferSelect}
             <div class="form-control mb-6">
               <label class="label" for="transfer-user-select">
-                <span class="label-text">Transfer to:</span>
+                <span class="label-text">{m.users_delete_transfer_to()}</span>
               </label>
               <select id="transfer-user-select" class="select select-bordered w-full" bind:value={selectedTransferUser}>
-                <option value="">Select a user...</option>
+                <option value="">{m.users_delete_select_user()}</option>
                 {#each availableUsers as availableUser}
                   {#if availableUser.id !== user.id}
                     <option value={availableUser.id}>
@@ -427,7 +434,7 @@
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
             </svg>
-            <span>This user has no linked content.</span>
+            <span>{m.users_delete_no_linked_content()}</span>
           </div>
         {/if}
       {/if}
@@ -435,9 +442,9 @@
       <!-- Confirmation Message -->
       <p class="text-sm text-base-content/70 mb-6">
         {#if contentCounts.posts > 0 || contentCounts.media > 0 || contentCounts.pages > 0 || contentCounts.comments > 0}
-          Warning: This action cannot be undone. The user account will be permanently deleted.
+          {m.users_delete_warning()}
         {:else}
-          Are you sure you want to delete this user? This action cannot be undone.
+          {m.users_modal_delete_confirm()}
         {/if}
       </p>
 
@@ -449,7 +456,7 @@
             class="btn btn-sm btn-ghost"
             onclick={handleViewDetails}
           >
-            {showDetails ? 'Hide Details' : 'View Details'}
+            {showDetails ? m.users_delete_hide_details() : m.users_delete_view_details()}
           </button>
         {:else}
           <div></div>
@@ -461,7 +468,7 @@
             onclick={handleClose}
             disabled={isDeleting}
           >
-            Cancel
+            {m.users_modal_delete_cancel()}
           </button>
           <button 
             type="button" 
@@ -471,9 +478,9 @@
           >
             {#if isDeleting}
               <span class="loading loading-spinner loading-sm"></span>
-              Deleting...
+              {m.users_modal_delete_deleting()}
             {:else}
-              Delete User
+              {m.users_modal_delete_button()}
             {/if}
           </button>
         </div>
