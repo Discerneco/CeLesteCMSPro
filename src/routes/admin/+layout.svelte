@@ -21,8 +21,10 @@
   
   // Import i18n with modern Paraglide pattern
   import * as m from '$lib/paraglide/messages';
+  import { setLocale, getLocale, locales } from '$lib/paraglide/runtime.js';
   import { auth } from '$lib/stores/auth';
   import { page } from '$app/stores';
+  import { browser } from '$app/environment';
 
   // Svelte 5 children prop for slot replacement
   let { children, data } = $props();
@@ -46,9 +48,24 @@
     auth.logout();
   }
   
+  // Early locale initialization to prevent hydration race conditions
+  $effect(() => {
+    if (browser) {
+      // Initialize locale before any content renders to prevent translation timing issues
+      const savedLanguage = localStorage.getItem('celestecms-language');
+      if (savedLanguage && locales.includes(savedLanguage)) {
+        const currentLocale = getLocale();
+        if (currentLocale !== savedLanguage) {
+          console.log('🌍 Early locale initialization:', currentLocale, '->', savedLanguage);
+          setLocale(savedLanguage);
+        }
+      }
+    }
+  });
+
   // Initialize theme from localStorage on mount (Svelte 5 $effect)
   $effect(() => {
-    if (typeof window !== 'undefined') {
+    if (browser) {
       const savedTheme = localStorage.getItem('theme') || 'light';
       theme = savedTheme;
       document.documentElement.setAttribute('data-theme', savedTheme);

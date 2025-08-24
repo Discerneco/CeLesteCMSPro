@@ -368,7 +368,7 @@
               <div>
                 <div class="text-base-content">{user.email}</div>
                 {#if !user.verifiedEmail}
-                  <div class="text-xs text-warning">Unverified</div>
+                  <div class="text-xs text-warning">{m.users_unverified()}</div>
                 {/if}
               </div>
               
@@ -444,8 +444,8 @@
                   {:else}
                     <button 
                       class="cms-btn-icon-danger opacity-50 cursor-not-allowed"
-                      title="You cannot delete yourself"
-                      aria-label="Cannot delete current user"
+                      title={m.users_cannot_delete_self()}
+                      aria-label={m.users_cannot_delete_self()}
                       disabled
                     >
                       <Trash2 class="h-4 w-4" />
@@ -466,7 +466,7 @@
             {m.users_no_users()}
           </h3>
           <p class="text-base-content/50 text-center mb-4">
-            {searchQuery ? 'Try adjusting your search criteria' : 'Start by adding your first user to the system'}
+            {searchQuery ? m.users_try_adjusting_search() : m.users_start_by_adding_first()}
           </p>
           {#if !searchQuery}
             <button class="btn btn-primary" onclick={openAddModal}>
@@ -601,7 +601,7 @@
               <div>
                 <div class="text-base-content/70">{user.email}</div>
                 {#if !user.verifiedEmail}
-                  <div class="text-xs text-warning/70">Unverified</div>
+                  <div class="text-xs text-warning/70">{m.users_unverified()}</div>
                 {/if}
               </div>
               
@@ -622,14 +622,14 @@
               <!-- Deleted When -->
               <div class="text-center">
                 <span class="text-sm text-base-content/70">
-                  {user.deletedAtFormatted || 'Unknown'}
+                  {user.deletedAtFormatted || m.users_unknown()}
                 </span>
               </div>
               
               <!-- Deleted By -->
               <div class="text-center">
                 <span class="text-sm text-base-content/70">
-                  {user.deletedBy || 'System'}
+                  {user.deletedBy || m.users_system()}
                 </span>
               </div>
               
@@ -677,7 +677,7 @@
             {m.users_no_deleted_users()}
           </h3>
           <p class="text-base-content/50 text-center mb-4">
-            {searchQuery ? 'Try adjusting your search criteria' : m.users_deleted_users_description()}
+            {searchQuery ? m.users_try_adjusting_search() : m.users_deleted_users_description()}
           </p>
         </div>
       {/if}
@@ -693,14 +693,14 @@
         <div class="card-header border-b border-base-300 px-6 py-4">
           <div class="flex items-center justify-between">
             <div>
-              <h2 class="text-lg font-semibold text-base-content">User Roles</h2>
-              <p class="text-sm text-base-content/60 mt-1">Manage user roles and their permissions</p>
+              <h2 class="text-lg font-semibold text-base-content">{m.users_roles_section_title()}</h2>
+              <p class="text-sm text-base-content/60 mt-1">{m.users_roles_subtitle()}</p>
             </div>
             <button class="btn btn-primary btn-sm">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
               </svg>
-              Add Role
+              {m.users_add_role()}
             </button>
           </div>
         </div>
@@ -716,21 +716,21 @@
                     </svg>
                   </div>
                   <div class="dropdown dropdown-end">
-                    <button class="btn btn-ghost btn-xs" aria-label="Administrator role options">
+                    <button class="btn btn-ghost btn-xs" aria-label={m.users_admin_role_options()}>
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
                       </svg>
                     </button>
                     <ul class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
-                      <li><button onclick={(e) => e.preventDefault()} role="menuitem" class="w-full text-left">Edit Role</button></li>
-                      <li><button onclick={(e) => e.preventDefault()} role="menuitem" class="w-full text-left">View Permissions</button></li>
+                      <li><button onclick={(e) => e.preventDefault()} role="menuitem" class="w-full text-left">{m.users_edit_role()}</button></li>
+                      <li><button onclick={(e) => e.preventDefault()} role="menuitem" class="w-full text-left">{m.users_view_permissions()}</button></li>
                     </ul>
                   </div>
                 </div>
                 <h3 class="font-semibold text-base-content mb-1">{m.users_role_admin()}</h3>
-                <p class="text-sm text-base-content/60 mb-3">Full system access and control</p>
+                <p class="text-sm text-base-content/60 mb-3">{m.users_role_admin_description()}</p>
                 <div class="flex items-center justify-between text-sm">
-                  <span class="text-base-content/70">Users</span>
+                  <span class="text-base-content/70">{m.users_users_label()}</span>
                   <span class="badge badge-primary badge-sm">1</span>
                 </div>
               </div>
@@ -746,21 +746,21 @@
                     </svg>
                   </div>
                   <div class="dropdown dropdown-end">
-                    <button class="btn btn-ghost btn-xs" aria-label="Editor role options">
+                    <button class="btn btn-ghost btn-xs" aria-label={m.users_editor_role_options()}>
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
                       </svg>
                     </button>
                     <ul class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
-                      <li><button onclick={(e) => e.preventDefault()} role="menuitem" class="w-full text-left">Edit Role</button></li>
-                      <li><button onclick={(e) => e.preventDefault()} role="menuitem" class="w-full text-left">View Permissions</button></li>
+                      <li><button onclick={(e) => e.preventDefault()} role="menuitem" class="w-full text-left">{m.users_edit_role()}</button></li>
+                      <li><button onclick={(e) => e.preventDefault()} role="menuitem" class="w-full text-left">{m.users_view_permissions()}</button></li>
                     </ul>
                   </div>
                 </div>
                 <h3 class="font-semibold text-base-content mb-1">{m.users_role_editor()}</h3>
-                <p class="text-sm text-base-content/60 mb-3">Edit and manage content</p>
+                <p class="text-sm text-base-content/60 mb-3">{m.users_role_editor_description()}</p>
                 <div class="flex items-center justify-between text-sm">
-                  <span class="text-base-content/70">Users</span>
+                  <span class="text-base-content/70">{m.users_users_label()}</span>
                   <span class="badge badge-secondary badge-sm">0</span>
                 </div>
               </div>
@@ -776,21 +776,21 @@
                     </svg>
                   </div>
                   <div class="dropdown dropdown-end">
-                    <button class="btn btn-ghost btn-xs" aria-label="Author role options">
+                    <button class="btn btn-ghost btn-xs" aria-label={m.users_author_role_options()}>
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
                       </svg>
                     </button>
                     <ul class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
-                      <li><button onclick={(e) => e.preventDefault()} role="menuitem" class="w-full text-left">Edit Role</button></li>
-                      <li><button onclick={(e) => e.preventDefault()} role="menuitem" class="w-full text-left">View Permissions</button></li>
+                      <li><button onclick={(e) => e.preventDefault()} role="menuitem" class="w-full text-left">{m.users_edit_role()}</button></li>
+                      <li><button onclick={(e) => e.preventDefault()} role="menuitem" class="w-full text-left">{m.users_view_permissions()}</button></li>
                     </ul>
                   </div>
                 </div>
                 <h3 class="font-semibold text-base-content mb-1">{m.users_role_author()}</h3>
-                <p class="text-sm text-base-content/60 mb-3">Create and edit own content</p>
+                <p class="text-sm text-base-content/60 mb-3">{m.users_role_author_description()}</p>
                 <div class="flex items-center justify-between text-sm">
-                  <span class="text-base-content/70">Users</span>
+                  <span class="text-base-content/70">{m.users_users_label()}</span>
                   <span class="badge badge-accent badge-sm">0</span>
                 </div>
               </div>
@@ -806,21 +806,21 @@
                     </svg>
                   </div>
                   <div class="dropdown dropdown-end">
-                    <button class="btn btn-ghost btn-xs" aria-label="Subscriber role options">
+                    <button class="btn btn-ghost btn-xs" aria-label={m.users_subscriber_role_options()}>
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
                       </svg>
                     </button>
                     <ul class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
-                      <li><button onclick={(e) => e.preventDefault()} role="menuitem" class="w-full text-left">Edit Role</button></li>
-                      <li><button onclick={(e) => e.preventDefault()} role="menuitem" class="w-full text-left">View Permissions</button></li>
+                      <li><button onclick={(e) => e.preventDefault()} role="menuitem" class="w-full text-left">{m.users_edit_role()}</button></li>
+                      <li><button onclick={(e) => e.preventDefault()} role="menuitem" class="w-full text-left">{m.users_view_permissions()}</button></li>
                     </ul>
                   </div>
                 </div>
                 <h3 class="font-semibold text-base-content mb-1">{m.users_role_subscriber()}</h3>
-                <p class="text-sm text-base-content/60 mb-3">View content only</p>
+                <p class="text-sm text-base-content/60 mb-3">{m.users_role_subscriber_description()}</p>
                 <div class="flex items-center justify-between text-sm">
-                  <span class="text-base-content/70">Users</span>
+                  <span class="text-base-content/70">{m.users_users_label()}</span>
                   <span class="badge badge-outline badge-sm">0</span>
                 </div>
               </div>
@@ -833,8 +833,8 @@
       <div class="card bg-base-100 border border-base-300">
         <div class="card-header border-b border-base-300 px-6 py-4">
           <div>
-            <h2 class="text-lg font-semibold text-base-content">Permissions Matrix</h2>
-            <p class="text-sm text-base-content/60 mt-1">Overview of permissions for each role</p>
+            <h2 class="text-lg font-semibold text-base-content">{m.users_permissions_matrix()}</h2>
+            <p class="text-sm text-base-content/60 mt-1">{m.users_permissions_overview()}</p>
           </div>
         </div>
         <div class="card-body p-6">
@@ -842,7 +842,7 @@
             <table class="table table-zebra">
               <thead>
                 <tr>
-                  <th class="font-semibold text-base-content/70">Permission</th>
+                  <th class="font-semibold text-base-content/70">{m.users_permission_header()}</th>
                   <th class="text-center font-semibold text-base-content/70">{m.users_role_admin()}</th>
                   <th class="text-center font-semibold text-base-content/70">{m.users_role_editor()}</th>
                   <th class="text-center font-semibold text-base-content/70">{m.users_role_author()}</th>
@@ -851,7 +851,7 @@
               </thead>
               <tbody>
                 <tr>
-                  <td class="font-medium">Manage Users</td>
+                  <td class="font-medium">{m.users_permission_manage_users()}</td>
                   <td class="text-center">
                     <svg class="w-5 h-5 text-success mx-auto" fill="currentColor" viewBox="0 0 20 20">
                       <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
@@ -874,7 +874,7 @@
                   </td>
                 </tr>
                 <tr>
-                  <td class="font-medium">Create Posts</td>
+                  <td class="font-medium">{m.users_permission_create_posts()}</td>
                   <td class="text-center">
                     <svg class="w-5 h-5 text-success mx-auto" fill="currentColor" viewBox="0 0 20 20">
                       <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
@@ -897,7 +897,7 @@
                   </td>
                 </tr>
                 <tr>
-                  <td class="font-medium">Edit All Posts</td>
+                  <td class="font-medium">{m.users_permission_edit_all_posts()}</td>
                   <td class="text-center">
                     <svg class="w-5 h-5 text-success mx-auto" fill="currentColor" viewBox="0 0 20 20">
                       <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
@@ -912,7 +912,7 @@
                     <svg class="w-5 h-5 text-warning mx-auto" fill="currentColor" viewBox="0 0 20 20">
                       <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
                     </svg>
-                    <div class="text-xs text-base-content/60 mt-1">Own only</div>
+                    <div class="text-xs text-base-content/60 mt-1">{m.users_permission_own_only()}</div>
                   </td>
                   <td class="text-center">
                     <svg class="w-5 h-5 text-error mx-auto" fill="currentColor" viewBox="0 0 20 20">
@@ -921,7 +921,7 @@
                   </td>
                 </tr>
                 <tr>
-                  <td class="font-medium">Publish Posts</td>
+                  <td class="font-medium">{m.users_permission_publish_posts()}</td>
                   <td class="text-center">
                     <svg class="w-5 h-5 text-success mx-auto" fill="currentColor" viewBox="0 0 20 20">
                       <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
@@ -935,29 +935,6 @@
                   <td class="text-center">
                     <svg class="w-5 h-5 text-error mx-auto" fill="currentColor" viewBox="0 0 20 20">
                       <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
-                    </svg>
-                  </td>
-                  <td class="text-center">
-                    <svg class="w-5 h-5 text-error mx-auto" fill="currentColor" viewBox="0 0 20 20">
-                      <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
-                    </svg>
-                  </td>
-                </tr>
-                <tr>
-                  <td class="font-medium">Manage Media</td>
-                  <td class="text-center">
-                    <svg class="w-5 h-5 text-success mx-auto" fill="currentColor" viewBox="0 0 20 20">
-                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                    </svg>
-                  </td>
-                  <td class="text-center">
-                    <svg class="w-5 h-5 text-success mx-auto" fill="currentColor" viewBox="0 0 20 20">
-                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                    </svg>
-                  </td>
-                  <td class="text-center">
-                    <svg class="w-5 h-5 text-success mx-auto" fill="currentColor" viewBox="0 0 20 20">
-                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
                     </svg>
                   </td>
                   <td class="text-center">
@@ -967,7 +944,30 @@
                   </td>
                 </tr>
                 <tr>
-                  <td class="font-medium">System Settings</td>
+                  <td class="font-medium">{m.users_permission_manage_media()}</td>
+                  <td class="text-center">
+                    <svg class="w-5 h-5 text-success mx-auto" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                  </td>
+                  <td class="text-center">
+                    <svg class="w-5 h-5 text-success mx-auto" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                  </td>
+                  <td class="text-center">
+                    <svg class="w-5 h-5 text-success mx-auto" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                  </td>
+                  <td class="text-center">
+                    <svg class="w-5 h-5 text-error mx-auto" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                    </svg>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="font-medium">{m.users_permission_system_settings()}</td>
                   <td class="text-center">
                     <svg class="w-5 h-5 text-success mx-auto" fill="currentColor" viewBox="0 0 20 20">
                       <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
@@ -1022,9 +1022,9 @@
 
 <ConfirmDeleteModal 
   bind:isOpen={confirmDeleteModalOpen}
-  title="Permanently Delete User"
-  message="Are you sure you want to permanently delete this user? This action cannot be undone and all user data will be lost forever."
-  confirmText="Delete Permanently"
+  title={m.users_permanent_delete_modal_title()}
+  message={m.users_permanent_delete_modal_message()}
+  confirmText={m.users_permanent_delete_modal_button()}
   onConfirm={handlePermanentDelete}
 />
 

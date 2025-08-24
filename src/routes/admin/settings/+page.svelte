@@ -700,10 +700,10 @@
   <div class="cms-grid-content">
     <div class="cms-card md:col-span-3">
       <div class="cms-card-body">
-        <h2 class="cms-card-title">Advanced Configuration</h2>
+        <h2 class="cms-card-title">{m.settings_advanced_title()}</h2>
         <div class="alert alert-info">
           <Monitor class="h-5 w-5" />
-          <span>Advanced settings will be available in future updates. This includes API configuration, backup settings, and developer options.</span>
+          <span>{m.settings_advanced_future_notice()}</span>
         </div>
       </div>
     </div>

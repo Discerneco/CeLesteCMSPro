@@ -10,12 +10,36 @@
     'pt-br': 'Português (BR)'
   } as const;
   
-  // ✅ Svelte 5 runes - reactive state
-  let currentLanguage = $state(getLocale());
+  // ✅ Svelte 5 runes - reactive state with hydration safety
+  let currentLanguage = $state('');
+  let isInitialized = $state(false);
   
-  // ✅ Update current language when locale changes
+  // ✅ Initialize locale safely after hydration
   $effect(() => {
-    currentLanguage = getLocale();
+    if (browser) {
+      // Initialize from localStorage first if available for consistency
+      const savedLanguage = localStorage.getItem('celestecms-language');
+      if (savedLanguage && locales.includes(savedLanguage)) {
+        currentLanguage = savedLanguage;
+        // Ensure Paraglide runtime is also set
+        if (getLocale() !== savedLanguage) {
+          setLocale(savedLanguage);
+        }
+      } else {
+        currentLanguage = getLocale();
+      }
+      isInitialized = true;
+    }
+  });
+  
+  // ✅ Update current language when locale changes (after initialization)
+  $effect(() => {
+    if (isInitialized) {
+      const runtimeLocale = getLocale();
+      if (currentLanguage !== runtimeLocale) {
+        currentLanguage = runtimeLocale;
+      }
+    }
   });
   
   function switchLanguage(lang: string) {
@@ -57,17 +81,17 @@
     aria-label="Choose language"
   >
     <Globe class="h-4 w-4" />
-    <span>{currentLanguage in languageNames ? languageNames[currentLanguage as keyof typeof languageNames] : currentLanguage}</span>
+    <span>{!isInitialized ? '...' : (currentLanguage in languageNames ? languageNames[currentLanguage as keyof typeof languageNames] : currentLanguage)}</span>
   </button>
   <ul tabindex="0" role="menu" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
     {#each locales as lang}
       <li>
         <button 
-          class="flex justify-between items-center {lang === currentLanguage ? 'active' : ''}"
+          class="flex justify-between items-center {isInitialized && lang === currentLanguage ? 'active' : ''}"
           onclick={() => switchLanguage(lang)}
         >
           <span>{lang in languageNames ? languageNames[lang as keyof typeof languageNames] : lang}</span>
-          {#if lang === currentLanguage}
+          {#if isInitialized && lang === currentLanguage}
             <span class="text-success">✓</span>
           {/if}
         </button>

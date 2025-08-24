@@ -193,7 +193,10 @@
       {#if activeTab === 'all'}
         {m.posts_showing({ count: data.posts?.length || 0 })}
       {:else}
-        Showing {trashedPosts.length} trashed post{trashedPosts.length !== 1 ? 's' : ''}
+        {trashedPosts.length === 1 ? 
+          m.posts_showing_trashed_singular({ count: trashedPosts.length }) : 
+          m.posts_showing_trashed_plural({ count: trashedPosts.length })
+        }
       {/if}
     </p>
   </div>
