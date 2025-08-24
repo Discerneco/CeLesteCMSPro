@@ -145,7 +145,7 @@
 <div class="cms-page-header">
   <div>
     <h1 class="cms-page-title">{m.posts_edit_post()}</h1>
-    <p class="cms-page-subtitle">Update your blog post content</p>
+    <p class="cms-page-subtitle">{m.posts_edit_subtitle()}</p>
   </div>
   <div class="flex gap-2">
     <button 
@@ -244,7 +244,7 @@
         <div class="space-y-4">
           <div>
             <label class="label">
-              <span class="label-text">Post ID</span>
+              <span class="label-text">{m.posts_form_post_id()}</span>
             </label>
             <input 
               type="text" 
@@ -256,7 +256,7 @@
           
           <div>
             <label class="label">
-              <span class="label-text">Slug</span>
+              <span class="label-text">{m.posts_form_slug()}</span>
             </label>
             <input 
               type="text" 
@@ -291,8 +291,8 @@
                 <option value="draft">{m.posts_form_status_draft()}</option>
                 <option value="published">{m.posts_form_status_published()}</option>
                 <option value="scheduled">{m.posts_form_status_scheduled()}</option>
-                <option value="archived">Archived</option>
-                <option value="trash">Trash</option>
+                <option value="archived">{m.posts_status_archived()}</option>
+                <option value="trash">{m.posts_status_trash()}</option>
               </select>
             </div>
           </div>
@@ -314,10 +314,10 @@
           <!-- Author Selection -->
           <div class="form-control">
             <label class="label">
-              <span class="label-text">Author</span>
+              <span class="label-text">{m.posts_form_author()}</span>
             </label>
             <select class="select select-bordered" bind:value={selectedAuthorId}>
-              <option value="">Select author...</option>
+              <option value="">{m.posts_form_select_author()}</option>
               {#each data.users as user}
                 <option value={user.id}>
                   {[user.firstName, user.lastName].filter(Boolean).join(' ') || user.username} (@{user.username})

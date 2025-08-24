@@ -178,6 +178,8 @@
         return m.posts_status_archived();
       case 'scheduled':
         return m.posts_status_scheduled();
+      case 'trash':
+        return m.posts_status_trash();
       default:
         return status;
     }
@@ -284,7 +286,7 @@
                   </h3>
                 </div>
                 <p class="text-sm text-base-content/60 mt-2 line-clamp-2 leading-5">
-                  {post.excerpt || 'No excerpt available'}
+                  {post.excerpt || m.posts_form_no_excerpt()}
                 </p>
               </div>
             </div>
@@ -316,7 +318,7 @@
                   <button 
                     onclick={() => handleView(post.id)}
                     class="cms-btn-icon"
-                    title="View"
+                    title={m.posts_action_view()}
                   >
                     <Eye class="h-4 w-4" />
                   </button>
@@ -401,7 +403,7 @@
           
           <!-- Card Content -->
           <p class="text-sm text-base-content/60 mb-3 line-clamp-2 leading-5">
-            {post.excerpt || 'No excerpt available'}
+            {post.excerpt || m.posts_form_no_excerpt()}
           </p>
           
           <!-- Card Meta -->
@@ -416,10 +418,10 @@
               <button 
                 onclick={() => handleView(post.id)}
                 class="cms-btn-icon"
-                title="View"
+                title={m.posts_action_view()}
               >
                 <Eye class="h-4 w-4" />
-                <span class="sr-only">View</span>
+                <span class="sr-only">{m.posts_action_view()}</span>
               </button>
               <button 
                 onclick={() => handleRestore(post.id)}
