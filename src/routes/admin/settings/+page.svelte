@@ -293,14 +293,54 @@
             <span class="label-text">{m.settings_general_timezone()}</span>
           </label>
           <select bind:value={timezone} class="select w-full max-w-xs">
-            <option value="UTC">UTC</option>
-            <option value="America/New_York">{m.settings_timezone_eastern_time()}</option>
-            <option value="America/Chicago">{m.settings_timezone_central_time()}</option>
-            <option value="America/Denver">{m.settings_timezone_mountain_time()}</option>
-            <option value="America/Los_Angeles">{m.settings_timezone_pacific_time()}</option>
-            <option value="America/Sao_Paulo">{m.settings_timezone_brasilia_time()}</option>
-            <option value="Europe/London">{m.settings_timezone_greenwich_time()}</option>
-            <option value="Europe/Paris">{m.settings_timezone_central_european_time()}</option>
+            <!-- UTC -->
+            <option value="UTC">{m.settings_timezone_utc()}</option>
+            
+            <!-- Americas -->
+            <optgroup label="Americas">
+              <option value="Pacific/Honolulu">{m.settings_timezone_hawaii()}</option>
+              <option value="America/Anchorage">{m.settings_timezone_alaska()}</option>
+              <option value="America/Los_Angeles">{m.settings_timezone_pacific()}</option>
+              <option value="America/Denver">{m.settings_timezone_mountain()}</option>
+              <option value="America/Chicago">{m.settings_timezone_central()}</option>
+              <option value="America/New_York">{m.settings_timezone_eastern()}</option>
+              <option value="America/Rio_Branco">{m.settings_timezone_acre()}</option>
+              <option value="America/Manaus">{m.settings_timezone_amazon()}</option>
+              <option value="America/Sao_Paulo">{m.settings_timezone_brasilia_time()}</option>
+              <option value="America/Buenos_Aires">{m.settings_timezone_argentina()}</option>
+              <option value="America/Noronha">{m.settings_timezone_noronha()}</option>
+              <option value="America/Mexico_City">{m.settings_timezone_mexico()}</option>
+            </optgroup>
+            
+            <!-- Europe -->
+            <optgroup label="Europe">
+              <option value="Europe/London">{m.settings_timezone_london()}</option>
+              <option value="Europe/Paris">{m.settings_timezone_paris()}</option>
+              <option value="Europe/Moscow">{m.settings_timezone_moscow()}</option>
+            </optgroup>
+            
+            <!-- Africa -->
+            <optgroup label="Africa">
+              <option value="Africa/Lagos">{m.settings_timezone_lagos()}</option>
+              <option value="Africa/Cairo">{m.settings_timezone_cairo()}</option>
+              <option value="Africa/Johannesburg">{m.settings_timezone_johannesburg()}</option>
+              <option value="Africa/Nairobi">{m.settings_timezone_nairobi()}</option>
+            </optgroup>
+            
+            <!-- Asia -->
+            <optgroup label="Asia">
+              <option value="Asia/Dubai">{m.settings_timezone_dubai()}</option>
+              <option value="Asia/Kolkata">{m.settings_timezone_kolkata()}</option>
+              <option value="Asia/Bangkok">{m.settings_timezone_bangkok()}</option>
+              <option value="Asia/Hong_Kong">{m.settings_timezone_hong_kong()}</option>
+              <option value="Asia/Tokyo">{m.settings_timezone_tokyo()}</option>
+            </optgroup>
+            
+            <!-- Oceania -->
+            <optgroup label="Oceania">
+              <option value="Australia/Sydney">{m.settings_timezone_sydney()}</option>
+              <option value="Pacific/Auckland">{m.settings_timezone_auckland()}</option>
+            </optgroup>
           </select>
         </div>
       </div>
