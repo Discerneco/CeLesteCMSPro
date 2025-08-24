@@ -106,6 +106,14 @@
 	"posts_page_of": "Page {current} of {total}",
 	"posts_no_posts": "No posts found",
 	"posts_delete_confirm": "Are you sure you want to delete this post?",
+	"posts_all_posts_tab": "All Posts",
+	"posts_trash_tab": "Trash",
+	"posts_delete_title": "Delete Post",
+	"posts_delete_permanently_title": "Permanently Delete Post",
+	"posts_delete_permanently_confirm": "This action cannot be undone. The post will be permanently deleted.",
+	"posts_action_restore": "Restore",
+	"posts_action_move_to_trash": "Move to Trash",
+	"posts_action_delete_permanently": "Delete Permanently",
 	
 	"posts_new_post": "New Post",
 	"posts_edit_post": "Edit Post",
@@ -139,6 +147,8 @@
 	"posts_form_no_excerpt": "No excerpt",
 	"posts_form_settings": "Post Settings",
 	"posts_form_content_section": "Content",
+	"posts_form_save_error": "Failed to save post",
+	"posts_form_save_error_generic": "An error occurred while saving. Please try again.",
 	
 	"media_title": "Media",
 	"media_subtitle": "Manage your images and files",

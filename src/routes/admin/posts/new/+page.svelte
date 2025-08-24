@@ -104,16 +104,16 @@
           const errorData = await response.json();
           console.error('Failed to save post:', errorData);
           const errorMsg = errorData.details || errorData.error || 'Unknown error';
-          alert(`Failed to save post: ${errorMsg}`);
+          alert(`${m.posts_form_save_error()}: ${errorMsg}`);
         } catch (parseError) {
           const errorText = await response.text();
           console.error('Failed to save post (raw):', errorText);
-          alert(`Failed to save post. Status: ${response.status}`);
+          alert(`${m.posts_form_save_error()}. Status: ${response.status}`);
         }
       }
     } catch (err) {
       console.error('Error saving post:', err);
-      alert('An error occurred while saving. Please try again.');
+      alert(m.posts_form_save_error_generic());
     } finally {
       isLoading = false;
     }

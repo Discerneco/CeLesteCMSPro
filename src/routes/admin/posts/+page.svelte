@@ -212,13 +212,13 @@
     class="px-4 py-2 font-medium transition-colors {activeTab === 'all' ? 'border-b-2 border-primary text-primary' : 'text-base-content/70 hover:text-base-content'}"
     onclick={() => switchTab('all')}
   >
-    All Posts ({data.posts?.length || 0})
+    {m.posts_all_posts_tab()} ({data.posts?.length || 0})
   </button>
   <button 
     class="px-4 py-2 font-medium transition-colors {activeTab === 'trash' ? 'border-b-2 border-primary text-primary' : 'text-base-content/70 hover:text-base-content'}"
     onclick={() => switchTab('trash')}
   >
-    Trash ({trashedPosts.length})
+    {m.posts_trash_tab()} ({trashedPosts.length})
   </button>
 </div>
 
@@ -320,8 +320,8 @@
                   <button 
                     onclick={() => handleRestore(post.id)}
                     class="cms-btn-icon text-success"
-                    title="Restore"
-                    aria-label="Restore post"
+                    title={m.posts_action_restore()}
+                    aria-label={m.posts_action_restore()}
                   >
                     <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
@@ -421,13 +421,13 @@
               <button 
                 onclick={() => handleRestore(post.id)}
                 class="cms-btn-icon text-success"
-                title="Restore"
-                aria-label="Restore post"
+                title={m.posts_action_restore()}
+                aria-label={m.posts_action_restore()}
               >
                 <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
                 </svg>
-                <span class="sr-only">Restore</span>
+                <span class="sr-only">{m.posts_action_restore()}</span>
               </button>
             {:else}
               <button 
@@ -488,7 +488,7 @@
       <ChevronLeft class="h-4 w-4" />
     </button>
     <span class="join-item btn btn-sm text-sm text-base-content/60 cursor-default">
-      Page 1 of 1
+      {m.posts_page_of({ current: 1, total: 1 })}
     </span>
     <button 
       class="join-item btn btn-sm"
@@ -505,11 +505,11 @@
 <div class="modal modal-open">
   <div class="modal-box">
     <h3 class="font-bold text-lg">
-      {deleteIsPermanent ? 'Permanently Delete Post' : 'Delete Post'}
+      {deleteIsPermanent ? m.posts_delete_permanently_title() : m.posts_delete_title()}
     </h3>
     <p class="py-4">
       {deleteIsPermanent 
-        ? 'This action cannot be undone. The post will be permanently deleted.'
+        ? m.posts_delete_permanently_confirm()
         : m.posts_delete_confirm()}
     </p>
     <div class="modal-action">
@@ -517,13 +517,13 @@
         onclick={cancelDelete}
         class="btn btn-outline"
       >
-        Cancel
+        {m.common_cancel()}
       </button>
       <button 
         onclick={confirmDelete}
         class="btn btn-error"
       >
-        {deleteIsPermanent ? 'Delete Permanently' : 'Move to Trash'}
+        {deleteIsPermanent ? m.posts_action_delete_permanently() : m.posts_action_move_to_trash()}
       </button>
     </div>
   </div>

@@ -106,6 +106,14 @@
 	"posts_page_of": "Página {current} de {total}",
 	"posts_no_posts": "Nenhum post encontrado",
 	"posts_delete_confirm": "Tem certeza de que deseja excluir este post?",
+	"posts_all_posts_tab": "Todos os Posts",
+	"posts_trash_tab": "Lixeira",
+	"posts_delete_title": "Excluir Post",
+	"posts_delete_permanently_title": "Excluir Post Permanentemente",
+	"posts_delete_permanently_confirm": "Esta ação não pode ser desfeita. O post será excluído permanentemente.",
+	"posts_action_restore": "Restaurar",
+	"posts_action_move_to_trash": "Mover para Lixeira",
+	"posts_action_delete_permanently": "Excluir Permanentemente",
 	
 	"posts_new_post": "Novo Post",
 	"posts_edit_post": "Editar Post",
@@ -139,6 +147,8 @@
 	"posts_form_no_excerpt": "Sem resumo",
 	"posts_form_settings": "Configurações do Post",
 	"posts_form_content_section": "Conteúdo",
+	"posts_form_save_error": "Falha ao salvar post",
+	"posts_form_save_error_generic": "Ocorreu um erro ao salvar. Tente novamente.",
 	
 	"media_title": "Mídia",
 	"media_subtitle": "Gerencie suas imagens e arquivos",
