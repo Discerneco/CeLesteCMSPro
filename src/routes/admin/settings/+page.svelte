@@ -27,11 +27,12 @@
   let isDarkMode = $state(false);
   let siteTitle = $state('CeLeste CMS');
   let siteDescription = $state('A modern headless CMS built with SvelteKit');
-  let timezone = $state('UTC');
+  let timezone = $state('');
   let defaultLanguage = $state('en');
   let detectedTimezone = $state(null);
   let currentTime = $state('');
   let timeInterval = null;
+  let isInitialized = $state(false);
   
   // Preset color schemes
   const colorSchemes = [
@@ -133,7 +134,7 @@
         const detected = Intl.DateTimeFormat().resolvedOptions().timeZone;
         detectedTimezone = detected;
         // If no timezone is set yet, use the detected one
-        if (timezone === 'UTC' && detected) {
+        if (!timezone && detected) {
           timezone = detected;
         }
       } catch (error) {
@@ -160,9 +161,11 @@
     }
   }
   
-  // Initialize settings on mount
+  // Initialize settings on mount (run only once)
   $effect(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== 'undefined' && !isInitialized) {
+      isInitialized = true;
+      
       // Detect timezone first
       detectTimezone();
       
@@ -350,18 +353,10 @@
           </label>
           <div class="space-y-2">
             <select bind:value={timezone} class="select w-full max-w-xs">
-              <!-- Always show Choose as first option -->
-              <option value="" disabled selected={!timezone || timezone === ''}>
+              <!-- Choose timezone placeholder - selectable for reset -->
+              <option value="">
                 {m.settings_timezone_choose()}
               </option>
-            
-            <!-- UTC -->
-            <option value="UTC">
-              {m.settings_timezone_utc()}
-              {#if detectedTimezone === 'UTC'}
-                ✓ {m.settings_timezone_auto_detected()}
-              {/if}
-            </option>
             
             <!-- Americas -->
             <optgroup label={m.settings_timezone_continent_americas()}>
@@ -373,7 +368,12 @@
               <option value="America/New_York">{m.settings_timezone_eastern()}</option>
               <option value="America/Rio_Branco">{m.settings_timezone_acre()}</option>
               <option value="America/Manaus">{m.settings_timezone_amazon()}</option>
-              <option value="America/Sao_Paulo">{m.settings_timezone_brasilia_time()}</option>
+              <option value="America/Sao_Paulo">
+                {m.settings_timezone_brasilia_time()}
+                {#if detectedTimezone === 'America/Sao_Paulo'}
+                  ✓ {m.settings_timezone_auto_detected()}
+                {/if}
+              </option>
               <option value="America/Buenos_Aires">{m.settings_timezone_argentina()}</option>
               <option value="America/Noronha">{m.settings_timezone_noronha()}</option>
               <option value="America/Mexico_City">{m.settings_timezone_mexico()}</option>
@@ -381,7 +381,12 @@
             
             <!-- Europe -->
             <optgroup label={m.settings_timezone_continent_europe()}>
-              <option value="Europe/London">{m.settings_timezone_london()}</option>
+              <option value="Europe/London">
+                {m.settings_timezone_london()}
+                {#if detectedTimezone === 'Europe/London'}
+                  ✓ {m.settings_timezone_auto_detected()}
+                {/if}
+              </option>
               <option value="Europe/Paris">{m.settings_timezone_paris()}</option>
               <option value="Europe/Moscow">{m.settings_timezone_moscow()}</option>
             </optgroup>
