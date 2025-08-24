@@ -29,6 +29,9 @@
   let siteDescription = $state('A modern headless CMS built with SvelteKit');
   let timezone = $state('UTC');
   let defaultLanguage = $state('en');
+  let detectedTimezone = $state(null);
+  let currentTime = $state('');
+  let timeInterval = null;
   
   // Preset color schemes
   const colorSchemes = [
@@ -123,9 +126,46 @@
     }
   }
   
+  // Auto-detect timezone
+  function detectTimezone() {
+    if (typeof window !== 'undefined') {
+      try {
+        const detected = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        detectedTimezone = detected;
+        // If no timezone is set yet, use the detected one
+        if (timezone === 'UTC' && detected) {
+          timezone = detected;
+        }
+      } catch (error) {
+        console.warn('Timezone auto-detection failed:', error);
+        detectedTimezone = null;
+      }
+    }
+  }
+  
+  // Update current time display
+  function updateCurrentTime() {
+    if (typeof window !== 'undefined' && timezone) {
+      try {
+        const now = new Date();
+        currentTime = now.toLocaleTimeString('en-US', {
+          timeZone: timezone,
+          hour12: false,
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+      } catch (error) {
+        currentTime = '';
+      }
+    }
+  }
+  
   // Initialize settings on mount
   $effect(() => {
     if (typeof window !== 'undefined') {
+      // Detect timezone first
+      detectTimezone();
+      
       // Load saved settings
       const savedSettings = localStorage.getItem('cms-settings');
       if (savedSettings) {
@@ -136,7 +176,7 @@
         isDarkMode = settings.isDarkMode || false;
         siteTitle = settings.siteTitle || siteTitle;
         siteDescription = settings.siteDescription || siteDescription;
-        timezone = settings.timezone || timezone;
+        timezone = settings.timezone || detectedTimezone || timezone;
         defaultLanguage = settings.defaultLanguage || defaultLanguage;
       }
       
@@ -147,12 +187,28 @@
       
       // Apply colors
       applyColors();
+      
+      // Start time updates
+      updateCurrentTime();
+      timeInterval = setInterval(updateCurrentTime, 1000);
     }
+    
+    // Cleanup interval on unmount
+    return () => {
+      if (timeInterval) {
+        clearInterval(timeInterval);
+      }
+    };
   });
   
   // Auto-apply colors when they change
   $effect(() => {
     applyColors();
+  });
+  
+  // Update current time when timezone changes
+  $effect(() => {
+    updateCurrentTime();
   });
   
   // Load statistics when Statistics tab is active or timeframe changes
@@ -292,9 +348,20 @@
           <label class="label">
             <span class="label-text">{m.settings_general_timezone()}</span>
           </label>
-          <select bind:value={timezone} class="select w-full max-w-xs">
-            <!-- UTC -->
-            <option value="UTC">{m.settings_timezone_utc()}</option>
+          <div class="space-y-2">
+            <select bind:value={timezone} class="select w-full max-w-xs">
+              <!-- Default/Choose option -->
+              {#if !detectedTimezone}
+                <option value="UTC">{m.settings_timezone_choose()}</option>
+              {/if}
+              
+              <!-- UTC -->
+              <option value="UTC">
+                {m.settings_timezone_utc()}
+                {#if detectedTimezone === 'UTC'}
+                  <span class="text-success text-xs ml-2">{m.settings_timezone_auto_detected()}</span>
+                {/if}
+              </option>
             
             <!-- Americas -->
             <optgroup label="Americas">
@@ -341,7 +408,15 @@
               <option value="Australia/Sydney">{m.settings_timezone_sydney()}</option>
               <option value="Pacific/Auckland">{m.settings_timezone_auckland()}</option>
             </optgroup>
-          </select>
+            </select>
+            
+            <!-- Current time display -->
+            {#if currentTime}
+              <div class="text-sm text-base-content/60">
+                {m.settings_timezone_current_time({ time: currentTime })}
+              </div>
+            {/if}
+          </div>
         </div>
       </div>
     </div>
