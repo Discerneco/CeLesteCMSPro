@@ -186,6 +186,12 @@
 	"media_upload_files": "Upload Files",
 	"media_cancel": "Cancel",
 	"media_url_copied": "URL copied to clipboard!",
+	"media_table_name": "Name",
+	"media_table_id": "ID",
+	"media_uploader": "Uploader",
+	"media_selected_files": "Selected Files",
+	"media_add_more_files": "Add More Files",
+	"media_uploading": "Uploading...",
 	
 	"settings_title": "Settings",
 	"settings_subtitle": "Configure your CMS preferences and appearance",

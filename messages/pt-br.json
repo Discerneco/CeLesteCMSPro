@@ -186,6 +186,12 @@
 	"media_upload_files": "Enviar Arquivos",
 	"media_cancel": "Cancelar",
 	"media_url_copied": "URL copiado para a área de transferência!",
+	"media_table_name": "Nome",
+	"media_table_id": "ID",
+	"media_uploader": "Enviado por",
+	"media_selected_files": "Arquivos Selecionados",
+	"media_add_more_files": "Adicionar Mais Arquivos",
+	"media_uploading": "Enviando...",
 	
 	"settings_title": "Configurações",
 	"settings_subtitle": "Configure suas preferências e aparência do CMS",

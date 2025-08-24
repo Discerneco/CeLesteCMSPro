@@ -478,14 +478,14 @@
     <!-- Table Header -->
     <div class="cms-table-header">
       <div class="hidden md:grid items-center gap-2 cms-table-header-text" style="grid-template-columns: minmax(200px, 2fr) minmax(100px, 1fr) minmax(80px, 1fr) minmax(100px, 1fr) minmax(100px, 1fr);">
-        <div>Name</div>
-        <div class="text-center">Dimensions</div>
-        <div class="text-center">Size</div>
-        <div class="text-center">Uploaded</div>
+        <div>{m.media_table_name()}</div>
+        <div class="text-center">{m.media_dimensions()}</div>
+        <div class="text-center">{m.media_size()}</div>
+        <div class="text-center">{m.media_uploaded()}</div>
         <div class="flex justify-end">
           <div class="flex items-center gap-1">
             <div class="w-8 h-4"></div> <!-- Spacer for first icon -->
-            <div class="w-8 h-4 flex justify-center text-xs font-medium">Actions</div> <!-- Text above middle icon -->
+            <div class="w-8 h-4 flex justify-center text-xs font-medium">{m.users_table_actions()}</div> <!-- Text above middle icon -->
             <div class="w-8 h-4"></div> <!-- Spacer for third icon -->
           </div>
         </div>
@@ -513,7 +513,7 @@
               {/if}
               <div class="min-w-0">
                 <div class="font-medium text-base-content truncate">{item.name}</div>
-                <div class="text-sm text-base-content/60">ID: {item.id}</div>
+                <div class="text-sm text-base-content/60">{m.media_table_id()}: {item.id}</div>
               </div>
             </div>
             
@@ -624,7 +624,7 @@
             
             {#if selectedMedia.uploaderData}
               <div class="grid grid-cols-3 gap-2">
-                <span class="text-base-content/60">Uploader:</span>
+                <span class="text-base-content/60">{m.media_uploader()}:</span>
                 <div class="col-span-2 flex items-center gap-2">
                   <div class="{getAvatarColor(selectedMedia.uploaderData.id)} rounded-full w-8 h-8 grid place-content-center text-xs">
                     {selectedMedia.uploaderData.name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2)}
@@ -721,7 +721,7 @@
       {:else}
         <!-- Selected Files Preview -->
         <div class="space-y-3">
-          <p class="font-medium">Selected Files ({selectedFiles.length})</p>
+          <p class="font-medium">{m.media_selected_files()} ({selectedFiles.length})</p>
           
           <div class="max-h-60 overflow-y-auto space-y-2">
             {#each selectedFiles as file, index}
@@ -748,7 +748,7 @@
 
           <label class="block">
             <span class="btn btn-outline btn-sm cursor-pointer">
-              Add More Files
+              {m.media_add_more_files()}
             </span>
             <input type="file" class="hidden" multiple accept="image/*,video/*,application/pdf,text/*" onchange={handleFileSelect} />
           </label>
@@ -759,7 +759,7 @@
         <!-- Upload Progress -->
         <div class="mt-4">
           <div class="flex justify-between text-sm mb-1">
-            <span>Uploading...</span>
+            <span>{m.media_uploading()}</span>
             <span>{uploadProgress}%</span>
           </div>
           <progress class="progress progress-primary w-full" value={uploadProgress} max="100"></progress>
@@ -782,7 +782,7 @@
           >
             {#if isUploading}
               <span class="loading loading-spinner loading-sm"></span>
-              Uploading...
+              {m.media_uploading()}
             {:else}
               <UploadCloud class="h-4 w-4" />
               Upload {selectedFiles.length} file{selectedFiles.length === 1 ? '' : 's'}
