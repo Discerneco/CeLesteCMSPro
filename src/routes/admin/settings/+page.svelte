@@ -445,29 +445,29 @@
         <div class="space-y-4">
           <!-- Button Preview -->
           <div>
-            <p class="text-sm text-base-content/60 mb-2">Buttons</p>
+            <p class="text-sm text-base-content/60 mb-2">{m.settings_appearance_preview_buttons()}</p>
             <div class="flex gap-2 flex-wrap">
-              <button class="btn btn-primary btn-xs sm:btn-sm">Primary</button>
-              <button class="btn btn-secondary btn-xs sm:btn-sm">Secondary</button>
-              <button class="btn btn-outline btn-xs sm:btn-sm">Outline</button>
+              <button class="btn btn-primary btn-xs sm:btn-sm">{m.settings_appearance_preview_primary()}</button>
+              <button class="btn btn-secondary btn-xs sm:btn-sm">{m.settings_appearance_preview_secondary()}</button>
+              <button class="btn btn-outline btn-xs sm:btn-sm">{m.settings_appearance_preview_outline()}</button>
             </div>
           </div>
           
           <!-- Badge Preview -->
           <div>
-            <p class="text-sm text-base-content/60 mb-2">Status Badges</p>
+            <p class="text-sm text-base-content/60 mb-2">{m.settings_appearance_preview_status_badges()}</p>
             <div class="flex gap-2 flex-wrap">
-              <span class="badge badge-primary badge-sm">Primary</span>
-              <span class="badge badge-secondary badge-sm">Secondary</span>
-              <span class="badge badge-accent badge-sm">Accent</span>
+              <span class="badge badge-primary badge-sm">{m.settings_appearance_preview_primary()}</span>
+              <span class="badge badge-secondary badge-sm">{m.settings_appearance_preview_secondary()}</span>
+              <span class="badge badge-accent badge-sm">{m.settings_appearance_preview_accent()}</span>
             </div>
           </div>
           
           <!-- Card Preview -->
           <div class="card bg-base-100 shadow-sm border">
             <div class="card-body p-4">
-              <h3 class="card-title text-sm">Sample Card</h3>
-              <p class="text-xs">This is how cards will look with your color scheme.</p>
+              <h3 class="card-title text-sm">{m.settings_appearance_preview_sample_card()}</h3>
+              <p class="text-xs">{m.settings_appearance_preview_card_description()}</p>
             </div>
           </div>
         </div>
@@ -638,17 +638,17 @@
                 {m.settings_statistics_for_label()} 
                 <span class="badge badge-primary badge-sm ml-1">
                   {#if selectedTimeframe === 'total'}
-                    All Time
+                    {m.settings_statistics_badge_all_time()}
                   {:else if selectedTimeframe === 'hour'}
-                    Last Hour
+                    {m.settings_statistics_badge_last_hour()}
                   {:else if selectedTimeframe === '24hrs'}
-                    Last 24 Hours
+                    {m.settings_statistics_badge_24_hours()}
                   {:else if selectedTimeframe === 'week'}
-                    Last Week
+                    {m.settings_statistics_badge_last_week()}
                   {:else if selectedTimeframe === 'month'}
-                    Last Month
+                    {m.settings_statistics_badge_last_month()}
                   {:else if selectedTimeframe === 'login'}
-                    Since Last Login
+                    {m.settings_statistics_badge_since_login()}
                   {/if}
                 </span>
               </span>
