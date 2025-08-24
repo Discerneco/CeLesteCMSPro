@@ -1,5 +1,6 @@
 <script lang="ts">
   import * as m from '$lib/paraglide/messages';
+  import { getLocale } from '$lib/paraglide/runtime.js';
   
   let { 
     isOpen = $bindable(false),
@@ -204,7 +205,8 @@
   // Format date for display
   function formatDate(date: Date | string) {
     const d = typeof date === 'string' ? new Date(date) : date;
-    return d.toLocaleDateString('en-US', { 
+    const locale = getLocale() === 'pt-br' ? 'pt-BR' : 'en-US';
+    return d.toLocaleDateString(locale, { 
       year: 'numeric', 
       month: 'short', 
       day: 'numeric' 
@@ -218,6 +220,24 @@
       case 'draft': return 'badge-warning';
       case 'archived': return 'badge-neutral';
       default: return 'badge-ghost';
+    }
+  }
+  
+  // Translate post status
+  function getStatusText(status: string) {
+    switch (status) {
+      case 'published':
+        return m.posts_status_published();
+      case 'draft':
+        return m.posts_status_draft();
+      case 'archived':
+        return m.posts_status_archived();
+      case 'scheduled':
+        return m.posts_status_scheduled();
+      case 'trash':
+        return m.posts_status_trash();
+      default:
+        return status;
     }
   }
 
@@ -359,7 +379,7 @@
                             </div>
                           </div>
                           <span class="badge {getStatusColor(post.status)} badge-sm">
-                            {post.status}
+                            {getStatusText(post.status)}
                           </span>
                         </div>
                       {/each}

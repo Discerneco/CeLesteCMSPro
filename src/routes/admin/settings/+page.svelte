@@ -350,21 +350,21 @@
           </label>
           <div class="space-y-2">
             <select bind:value={timezone} class="select w-full max-w-xs">
-              <!-- Default/Choose option -->
-              {#if !detectedTimezone}
-                <option value="UTC">{m.settings_timezone_choose()}</option>
-              {/if}
-              
-              <!-- UTC -->
-              <option value="UTC">
-                {m.settings_timezone_utc()}
-                {#if detectedTimezone === 'UTC'}
-                  <span class="text-success text-xs ml-2">{m.settings_timezone_auto_detected()}</span>
-                {/if}
+              <!-- Always show Choose as first option -->
+              <option value="" disabled selected={!timezone || timezone === ''}>
+                {m.settings_timezone_choose()}
               </option>
             
+            <!-- UTC -->
+            <option value="UTC">
+              {m.settings_timezone_utc()}
+              {#if detectedTimezone === 'UTC'}
+                ✓ {m.settings_timezone_auto_detected()}
+              {/if}
+            </option>
+            
             <!-- Americas -->
-            <optgroup label="Americas">
+            <optgroup label={m.settings_timezone_continent_americas()}>
               <option value="Pacific/Honolulu">{m.settings_timezone_hawaii()}</option>
               <option value="America/Anchorage">{m.settings_timezone_alaska()}</option>
               <option value="America/Los_Angeles">{m.settings_timezone_pacific()}</option>
@@ -380,14 +380,14 @@
             </optgroup>
             
             <!-- Europe -->
-            <optgroup label="Europe">
+            <optgroup label={m.settings_timezone_continent_europe()}>
               <option value="Europe/London">{m.settings_timezone_london()}</option>
               <option value="Europe/Paris">{m.settings_timezone_paris()}</option>
               <option value="Europe/Moscow">{m.settings_timezone_moscow()}</option>
             </optgroup>
             
             <!-- Africa -->
-            <optgroup label="Africa">
+            <optgroup label={m.settings_timezone_continent_africa()}>
               <option value="Africa/Lagos">{m.settings_timezone_lagos()}</option>
               <option value="Africa/Cairo">{m.settings_timezone_cairo()}</option>
               <option value="Africa/Johannesburg">{m.settings_timezone_johannesburg()}</option>
@@ -395,7 +395,7 @@
             </optgroup>
             
             <!-- Asia -->
-            <optgroup label="Asia">
+            <optgroup label={m.settings_timezone_continent_asia()}>
               <option value="Asia/Dubai">{m.settings_timezone_dubai()}</option>
               <option value="Asia/Kolkata">{m.settings_timezone_kolkata()}</option>
               <option value="Asia/Bangkok">{m.settings_timezone_bangkok()}</option>
@@ -404,7 +404,7 @@
             </optgroup>
             
             <!-- Oceania -->
-            <optgroup label="Oceania">
+            <optgroup label={m.settings_timezone_continent_oceania()}>
               <option value="Australia/Sydney">{m.settings_timezone_sydney()}</option>
               <option value="Pacific/Auckland">{m.settings_timezone_auckland()}</option>
             </optgroup>
