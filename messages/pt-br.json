@@ -285,6 +285,13 @@
 	"settings_appearance_preview_accent": "Destaque",
 	"settings_appearance_preview_sample_card": "Cartão de amostra",
 	"settings_appearance_preview_card_description": "Assim é como os cartões apareceram com seu esquema de cores.",
+	"settings_timezone_eastern_time": "Horário do Leste (ET)",
+	"settings_timezone_central_time": "Horário Central (CT)",
+	"settings_timezone_mountain_time": "Horário das Montanhas (MT)",
+	"settings_timezone_pacific_time": "Horário do Pacífico (PT)",
+	"settings_timezone_brasilia_time": "Horário de Brasília (BRT)",
+	"settings_timezone_greenwich_time": "Horário de Greenwich (GMT)",
+	"settings_timezone_central_european_time": "Horário da Europa Central (CET)",
 	
 	"users_title": "Usuários",
 	"users_subtitle": "Gerenciar contas de usuário e permissões",

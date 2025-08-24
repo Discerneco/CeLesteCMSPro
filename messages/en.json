@@ -285,6 +285,13 @@
 	"settings_appearance_preview_accent": "Accent",
 	"settings_appearance_preview_sample_card": "Sample Card",
 	"settings_appearance_preview_card_description": "This is how cards will look with your color scheme.",
+	"settings_timezone_eastern_time": "Eastern Time (ET)",
+	"settings_timezone_central_time": "Central Time (CT)",
+	"settings_timezone_mountain_time": "Mountain Time (MT)",
+	"settings_timezone_pacific_time": "Pacific Time (PT)",
+	"settings_timezone_brasilia_time": "Brasília Time (BRT)",
+	"settings_timezone_greenwich_time": "Greenwich Mean Time (GMT)",
+	"settings_timezone_central_european_time": "Central European Time (CET)",
 	
 	"users_title": "Users",
 	"users_subtitle": "Manage user accounts and permissions",

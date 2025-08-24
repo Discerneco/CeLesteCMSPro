@@ -294,13 +294,13 @@
           </label>
           <select bind:value={timezone} class="select w-full max-w-xs">
             <option value="UTC">UTC</option>
-            <option value="America/New_York">Eastern Time (ET)</option>
-            <option value="America/Chicago">Central Time (CT)</option>
-            <option value="America/Denver">Mountain Time (MT)</option>
-            <option value="America/Los_Angeles">Pacific Time (PT)</option>
-            <option value="America/Sao_Paulo">Brasília Time (BRT)</option>
-            <option value="Europe/London">Greenwich Mean Time (GMT)</option>
-            <option value="Europe/Paris">Central European Time (CET)</option>
+            <option value="America/New_York">{m.settings_timezone_eastern_time()}</option>
+            <option value="America/Chicago">{m.settings_timezone_central_time()}</option>
+            <option value="America/Denver">{m.settings_timezone_mountain_time()}</option>
+            <option value="America/Los_Angeles">{m.settings_timezone_pacific_time()}</option>
+            <option value="America/Sao_Paulo">{m.settings_timezone_brasilia_time()}</option>
+            <option value="Europe/London">{m.settings_timezone_greenwich_time()}</option>
+            <option value="Europe/Paris">{m.settings_timezone_central_european_time()}</option>
           </select>
         </div>
       </div>
