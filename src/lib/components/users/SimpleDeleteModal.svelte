@@ -252,8 +252,8 @@
 </script>
 
 {#if isOpen && user}
-  <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-  <div class="modal modal-open" onkeydown={handleKeydown}>
+  <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+  <div class="modal modal-open" role="dialog" aria-modal="true" onkeydown={handleKeydown}>
     <div class="modal-box max-w-2xl">
       <!-- Header -->
       <h3 class="font-bold text-lg mb-4">{m.users_modal_delete_title()}</h3>

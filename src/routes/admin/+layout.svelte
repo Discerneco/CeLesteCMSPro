@@ -51,13 +51,20 @@
   // Early locale initialization to prevent hydration race conditions
   $effect(() => {
     if (browser) {
-      // Initialize locale before any content renders to prevent translation timing issues
-      const savedLanguage = localStorage.getItem('celestecms-language');
+      // Check both Paraglide's standard key and our custom key
+      const paraglideLocale = localStorage.getItem('PARAGLIDE_LOCALE');
+      const customLocale = localStorage.getItem('celestecms-language');
+      const savedLanguage = paraglideLocale || customLocale;
+      
       if (savedLanguage && locales.includes(savedLanguage)) {
         const currentLocale = getLocale();
         if (currentLocale !== savedLanguage) {
-          console.log('🌍 Early locale initialization:', currentLocale, '->', savedLanguage);
+          console.log('🌍 Admin layout locale restoration:', currentLocale, '->', savedLanguage);
           setLocale(savedLanguage);
+          
+          // Ensure both keys are synchronized
+          localStorage.setItem('PARAGLIDE_LOCALE', savedLanguage);
+          localStorage.setItem('celestecms-language', savedLanguage);
         }
       }
     }

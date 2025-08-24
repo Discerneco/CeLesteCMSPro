@@ -46,27 +46,18 @@
     try {
       console.log('🌍 Switching language from', currentLanguage, 'to', lang);
       
-      // ✅ Store in localStorage FIRST for persistence across navigation
+      // ✅ Store in localStorage using Paraglide's expected key
       if (browser) {
-        localStorage.setItem('celestecms-language', lang);
+        localStorage.setItem('PARAGLIDE_LOCALE', lang);
+        localStorage.setItem('celestecms-language', lang); // Keep for backward compatibility
         console.log('💾 Saved language to localStorage:', lang);
       }
       
-      // ✅ Update Paraglide locale
+      // ✅ Update Paraglide locale - this will trigger reactivity throughout the app
       setLocale(lang as any);
       currentLanguage = lang;
       
-      // ✅ Force page refresh for full language switch
-      // This ensures all content updates properly (Paraglide 2.0 way)
-      if (browser) {
-        // Get current path without language prefix
-        const currentPath = window.location.pathname;
-        const pathWithoutLang = currentPath.replace(/^\/(en|pt-br)/, '') || '/';
-        
-        // Navigate to the same path with new language
-        const newPath = lang === 'en' ? pathWithoutLang : `/${lang}${pathWithoutLang}`;
-        window.location.href = newPath;
-      }
+      console.log('✅ Language switched successfully to:', lang);
       
     } catch (error) {
       console.error('❌ Language switch failed:', error);
