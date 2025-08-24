@@ -17,20 +17,38 @@
     const returnUrl = returnTab === 'trash' ? '/admin/posts?tab=trash' : '/admin/posts';
     goto(returnUrl);
   }
+  
+  // Translate post status
+  function getStatusText(status) {
+    switch (status) {
+      case 'published':
+        return m.posts_status_published();
+      case 'draft':
+        return m.posts_status_draft();
+      case 'archived':
+        return m.posts_status_archived();
+      case 'scheduled':
+        return m.posts_status_scheduled();
+      case 'trash':
+        return m.posts_status_trash();
+      default:
+        return status;
+    }
+  }
 </script>
 
 <!-- Page Header -->
 <div class="cms-page-header">
   <div>
-    <h1 class="cms-page-title">View Post</h1>
-    <p class="cms-page-subtitle">Viewing: {data.post.title}</p>
+    <h1 class="cms-page-title">{m.posts_view_title()}</h1>
+    <p class="cms-page-subtitle">{m.posts_view_viewing()}: {data.post.title}</p>
   </div>
   <button 
     onclick={handleBack}
     class="btn btn-outline gap-2"
   >
     <ArrowLeft class="h-4 w-4" />
-    Back to {returnTab === 'trash' ? 'Trash' : 'Posts'}
+    {returnTab === 'trash' ? m.posts_view_back_to_trash() : m.posts_view_back_to_posts()}
   </button>
 </div>
 
@@ -39,27 +57,27 @@
   <!-- Post Details -->
   <div class="cms-card">
     <div class="cms-card-body">
-      <h2 class="cms-card-title">Post Details</h2>
+      <h2 class="cms-card-title">{m.posts_view_details()}</h2>
       <div class="space-y-4">
         <div>
           <div class="label">
-            <span class="label-text font-semibold">Status</span>
+            <span class="label-text font-semibold">{m.posts_form_status()}</span>
           </div>
           <div class="badge {data.post.status === 'trash' ? 'badge-error' : 'badge-info'}">
-            {data.post.status}
+            {getStatusText(data.post.status)}
           </div>
         </div>
         
         <div>
           <div class="label">
-            <span class="label-text font-semibold">Author</span>
+            <span class="label-text font-semibold">{m.posts_form_author()}</span>
           </div>
-          <p class="text-base-content">{data.post.author || 'Unknown'}</p>
+          <p class="text-base-content">{data.post.author || m.users_unknown()}</p>
         </div>
         
         <div>
           <div class="label">
-            <span class="label-text font-semibold">Created</span>
+            <span class="label-text font-semibold">{m.posts_view_created()}</span>
           </div>
           <p class="text-base-content">{data.post.createdAtFormatted}</p>
         </div>
@@ -67,7 +85,7 @@
         {#if data.post.publishedAt}
         <div>
           <div class="label">
-            <span class="label-text font-semibold">Published</span>
+            <span class="label-text font-semibold">{m.posts_view_published()}</span>
           </div>
           <p class="text-base-content">{data.post.publishedAtFormatted}</p>
         </div>
@@ -76,9 +94,9 @@
         {#if data.post.featured}
         <div>
           <div class="label">
-            <span class="label-text font-semibold">Featured</span>
+            <span class="label-text font-semibold">{m.posts_view_featured()}</span>
           </div>
-          <div class="badge badge-warning">Featured Post</div>
+          <div class="badge badge-warning">{m.posts_view_featured_badge()}</div>
         </div>
         {/if}
       </div>
