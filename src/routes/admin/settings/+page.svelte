@@ -246,7 +246,7 @@
   <div class="cms-grid-content">
     <div class="cms-card md:col-span-2">
       <div class="cms-card-body">
-        <h2 class="cms-card-title">Site Configuration</h2>
+        <h2 class="cms-card-title">{m.settings_general_site_configuration()}</h2>
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
           <!-- Site Title -->
@@ -258,7 +258,7 @@
               type="text" 
               bind:value={siteTitle}
               class="input w-full" 
-              placeholder="Enter site title"
+              placeholder={m.settings_general_site_title_placeholder()}
             />
           </div>
           
@@ -283,7 +283,7 @@
             bind:value={siteDescription}
             class="textarea w-full" 
             rows="3"
-            placeholder="Enter site description"
+            placeholder={m.settings_general_site_description_placeholder()}
           ></textarea>
         </div>
         
@@ -309,7 +309,7 @@
     <!-- Quick Actions -->
     <div class="cms-card">
       <div class="cms-card-body">
-        <h2 class="cms-card-title">Quick Actions</h2>
+        <h2 class="cms-card-title">{m.settings_general_quick_actions()}</h2>
         
         <div class="space-y-4">
           <button onclick={resetToDefaults} class="btn btn-outline w-full gap-2">
@@ -401,7 +401,7 @@
         <div class="flex items-center justify-between">
           <div>
             <h3 class="font-semibold">{m.settings_appearance_dark_mode()}</h3>
-            <p class="text-sm text-base-content/60">Toggle between light and dark themes</p>
+            <p class="text-sm text-base-content/60">{m.settings_appearance_dark_mode_description()}</p>
           </div>
           <button 
             onclick={toggleDarkMode}
@@ -544,8 +544,8 @@
             <table class="table table-zebra">
               <thead>
                 <tr>
-                  <th class="font-semibold">Content Type</th>
-                  <th class="text-center font-semibold">Current Period</th>
+                  <th class="font-semibold">{m.settings_statistics_content_type()}</th>
+                  <th class="text-center font-semibold">{m.settings_statistics_current_period()}</th>
                   <th class="text-center text-xs text-base-content/60">
                     {#if selectedTimeframe === 'total'}
                       All Time
@@ -575,7 +575,7 @@
                     <div class="stat-value text-lg font-bold text-primary">{statsData.posts}</div>
                   </td>
                   <td class="text-center text-sm text-base-content/60">
-                    {selectedTimeframe === 'total' ? 'Total posts created' : `Posts created in selected period`}
+                    {selectedTimeframe === 'total' ? 'Total posts created' : m.settings_statistics_posts_period()}
                   </td>
                 </tr>
                 
@@ -592,7 +592,7 @@
                     <div class="stat-value text-lg font-bold text-secondary">{statsData.media}</div>
                   </td>
                   <td class="text-center text-sm text-base-content/60">
-                    {selectedTimeframe === 'total' ? 'Total media files uploaded' : `Media files uploaded in selected period`}
+                    {selectedTimeframe === 'total' ? 'Total media files uploaded' : m.settings_statistics_media_period()}
                   </td>
                 </tr>
                 
@@ -609,7 +609,7 @@
                     <div class="stat-value text-lg font-bold text-accent">{statsData.users}</div>
                   </td>
                   <td class="text-center text-sm text-base-content/60">
-                    {selectedTimeframe === 'total' ? 'Total users registered' : `Users registered in selected period`}
+                    {selectedTimeframe === 'total' ? 'Total users registered' : m.settings_statistics_users_period()}
                   </td>
                 </tr>
                 
@@ -624,7 +624,7 @@
                     <div class="stat-value text-lg font-bold text-info">{statsData.sites}</div>
                   </td>
                   <td class="text-center text-sm text-base-content/60">
-                    {selectedTimeframe === 'total' ? 'Total active sites' : `Sites activity in selected period`}
+                    {selectedTimeframe === 'total' ? 'Total active sites' : m.settings_statistics_sites_period()}
                   </td>
                 </tr>
               </tbody>
@@ -635,7 +635,7 @@
           <div class="mt-6 p-4 bg-base-200 rounded-lg">
             <div class="flex items-center justify-between text-sm">
               <span class="font-medium">
-                Statistics for: 
+                {m.settings_statistics_for_label()} 
                 <span class="badge badge-primary badge-sm ml-1">
                   {#if selectedTimeframe === 'total'}
                     All Time
@@ -653,7 +653,7 @@
                 </span>
               </span>
               <span class="text-base-content/60">
-                Last updated: just now
+                {m.settings_statistics_last_updated()}
               </span>
             </div>
           </div>
@@ -664,32 +664,32 @@
     <!-- Statistics Info Panel -->
     <div class="cms-card">
       <div class="cms-card-body">
-        <h3 class="font-semibold mb-4">Time Period Information</h3>
+        <h3 class="font-semibold mb-4">{m.settings_statistics_time_info_title()}</h3>
         <div class="space-y-3 text-sm">
           <div>
-            <strong>Total:</strong> All records since installation
+            <strong>{m.settings_statistics_total()}:</strong> {m.settings_statistics_info_total()}
           </div>
           <div>
-            <strong>Last Hour:</strong> Records created in the past 60 minutes
+            <strong>{m.settings_statistics_last_hour()}:</strong> {m.settings_statistics_info_hour()}
           </div>
           <div>
-            <strong>24 Hours:</strong> Records created in the past day
+            <strong>{m.settings_statistics_24_hours()}:</strong> {m.settings_statistics_info_24hrs()}
           </div>
           <div>
-            <strong>Week:</strong> Records created in the past 7 days
+            <strong>{m.settings_statistics_week()}:</strong> {m.settings_statistics_info_week()}
           </div>
           <div>
-            <strong>Month:</strong> Records created in the past 30 days
+            <strong>{m.settings_statistics_month()}:</strong> {m.settings_statistics_info_month()}
           </div>
           <div>
-            <strong>Since Login:</strong> Records created since your last login
+            <strong>{m.settings_statistics_since_login()}:</strong> {m.settings_statistics_info_login()}
           </div>
         </div>
         
         <div class="divider"></div>
         
         <div class="text-xs text-base-content/60">
-          Statistics are updated in real-time and reflect the current state of your CMS database.
+          {m.settings_statistics_realtime_note()}
         </div>
       </div>
     </div>
