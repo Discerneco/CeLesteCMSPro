@@ -274,10 +274,11 @@
         <h2 class="cms-card-title">{m.posts_form_settings()}</h2>
         <div class="space-y-4">
           <div>
-            <label class="label">
+            <label for="post-id" class="label">
               <span class="label-text">{m.posts_form_post_id()}</span>
             </label>
             <input 
+              id="post-id"
               type="text" 
               value={postId}
               class="input w-full"
@@ -286,10 +287,11 @@
           </div>
           
           <div>
-            <label class="label">
+            <label for="post-slug" class="label">
               <span class="label-text">{m.posts_form_slug()}</span>
             </label>
             <input 
+              id="post-slug"
               type="text" 
               bind:value={postSlug}
               class="input w-full"
@@ -297,11 +299,12 @@
           </div>
           
           <div>
-            <label class="label">
+            <label for="publication-date" class="label">
               <span class="label-text">{m.posts_form_publication_date()}</span>
             </label>
             <div class="relative">
               <input 
+                id="publication-date"
                 type="date" 
                 bind:value={publicationDate}
                 class="input w-full pr-8"
@@ -311,11 +314,12 @@
           </div>
           
           <div>
-            <label class="label">
+            <label for="post-status" class="label">
               <span class="label-text">{m.posts_form_status()}</span>
             </label>
             <div class="relative">
               <select 
+                id="post-status"
                 bind:value={status}
                 class="select w-full"
               >
@@ -344,10 +348,10 @@
 
           <!-- Author Selection -->
           <div class="form-control">
-            <label class="label">
+            <label for="post-author" class="label">
               <span class="label-text">{m.posts_form_author()}</span>
             </label>
-            <select class="select select-bordered" bind:value={selectedAuthorId}>
+            <select id="post-author" class="select select-bordered" bind:value={selectedAuthorId}>
               <option value="">{m.posts_form_select_author()}</option>
               {#each data.users as user}
                 <option value={user.id}>
@@ -377,10 +381,11 @@
         
         <div class="space-y-4">
           <div>
-            <label class="label">
+            <label for="post-title" class="label">
               <span class="label-text">{m.posts_form_title()}</span>
             </label>
             <input 
+              id="post-title"
               type="text" 
               class="input w-full"
               value={activeTab === 'en' ? content.en.title : content.pt.title}
@@ -390,10 +395,11 @@
           </div>
           
           <div>
-            <label class="label">
+            <label for="post-excerpt" class="label">
               <span class="label-text">{m.posts_form_excerpt()}</span>
             </label>
             <input 
+              id="post-excerpt"
               type="text" 
               class="input w-full"
               value={activeTab === 'en' ? content.en.excerpt : content.pt.excerpt}
@@ -403,14 +409,16 @@
           </div>
           
           <div>
-            <label class="label">
+            <label for="post-content" class="label">
               <span class="label-text">{m.posts_form_content()}</span>
             </label>
-            <RichTextEditor 
-              value={activeTab === 'en' ? content.en.content : content.pt.content}
-              placeholder={activeTab === 'en' ? m.posts_form_content_placeholder_en() : m.posts_form_content_placeholder_pt()}
-              onUpdate={handleContentUpdate}
-            />
+            <div id="post-content">
+              <RichTextEditor 
+                value={activeTab === 'en' ? content.en.content : content.pt.content}
+                placeholder={activeTab === 'en' ? m.posts_form_content_placeholder_en() : m.posts_form_content_placeholder_pt()}
+                onUpdate={handleContentUpdate}
+              />
+            </div>
             <div class="label">
               <span class="label-text-alt">{m.posts_form_markdown_support()}</span>
             </div>
@@ -422,10 +430,12 @@
     <!-- Featured Image Card -->
     <div class="cms-card">
       <div class="cms-card-body">
+        <h2 class="cms-card-title">{m.featured_image_title()}</h2>
         <FeaturedImageUpload 
           value={featuredImageId}
           onUpload={handleFeaturedImageUpload}
           onRemove={handleFeaturedImageRemove}
+          showLabel={false}
         />
       </div>
     </div>

@@ -31,7 +31,7 @@
             id: mediaItem.id,
             url: mediaItem.url,
             name: mediaItem.name,
-            size: mediaItem.size
+            size: mediaItem.sizeBytes || 0 // Use sizeBytes instead of size (which is formatted string)
           };
         }
       } catch (error) {
@@ -164,7 +164,7 @@
 
 <div class="featured-image-upload">
   {#if showLabel}
-    <label class="label">
+    <label for="featured-image-input" class="label">
       <span class="label-text font-medium">{m.featured_image_title()}</span>
     </label>
   {/if}
@@ -185,23 +185,23 @@
         <!-- Image Info -->
         <div class="flex-1">
           <h4 class="font-medium text-base-content">{previewImage.name}</h4>
-          <p class="text-sm text-base-content/60">{formatFileSize(previewImage.size)}</p>
+          <p class="text-sm text-base-content/60">{formatFileSize(previewImage.size || 0)}</p>
           <div class="flex gap-2 mt-2">
             <button
               type="button"
               onclick={openFileDialog}
               class="btn btn-sm btn-outline"
+              title={m.featured_image_change()}
             >
               <Upload class="h-4 w-4" />
-              {m.featured_image_change()}
             </button>
             <button
               type="button"
               onclick={handleRemove}
               class="btn btn-sm btn-outline btn-error"
+              title={m.featured_image_remove()}
             >
               <X class="h-4 w-4" />
-              {m.featured_image_remove()}
             </button>
           </div>
         </div>
@@ -211,6 +211,9 @@
     <!-- Upload Area -->
     <div 
       class="border-2 border-dashed {isDragging ? 'border-primary bg-primary/5' : 'border-base-300'} rounded-lg p-8 text-center transition-colors"
+      role="button"
+      tabindex="0"
+      aria-label={m.featured_image_drag_drop()}
       ondragover={handleDragOver}
       ondragleave={handleDragLeave}
       ondrop={handleDrop}
@@ -255,6 +258,7 @@
 
   <!-- Hidden File Input -->
   <input
+    id="featured-image-input"
     bind:this={fileInput}
     type="file"
     accept="image/png,image/jpeg,image/jpg,image/gif"
