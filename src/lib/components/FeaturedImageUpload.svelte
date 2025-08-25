@@ -15,6 +15,7 @@
   let isUploading = $state(false);
   let uploadError = $state('');
   let previewImage = $state(null); // Preview image data
+  let originalFileSize = $state(0); // Store original file size in bytes
 
   // File input reference
   let fileInput: HTMLInputElement;
@@ -76,6 +77,9 @@
     // Reset error state
     uploadError = '';
 
+    // Store original file size in bytes for display
+    originalFileSize = file.size;
+
     // Validate file type
     const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif'];
     if (!allowedTypes.includes(file.type)) {
@@ -102,16 +106,27 @@
       });
 
       if (response.ok) {
-        const uploadedMedia = await response.json();
+        const uploadResponse = await response.json();
+        console.log('📤 Media upload successful - Full response:', uploadResponse);
+        
+        // The API returns: { message: "...", media: { id, url, name, ... } }
+        const uploadedMedia = uploadResponse.media;
+        console.log('📤 Media object:', uploadedMedia);
+        
+        const mediaId = uploadedMedia.id;
+        console.log('📤 Resolved mediaId:', mediaId);
+        
         previewImage = {
-          id: uploadedMedia.id,
+          id: mediaId,
           url: uploadedMedia.url,
           name: uploadedMedia.name,
-          size: uploadedMedia.size
+          size: originalFileSize // Use original file size in bytes
         };
-        onUpload(uploadedMedia.id);
+        console.log('📤 Calling onUpload callback with mediaId:', mediaId);
+        onUpload(mediaId);
       } else {
         const error = await response.text();
+        console.error('📤 Media upload failed:', error);
         uploadError = `Upload failed: ${error}`;
       }
     } catch (error) {
@@ -150,7 +165,7 @@
 <div class="featured-image-upload">
   {#if showLabel}
     <label class="label">
-      <span class="label-text font-medium">Featured Image</span>
+      <span class="label-text font-medium">{m.featured_image_title()}</span>
     </label>
   {/if}
 
@@ -178,7 +193,7 @@
               class="btn btn-sm btn-outline"
             >
               <Upload class="h-4 w-4" />
-              Change
+              {m.featured_image_change()}
             </button>
             <button
               type="button"
@@ -186,7 +201,7 @@
               class="btn btn-sm btn-outline btn-error"
             >
               <X class="h-4 w-4" />
-              Remove
+              {m.featured_image_remove()}
             </button>
           </div>
         </div>
@@ -203,7 +218,7 @@
       {#if isUploading}
         <div class="flex flex-col items-center gap-4">
           <div class="loading loading-spinner loading-lg text-primary"></div>
-          <p class="text-base-content/70">Uploading image...</p>
+          <p class="text-base-content/70">{m.featured_image_uploading()}</p>
         </div>
       {:else}
         <div class="flex flex-col items-center gap-4">
@@ -217,13 +232,13 @@
               onclick={openFileDialog}
               class="text-primary hover:text-primary-focus underline font-medium"
             >
-              Upload a file
+              {m.featured_image_upload_file()}
             </button>
-            <span class="text-base-content/70"> or drag and drop</span>
+            <span class="text-base-content/70"> {m.featured_image_drag_drop()}</span>
           </div>
           
           <p class="text-sm text-base-content/60">
-            PNG, JPG, GIF up to 10MB
+            {m.featured_image_file_types()}
           </p>
         </div>
       {/if}

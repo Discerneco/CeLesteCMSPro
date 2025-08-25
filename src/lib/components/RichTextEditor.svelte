@@ -2,7 +2,6 @@
   import { onMount, onDestroy } from 'svelte';
   import { Editor } from '@tiptap/core';
   import StarterKit from '@tiptap/starter-kit';
-  import Link from '@tiptap/extension-link';
   import Image from '@tiptap/extension-image';
   import { 
     Bold,
@@ -27,11 +26,13 @@
     editor = new Editor({
       element: editorElement,
       extensions: [
-        StarterKit,
-        Link.configure({
-          openOnClick: false,
-          HTMLAttributes: {
-            class: 'text-primary underline cursor-pointer',
+        StarterKit.configure({
+          // Configure Link through StarterKit
+          link: {
+            openOnClick: false,
+            HTMLAttributes: {
+              class: 'text-primary underline cursor-pointer',
+            },
           },
         }),
         Image.configure({

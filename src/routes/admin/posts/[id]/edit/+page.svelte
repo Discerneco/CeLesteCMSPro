@@ -90,17 +90,24 @@
   };
   
   const handleFeaturedImageUpload = (mediaId: string) => {
+    console.log('🖼️ Featured image uploaded, received mediaId:', mediaId);
     featuredImageId = mediaId;
+    console.log('🖼️ Updated featuredImageId state to:', featuredImageId);
   };
   
   const handleFeaturedImageRemove = () => {
+    console.log('🗑️ Featured image removed');
     featuredImageId = null;
+    console.log('🗑️ Updated featuredImageId state to:', featuredImageId);
   };
   
   const handleSave = async () => {
     isLoading = true;
     
     try {
+      console.log('💾 Starting save process...');
+      console.log('💾 Current featuredImageId state:', featuredImageId);
+      
       // Prepare the post data
       const postData = {
         title: content.en.title || content.pt.title, // Use first available title
@@ -118,6 +125,9 @@
         })
       };
       
+      console.log('💾 Prepared post data:', postData);
+      console.log('💾 Featured image ID in request:', postData.featuredImageId);
+      
       const response = await fetch(`/api/posts/${postId}`, {
         method: 'PUT',
         headers: {
@@ -126,12 +136,18 @@
         body: JSON.stringify(postData)
       });
       
+      console.log('📡 API response status:', response.status);
+      
       if (response.ok) {
+        const result = await response.json();
+        console.log('✅ Post updated successfully:', result);
+        console.log('✅ Updated post data:', result.post);
         // Success - redirect to posts list
         goto('/admin/posts');
       } else {
         const error = await response.text();
-        console.error('Failed to update post:', error);
+        console.error('❌ Failed to update post:', error);
+        console.error('❌ Response status:', response.status);
         alert('Failed to update post. Please try again.');
       }
     } catch (err) {
@@ -399,16 +415,18 @@
               <span class="label-text-alt">{m.posts_form_markdown_support()}</span>
             </div>
           </div>
-          
-          <!-- Featured Image -->
-          <div>
-            <FeaturedImageUpload 
-              value={featuredImageId}
-              onUpload={handleFeaturedImageUpload}
-              onRemove={handleFeaturedImageRemove}
-            />
-          </div>
         </div>
+      </div>
+    </div>
+
+    <!-- Featured Image Card -->
+    <div class="cms-card">
+      <div class="cms-card-body">
+        <FeaturedImageUpload 
+          value={featuredImageId}
+          onUpload={handleFeaturedImageUpload}
+          onRemove={handleFeaturedImageRemove}
+        />
       </div>
     </div>
   </div>

@@ -519,5 +519,13 @@
 	"users_author_role_options": "Opções da função autor",
 	"users_subscriber_role_options": "Opções da função assinante",
 	"users_try_adjusting_search": "Tente ajustar seus critérios de busca",
-	"users_start_by_adding_first": "Comece adicionando seu primeiro usuário ao sistema"
+	"users_start_by_adding_first": "Comece adicionando seu primeiro usuário ao sistema",
+
+	"featured_image_title": "Imagem Destacada",
+	"featured_image_upload_file": "Enviar arquivo",
+	"featured_image_drag_drop": "ou arraste e solte",
+	"featured_image_file_types": "PNG, JPG, GIF até 10MB",
+	"featured_image_change": "Alterar",
+	"featured_image_remove": "Remover",
+	"featured_image_uploading": "Enviando imagem..."
 }

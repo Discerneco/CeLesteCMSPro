@@ -98,7 +98,10 @@ export const PUT: RequestHandler = async (event) => {
 
     // Parse the request body
     const body = await event.request.json();
+    console.log('🔄 API received request body:', body);
+    
     const { title, slug, excerpt, content, status, featured, featuredImageId, publishedAt, metaData, authorId } = body;
+    console.log('🔄 Extracted featuredImageId from request:', featuredImageId);
 
     // Validate required fields
     if (!title || !content) {
@@ -138,13 +141,19 @@ export const PUT: RequestHandler = async (event) => {
       metaData: metaData ? JSON.parse(typeof metaData === 'string' ? metaData : JSON.stringify(metaData)) : null,
       updatedAt: new Date()
     };
+    
+    console.log('🔄 Prepared update data:', updateData);
+    console.log('🔄 Featured image ID in update data:', updateData.featuredImageId);
 
     // Update the post
+    console.log('🔄 Updating post in database...');
     const [updatedPost] = await db
       .update(posts)
       .set(updateData)
       .where(eq(posts.id, postId))
       .returning();
+      
+    console.log('✅ Database update completed:', updatedPost);
 
     return json({ 
       message: 'Post updated successfully',

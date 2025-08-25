@@ -519,5 +519,13 @@
 	"users_author_role_options": "Author role options",
 	"users_subscriber_role_options": "Subscriber role options",
 	"users_try_adjusting_search": "Try adjusting your search criteria",
-	"users_start_by_adding_first": "Start by adding your first user to the system"
+	"users_start_by_adding_first": "Start by adding your first user to the system",
+
+	"featured_image_title": "Featured Image",
+	"featured_image_upload_file": "Upload a file",
+	"featured_image_drag_drop": "or drag and drop",
+	"featured_image_file_types": "PNG, JPG, GIF up to 10MB",
+	"featured_image_change": "Change",
+	"featured_image_remove": "Remove",
+	"featured_image_uploading": "Uploading image..."
 }
