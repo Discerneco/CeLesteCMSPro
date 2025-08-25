@@ -525,6 +525,12 @@
       </button>
     </div>
   </div>
-  <div class="modal-backdrop" onclick={cancelDelete}></div>
+  <button 
+    type="button"
+    class="modal-backdrop"
+    aria-label="Close modal"
+    onclick={cancelDelete}
+    onkeydown={(e) => e.key === 'Escape' && cancelDelete()}
+  ></button>
 </div>
 {/if}

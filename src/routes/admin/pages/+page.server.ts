@@ -18,12 +18,9 @@ export const load: PageServerLoad = async (event) => {
 				createdAt: pages.createdAt,
 				updatedAt: pages.updatedAt,
 				publishedAt: pages.publishedAt,
-				author: {
-					id: users.id,
-					username: users.username,
-					firstName: users.firstName,
-					lastName: users.lastName
-				}
+				authorUsername: users.username,
+				authorFirstName: users.firstName,
+				authorLastName: users.lastName
 			})
 			.from(pages)
 			.leftJoin(users, eq(pages.authorId, users.id))
@@ -37,7 +34,7 @@ export const load: PageServerLoad = async (event) => {
 			slug: page.slug,
 			excerpt: page.excerpt || '',
 			status: page.status,
-			author: page.author?.username || 'Unknown',
+			author: page.authorUsername || 'Unknown',
 			createdAt: page.createdAt,
 			publishedAt: page.publishedAt,
 			// Format dates for display

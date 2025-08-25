@@ -21,16 +21,14 @@ export const GET: RequestHandler = async (event) => {
         content: pages.content,
         excerpt: pages.excerpt,
         status: pages.status,
+        featuredImageId: pages.featuredImageId,
         createdAt: pages.createdAt,
         updatedAt: pages.updatedAt,
         publishedAt: pages.publishedAt,
         metaData: pages.metaData,
-        author: {
-          id: users.id,
-          username: users.username,
-          firstName: users.firstName,
-          lastName: users.lastName
-        }
+        authorUsername: users.username,
+        authorFirstName: users.firstName,
+        authorLastName: users.lastName
       })
       .from(pages)
       .leftJoin(users, eq(pages.authorId, users.id))
@@ -44,7 +42,8 @@ export const GET: RequestHandler = async (event) => {
       slug: page.slug,
       excerpt: page.excerpt || '',
       status: page.status,
-      author: page.author?.username || 'Unknown',
+      featuredImageId: page.featuredImageId,
+      author: page.authorUsername || 'Unknown',
       createdAt: page.createdAt,
       publishedAt: page.publishedAt,
       // Format dates for display
@@ -75,11 +74,11 @@ export const POST: RequestHandler = async (event) => {
 
     // Parse the request body
     const body = await event.request.json();
-    const { title, slug, excerpt, content, status, publishedAt, metaData } = body;
+    const { title, slug, excerpt, content, status, publishedAt, metaData, featuredImageId } = body;
 
-    // Validate required fields
-    if (!title || !content) {
-      return json({ error: 'Title and content are required' }, { status: 400 });
+    // Validate required fields - content is optional for pages
+    if (!title) {
+      return json({ error: 'Title is required' }, { status: 400 });
     }
 
     // Generate slug if not provided
@@ -98,6 +97,7 @@ export const POST: RequestHandler = async (event) => {
       excerpt: excerpt || '',
       authorId: event.locals.user.id,
       status: status || 'draft',
+      featuredImageId: featuredImageId || null,
       publishedAt: status === 'published' && publishedAt ? new Date(publishedAt) : null,
       metaData: metaData ? JSON.parse(typeof metaData === 'string' ? metaData : JSON.stringify(metaData)) : null
     };

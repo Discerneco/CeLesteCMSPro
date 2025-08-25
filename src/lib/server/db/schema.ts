@@ -195,8 +195,9 @@ export const pages = sqliteTable('pages', {
   id: text('id').primaryKey().$defaultFn(() => createId()),
   title: text('title').notNull(),
   slug: text('slug').notNull().unique(),
-  content: text('content').notNull(),
+  content: text('content'),
   excerpt: text('excerpt'),
+  featuredImageId: text('featured_image_id').references(() => media.id),
   authorId: text('author_id').notNull().references(() => users.id),
   status: text('status', { enum: ['draft', 'published', 'archived', 'trash'] }).notNull().default('draft'),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
@@ -215,6 +216,7 @@ export const pages = sqliteTable('pages', {
 // @ts-ignore - Suppress TypeScript errors for relations API with SQLite tables
 export const pageRelations = relations(typeTable(pages), ({ one }) => ({
   author: one(typeTable(users), { fields: [typeTable(pages.authorId)], references: [typeTable(users.id)] }),
+  featuredImage: one(typeTable(media), { fields: [typeTable(pages.featuredImageId)], references: [typeTable(media.id)] }),
 }));
 
 // ================ MEDIA ================

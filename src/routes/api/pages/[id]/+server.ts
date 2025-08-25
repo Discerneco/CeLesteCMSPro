@@ -92,11 +92,11 @@ export const PUT: RequestHandler = async (event) => {
 
     // Parse the request body
     const body = await event.request.json();
-    const { title, slug, excerpt, content, status, publishedAt, metaData, authorId } = body;
+    const { title, slug, excerpt, content, status, publishedAt, metaData, featuredImageId } = body;
 
-    // Validate required fields
-    if (!title || !content) {
-      return json({ error: 'Title and content are required' }, { status: 400 });
+    // Validate required fields - content is optional for pages
+    if (!title) {
+      return json({ error: 'Title is required' }, { status: 400 });
     }
 
     // Check if page exists
@@ -118,14 +118,14 @@ export const PUT: RequestHandler = async (event) => {
       .replace(/\s+/g, '-')
       .replace(/-+/g, '-');
 
-    // Prepare the update data
+    // Prepare the update data (preserve existing authorId, don't overwrite it)
     const updateData = {
       title,
       slug: finalSlug,
       content,
       excerpt: excerpt || '',
       status: status || 'draft',
-      authorId: authorId || null,
+      featuredImageId: featuredImageId || null,
       publishedAt: status === 'published' && publishedAt ? new Date(publishedAt) : null,
       metaData: metaData ? JSON.parse(typeof metaData === 'string' ? metaData : JSON.stringify(metaData)) : null,
       updatedAt: new Date()
