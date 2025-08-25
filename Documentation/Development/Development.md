@@ -36,18 +36,57 @@
 - [x] Test complete authentication flow (login → dashboard → logout) ✅ COMPLETED
 - [x] Verify session persistence and expiration ✅ COMPLETED
 - [x] Test route protection for admin pages ✅ COMPLETED
-- [ ] Deploy and verify on Cloudflare D1 production environment 🔄 NEXT
+- [x] Deploy and verify on Cloudflare D1 production environment ✅ COMPLETED
 - [x] Create admin user creation script ✅ COMPLETED
 
 **User Management**
 - [x] User login/registration functionality ✅ COMPLETED
 - [x] Role-based permissions system ✅ COMPLETED (basic implementation)
 - [x] Auth pages layout override (clean, standalone experience) ✅ COMPLETED
-- [ ] User profile management interface 🔄 IN PROGRESS
+- [x] User profile management interface ✅ COMPLETED
 
 **Authentication System Enhancements**
 - [ ] Language-aware navigation in auth flows 🔄 NEXT
   - **Issue**: Auth pages use hardcoded URLs without language prefixes
+
+---
+
+## Versioning Strategy
+
+CeLesteCMS Pro follows semantic versioning (MAJOR.MINOR.PATCH):
+
+- **MAJOR (x.0.0)**: API changes, major features, architectural shifts
+- **MINOR (0.x.0)**: New features, backwards compatible
+- **PATCH (0.0.x)**: Bug fixes and minor improvements
+
+### Current Development Status
+- **Current Phase**: ~75% MVP Complete - Admin & APIs Functional ✅
+- **Authentication**: Oslo + Arctic implementation complete
+- **Database**: Full schema with Drizzle ORM
+- **Admin UI**: Posts, Media, Settings, Users management functional
+- **Next Priority**: Pages system for public site generation
+
+---
+
+## Next Development Priorities
+
+### 🎯 1. Pages System Implementation (CURRENT PRIORITY)
+- Add `pages` table to database schema
+- Create `/admin/pages` CRUD interface
+- Implement `/api/pages` REST endpoints  
+- Seed with About page content
+
+### 🎯 2. Public Site Templates
+- Create homepage, blog, and page templates
+- Implement hybrid static+dynamic routing
+- Build responsive public theme
+- Enable content delivery for static pages
+
+### 🎯 3. Static Site Generation with Dynamic Features
+- Use `adapter-cloudflare` for hybrid architecture
+- Pre-render public pages for performance
+- Dynamic islands for comments, search, analytics
+- SEO implementation and sitemaps
   - **Problem**: Portuguese users navigate to English pages during auth flows  
   - **Solution**: Use Paraglide i18n routing for language-persistent navigation
   - **Affected Pages**: Login, Signup, Forgot Password, Reset Password
@@ -75,7 +114,7 @@
 - [x] Status badges with borderless design ✅ COMPLETED
 - [x] Pagination layout with proper spacing ✅ COMPLETED
 - [x] Mobile-responsive card layout for smaller screens ✅ COMPLETED
-- [ ] Posts API debugging and CRUD operations 🔄 NEXT
+- [x] Posts API debugging and CRUD operations ✅ COMPLETED
 - [ ] Markdown editor integration 🔄 FUTURE
 
 **Settings Management System**
@@ -95,13 +134,38 @@
 - [ ] Advanced settings (API keys, email/SMTP, integrations) 🔄 FUTURE
 
 #### Content & Application Logic (Month 2)
-- [ ] Core content schemas with Drizzle ORM
-- [ ] Content type definitions (pages, posts)
-- [ ] File/media handling
-- [ ] RESTful API endpoints
-- [ ] Plugin architecture foundation
-- [ ] Application extension points
-- [ ] Developer SDK basics
+- [x] Core content schemas with Drizzle ORM ✅ COMPLETED
+- [x] Content type definitions (posts) ✅ COMPLETED  
+- [ ] Content type definitions (pages) 🔄 NEXT
+- [x] File/media handling ✅ COMPLETED
+- [x] RESTful API endpoints ✅ COMPLETED
+- [ ] Plugin architecture foundation 🔄 FUTURE
+- [ ] Application extension points 🔄 FUTURE
+- [ ] Developer SDK basics 🔄 FUTURE
+
+### Current Priority: Public Site Generation 🎯
+
+**Next Major Milestone**: Transform CeLesteCMS Pro from admin-only to complete hybrid CMS
+
+#### Pages System Implementation (URGENT)
+- [ ] Add `pages` table to database schema 🔄 NEXT
+- [ ] Create `/admin/pages` CRUD interface similar to Posts
+- [ ] Implement `/api/pages` REST endpoints
+- [ ] Seed database with About page content
+- [ ] Test Pages management workflow
+
+#### Template System for Public Site (URGENT)
+- [ ] Create public site template components
+  - [ ] Homepage template with recent posts
+  - [ ] Blog listing page with pagination
+  - [ ] Individual post page template
+  - [ ] Static page template (About, Contact, etc.)
+- [ ] Implement public routes:
+  - [ ] `/` - Homepage
+  - [ ] `/blog` - Blog listing 
+  - [ ] `/blog/[slug]` - Post pages
+  - [ ] `/[slug]` - Static pages
+- [ ] Configure hybrid deployment (static public + dynamic admin)
 
 ### Phase 2: Agency Features (Months 2-3)
 - [ ] Multi-site management
@@ -142,3 +206,62 @@
 - [ ] Environment configuration management
 - [ ] Monitoring and analytics integration
 - [ ] CI/CD pipeline integrations
+
+---
+
+## Current Status Summary
+
+### ✅ **Completed (MVP Foundation Ready)**
+- **Framework Stack**: All 2025 frameworks updated and optimized
+- **Authentication System**: Oslo + Arctic fully implemented and tested
+- **Admin UI**: Complete dashboard, posts, media, users, settings management
+- **Database**: Comprehensive schema with all relationships
+- **Internationalization**: English/Portuguese with flat message structure
+- **Theme System**: Light/dark mode with timezone support
+
+### 🎯 **Current Priority: Public Site Generation**
+- **Challenge**: We have a complete admin system but no public website output
+- **Goal**: Transform from admin-only tool to complete CMS that generates public sites
+- **Approach**: Hybrid architecture (static public + dynamic admin + edge functions)
+
+### 📋 **Next Sprint Tasks**
+1. **Pages System** - Add database table, admin interface, API endpoints
+2. **Template System** - Create public site templates and routing
+3. **Hybrid Deployment** - Configure static generation + dynamic features
+4. **SEO Implementation** - Meta tags, structured data, sitemaps
+
+---
+
+## Technical Decisions Log
+
+### Authentication: Oslo + Arctic (Completed)
+**Decision**: Replaced Better Auth with Oslo + Arctic
+**Rationale**: 
+- Better control over cryptographic primitives
+- More suitable for edge computing (Cloudflare D1)
+- Lighter weight and more flexible
+- Better TypeScript integration
+
+### Database: Drizzle ORM + SQLite/D1 (Completed)
+**Decision**: Drizzle ORM with SQLite (dev) and Cloudflare D1 (prod)
+**Rationale**:
+- Type-safe ORM with excellent TypeScript integration
+- SQLite compatibility for local development
+- Optimized for Cloudflare D1 in production
+- Zero-cost abstractions
+
+### UI Framework: Svelte 5 + DaisyUI (Completed)
+**Decision**: Svelte 5 runes + DaisyUI components + TailwindCSS 4
+**Rationale**:
+- Modern reactivity with Svelte 5 runes ($state, $effect, $derived)
+- DaisyUI provides consistent component system
+- TailwindCSS 4 Oxide engine for performance
+- Excellent developer experience
+
+### Deployment: Hybrid Architecture (In Progress)
+**Decision**: Cloudflare Pages with hybrid static/dynamic approach
+**Rationale**:
+- Static public pages for optimal performance and SEO
+- Dynamic admin panel for real-time content management
+- Edge functions for API and authentication
+- Global CDN distribution

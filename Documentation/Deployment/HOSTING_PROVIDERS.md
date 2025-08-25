@@ -1,4 +1,15 @@
-Technical Implementation for Hosting Providers
+# Hosting Provider Integration Strategy
+
+> **Note**: This document outlines the **future implementation** strategy for hosting provider partnerships. The technical implementation described here is planned for **Phase 2** of CeLesteCMS Pro development, after the core MVP is established.
+
+## Current Status: Planning Phase
+
+CeLesteCMS Pro follows an **upgrade/add-on model** where:
+- **CeLesteCMS Standard** (free) provides the base CMS functionality  
+- **CeLesteCMS Pro** (paid license) unlocks application transformation features
+- Hosting providers can integrate both versions for their customers
+
+## Technical Implementation for Hosting Providers (Future)
 License Server for Hosting Companies
 typescript// src/routes/api/hosting-license/verify/+server.ts
 import { json } from '@sveltejs/kit';

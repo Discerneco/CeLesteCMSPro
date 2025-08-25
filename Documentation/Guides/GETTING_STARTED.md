@@ -1,293 +1,330 @@
 # Getting Started with CeLesteCMS Pro
 
-This guide will help you set up CeLesteCMS Pro for application development.
+Welcome to CeLesteCMS Pro! This guide will help you get up and running with your content management system and introduce you to its powerful application development capabilities.
 
-## Core Technologies
+## What is CeLesteCMS Pro?
 
-### Framework
-- **SvelteKit**: Full-stack framework built on Svelte 5
-- **TypeScript**: For type safety and better developer experience
+CeLesteCMS Pro is a modern hybrid CMS that transforms content management into application development. It provides:
 
-### UI & Design
-- **TailwindCSS**: Utility-first CSS framework
-- **DaisyUI**: Component library built on top of Tailwind
+- **Complete Admin Interface** - Manage content, users, media, and settings
+- **Hybrid Architecture** - Static public sites with dynamic admin capabilities  
+- **Application Platform** - Transform content into interactive applications
+- **Headless API** - RESTful endpoints for external consumption
+- **Modern Stack** - Svelte 5, TailwindCSS 4, DaisyUI, Drizzle ORM
 
-### Database
-- **Cloudflare D1**: Serverless SQLite database distributed globally
-- **Drizzle ORM**: TypeScript ORM for database operations
+## Quick Setup (5 Minutes)
 
-### Testing
-- **Vitest**: Unit and component testing framework built on Vite
-- **Playwright**: End-to-end testing framework for browser testing
+### 1. Local Development Setup
 
-### Content Authoring
-- **MDSvex**: Markdown preprocessor for Svelte with component support
+Follow the comprehensive [LocalDevelopment.md](../Development/LocalDevelopment.md) guide for complete setup instructions. Here's the summary:
 
-### Internationalization
-- **Paraglide**: Type-safe i18n solution optimized for SvelteKit
-- **Supported Languages**: English (en) and Portuguese Brazil (pt-BR)
-
-### Development Tools
-- **Storybook**: UI component explorer and documentation
-- **ESLint**: Code linting
-- **Prettier**: Code formatting
-
-## Development Environment Setup
-
-### 1. Set up SvelteKit project with TypeScript
 ```bash
-npx sv create celestecms-pro
-cd celestecms-pro
-npm install
+# Clone and setup
+git clone <your-repository>
+cd CeLesteCMS-Pro
+pnpm install
+
+# Configure environment
+cp .env.example .env
+# Edit .env with your SESSION_SECRET
+
+# Setup database
+pnpm run db:migrate
+pnpm run db:seed-standalone
+
+# Start development server
+pnpm run dev
 ```
 
-During setup, select the following options:
-- TypeScript: Yes
-- ESLint: Yes
-- Prettier: Yes
-- Vitest: Yes
-- Playwright: Yes
-- TailwindCSS: Yes
-- Drizzle: Yes (SQLite adapter)
-- Storybook: Yes
-- SvelteKit-adapter: Yes (Cloudflare)
-- MDSvex: Yes
-- Paraglide: Yes
-- Oslo + Arctic: Yes (for authentication)
+### 2. First Login
 
-### 2. Add Cloudflare D1 integration
-```bash
-npm install @cloudflare/workers-types
-npm install drizzle-orm drizzle-kit
+1. Visit `http://localhost:5173/admin/login`
+2. Login with default credentials:
+   - **Email**: `admin@example.com`
+   - **Password**: `adminpassword123`
+3. **Important**: Change these credentials in Settings > Profile
+
+### 3. Explore the Admin Interface
+
+Your admin dashboard includes:
+- **Dashboard** - Overview of content and system stats
+- **Posts** - Create and manage blog content
+- **Media** - Upload and organize files
+- **Users** - Manage user accounts and permissions
+- **Settings** - Configure site appearance and functionality
+
+## Core Features Overview
+
+### Content Management
+
+**Posts System** ✅
+- Full CRUD interface for blog posts
+- Category and tag organization
+- Featured image support
+- Draft and publish workflow
+- SEO-friendly slug generation
+
+**Media Management** ✅
+- Drag-and-drop file uploads
+- Image preview and metadata
+- Organized file library
+- Integration with content editors
+
+**User Management** ✅
+- User creation and role assignment
+- Profile management
+- Authentication and sessions
+- Admin access controls
+
+**Settings & Configuration** ✅
+- Site information and branding
+- Theme customization (light/dark)
+- Global timezone settings (30+ timezones)
+- Language switching (English/Portuguese)
+
+### Coming Soon: Public Site Generation 🎯
+
+**Pages System** (Next Priority)
+- Static page creation (About, Contact, etc.)
+- Template-based page generation
+- SEO optimization and metadata
+
+**Template System** (Next Priority)
+- Homepage template with recent posts
+- Blog listing with pagination
+- Individual post page templates
+- Responsive, mobile-first design
+
+## Understanding the Architecture
+
+### Current State: Admin-Complete ✅
+
+You have a fully functional admin system with:
+- **Authentication**: Oslo + Arctic secure authentication
+- **Database**: Comprehensive schema with all relationships
+- **UI Framework**: Svelte 5 + DaisyUI + TailwindCSS 4
+- **Internationalization**: English/Portuguese support
+- **API Layer**: RESTful endpoints for content management
+
+### Next Phase: Public Site 🚧
+
+CeLesteCMS Pro will generate public websites with:
+- **Static Pages**: Pre-rendered for optimal performance
+- **Dynamic Features**: Comments, search, real-time elements
+- **Hybrid Deployment**: Static + Dynamic + Edge Functions
+- **SEO Optimized**: Meta tags, structured data, sitemaps
+
+### Future: Application Platform 🚀
+
+Transform your content into applications:
+- **Custom Data Models**: Beyond standard blog content
+- **Interactive Components**: Dynamic user interfaces
+- **API Integration**: Connect with external services
+- **Plugin System**: Extend functionality modularly
+
+## Your First Tasks
+
+### 1. Explore the Admin Interface
+
+**Dashboard Overview**:
+- View content statistics and system status
+- Check recent activity and user engagement
+- Monitor system health and performance
+
+**Create Your First Post**:
+1. Go to **Posts** > **Add New**
+2. Write content in Markdown format
+3. Add categories and tags
+4. Upload a featured image
+5. Publish when ready
+
+**Upload Media**:
+1. Go to **Media** > **Upload**
+2. Drag and drop images/files
+3. Organize in folders
+4. Use in posts and pages
+
+### 2. Customize Your Site
+
+**Update Site Information**:
+1. Go to **Settings** > **General**
+2. Set site title and description
+3. Configure timezone and language
+4. Save changes
+
+**Personalize Appearance**:
+1. Go to **Settings** > **Appearance**
+2. Choose between light/dark themes
+3. Customize colors if desired
+4. Test theme switching
+
+### 3. Manage Users (If Team-Based)
+
+**Add Team Members**:
+1. Go to **Users** > **Add New**
+2. Set email and temporary password
+3. Assign appropriate roles
+4. User can reset password on first login
+
+## Development Capabilities
+
+### For Developers: Extending CeLesteCMS Pro
+
+**Custom Components**:
+```svelte
+<!-- Example: Custom dashboard widget -->
+<script lang="ts">
+  import { Card } from '$lib/components';
+  
+  let data = $state([]);
+  
+  // Fetch custom data
+  async function loadData() {
+    const response = await fetch('/api/custom-data');
+    data = await response.json();
+  }
+</script>
+
+<Card title="Custom Widget">
+  {#each data as item}
+    <div>{item.name}: {item.value}</div>
+  {/each}
+</Card>
 ```
 
-### 3. Set up DaisyUI
-```bash
-npm install daisyui@latest
-```
-
-Update your `tailwind.config.js` to include DaisyUI:
-```javascript
-module.exports = {
-  //...
-  plugins: [require("daisyui")],
-}
-```
-
-### 4. Configure Paraglide for Internationalization
-```bash
-npm install @inlang/paraglide-js
-```
-
-Create a Paraglide configuration file:
-```javascript
-// paraglide.config.js
-export default {
-  project: {
-    sourceLanguageTag: "en",
-    languageTags: ["en", "pt-BR"],
-  },
-  plugins: [
-    // Add plugins as needed
-  ]
-}
-```
-
-Create translation files for each language:
-```javascript
-// src/i18n/en.json
-{
-  "welcome": "Welcome to CeLesteCMS Pro",
-  "dashboard": "Dashboard",
-  "content": "Content"
-}
-
-// src/i18n/pt-BR.json
-{
-  "welcome": "Bem-vindo ao CeLesteCMS Pro",
-  "dashboard": "Painel de Controle",
-  "content": "Conteúdo"
-}
-```
-
-### 5. Set up authentication system
-```bash
-npm install @oslojs/crypto @oslojs/encoding @oslojs/cookie arctic
-```
-
-### 6. Add deployment adapters
-```bash
-npm install @sveltejs/adapter-cloudflare @sveltejs/adapter-vercel -D
-```
-
-### 7. Configure Cloudflare integration
-```bash
-npm install @cloudflare/workers-sdk
-```
-
-### 8. Install application development dependencies
-```bash
-npm install svelte-forms-lib zod
-npm install svelte-dnd-action
-npm install chart.js svelte-chartjs
-```
-
-## Package Reference
-
-### Core Packages
-
-| Package | Purpose | Documentation |
-|---------|---------|---------------|
-| `@sveltejs/kit` | SvelteKit framework | [docs](https://kit.svelte.dev/docs) |
-| `svelte` | Svelte framework | [docs](https://svelte.dev/docs) |
-| `tailwindcss` | CSS framework | [docs](https://tailwindcss.com/docs) |
-| `daisyui` | UI component library | [docs](https://daisyui.com/docs) |
-| `drizzle-orm` | Database ORM | [docs](https://orm.drizzle.team/docs/overview) |
-| `@cloudflare/workers-types` | Types for Cloudflare Workers | [docs](https://developers.cloudflare.com/workers/) |
-
-### Testing Packages
-
-| Package | Purpose | Documentation |
-|---------|---------|---------------|
-| `vitest` | Unit and component testing | [docs](https://vitest.dev/guide/) |
-| `@playwright/test` | End-to-end testing | [docs](https://playwright.dev/docs/intro) |
-
-### Deployment Adapters
-
-| Package | Purpose | Documentation |
-|---------|---------|---------------|
-| `@sveltejs/adapter-cloudflare` | Cloudflare Pages deployment | [docs](https://kit.svelte.dev/docs/adapter-cloudflare) |
-| `@sveltejs/adapter-vercel` | Vercel deployment | [docs](https://kit.svelte.dev/docs/adapter-vercel) |
-
-### Content & Internationalization
-
-| Package | Purpose | Documentation |
-|---------|---------|---------------|
-| `mdsvex` | Markdown in Svelte | [docs](https://mdsvex.pngwn.io/) |
-| `@inlang/paraglide-js` | Internationalization (en, pt-BR) | [docs](https://inlang.com/m/gerre34r/library-inlang-paraglideJs) |
-
-## Creating Your First Application
-
-### 1. Define a Custom Data Model
-Create a new data model in `src/lib/models/`:
-
+**API Endpoints**:
 ```typescript
-// src/lib/models/product.ts
+// src/routes/api/custom/+server.ts
+import { json } from '@sveltejs/kit';
+import { db } from '$lib/server/db';
+
+export async function GET() {
+  // Custom API logic
+  const data = await db.query.customTable.findMany();
+  return json(data);
+}
+```
+
+**Database Extensions**:
+```typescript
+// Add custom tables to schema.ts
 import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
 
-export const products = sqliteTable('products', {
+export const customTable = sqliteTable('custom_table', {
   id: text('id').primaryKey(),
   name: text('name').notNull(),
-  description: text('description'),
-  price: integer('price').notNull(),
-  imageUrl: text('image_url'),
-  category: text('category'),
+  value: integer('value').notNull(),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull()
 });
 ```
 
-### 2. Create Application Components
-Build reusable components in `src/lib/components/app/`:
+## Pro Features (Application Development)
+
+### Transform Content Into Applications
+
+**Custom Content Types**:
+- Define data models beyond blog posts
+- Create forms for custom content entry
+- Build specialized interfaces for different content types
+
+**Interactive Components**:
+- Real-time data visualization
+- User interaction elements
+- Dynamic filtering and search
+
+**API-First Architecture**:
+- Headless consumption by external apps
+- Mobile app backends
+- Multi-channel content distribution
+
+### Example: Product Catalog Application
 
 ```typescript
-// src/lib/components/app/ProductCard.svelte
-<script lang="ts">
-  export let product: {
-    id: string;
-    name: string;
-    description: string;
-    price: number;
-    imageUrl: string;
-  };
-</script>
+// 1. Define product model
+export const products = sqliteTable('products', {
+  id: text('id').primaryKey(),
+  name: text('name').notNull(),
+  price: integer('price').notNull(),
+  category: text('category').notNull(),
+});
 
-<div class="product-card">
-  <img src={product.imageUrl} alt={product.name} />
-  <h3>{product.name}</h3>
-  <p>{product.description}</p>
-  <p class="price">${product.price / 100}</p>
-  <button>Add to Cart</button>
-</div>
+// 2. Create admin interface
+// Custom admin pages for product management
 
-<style>
-  .product-card {
-    border: 1px solid #eee;
-    border-radius: 8px;
-    padding: 1rem;
-    transition: transform 0.2s;
-  }
-  .product-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-  }
-  .price {
-    font-weight: bold;
-    font-size: 1.2rem;
-  }
-</style>
+// 3. Build public interfaces  
+// Product listing, detail pages, search/filter
+
+// 4. Add interactive features
+// Cart functionality, user reviews, inventory tracking
 ```
 
-### 3. Create API Endpoints
-Set up endpoints in `src/routes/api/`:
+## Best Practices
 
-```typescript
-// src/routes/api/products/+server.ts
-import { json } from '@sveltejs/kit';
-import { db } from '$lib/db';
-import { products } from '$lib/models/product';
+### Content Creation
+1. **Use meaningful slugs** for SEO-friendly URLs
+2. **Add alt text** to all images for accessibility
+3. **Organize with categories** and tags for better discovery
+4. **Write meta descriptions** for better search engine results
 
-export async function GET({ platform }) {
-  try {
-    const allProducts = await db.select().from(products).all();
-    return json(allProducts);
-  } catch (error) {
-    console.error('Error fetching products:', error);
-    return json({ error: 'Failed to fetch products' }, { status: 500 });
-  }
-}
-```
+### Development
+1. **Follow the component patterns** established in the admin
+2. **Use TypeScript** for all new code
+3. **Test in both light and dark modes**
+4. **Ensure mobile responsiveness**
+5. **Follow accessibility guidelines**
 
-### 4. Create Application Pages
-Build pages in `src/routes/`:
+### Security
+1. **Change default admin credentials** immediately
+2. **Use strong passwords** for all accounts
+3. **Regularly update dependencies**
+4. **Monitor user activity** in admin logs
 
-```typescript
-// src/routes/products/+page.svelte
-<script lang="ts">
-  import { onMount } from 'svelte';
-  import ProductCard from '$lib/components/app/ProductCard.svelte';
-  
-  let products = [];
-  
-  onMount(async () => {
-    const response = await fetch('/api/products');
-    if (response.ok) {
-      products = await response.json();
-    }
-  });
-</script>
+## Getting Help
 
-<h1>Products</h1>
+### Documentation
+- **[LocalDevelopment.md](../Development/LocalDevelopment.md)** - Complete setup guide
+- **[Development.md](../Development/Development.md)** - Development roadmap and progress
+- **[Localization_Guide.md](Localization_Guide.md)** - Internationalization setup
+- **[UI_Guide.md](UI_Guide.md)** - Design system and components
+- **[CloudflareSetup.md](../Deployment/CloudflareSetup.md)** - Production deployment
 
-<div class="product-grid">
-  {#each products as product}
-    <ProductCard {product} />
-  {/each}
-</div>
+### Support
+- **Email**: pro@celestecms.com
+- **GitHub**: Create issues in the repository
+- **Documentation**: Comprehensive guides in the `/Documentation` folder
 
-<style>
-  .product-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 2rem;
-  }
-</style>
-```
+### Community
+- Join discussions about features and best practices
+- Share custom components and extensions
+- Contribute to the open-source foundation
 
-## Next Steps
+## What's Next?
 
-1. Explore the plugin development documentation
-2. Learn about custom field types
-3. Discover application deployment options
-4. Join our developer community
+### Immediate Next Steps (You)
+1. **Explore the admin interface** thoroughly
+2. **Create sample content** to understand workflows  
+3. **Customize appearance** to match your brand
+4. **Set up user accounts** for your team
 
-For more detailed documentation, visit our [Developer Portal](https://docs.celestecms.com).
+### Development Roadmap (Project)
+1. **Pages System** - Static page creation and management
+2. **Template System** - Public site generation with themes
+3. **Plugin Architecture** - Extensible application development
+4. **Advanced Features** - Analytics, SEO tools, performance optimization
+
+### Pro Application Development
+1. **Custom Data Models** - Beyond standard CMS content
+2. **Interactive Interfaces** - Dynamic user experiences
+3. **API Integrations** - Connect with external services
+4. **Deployment Options** - Various hosting and scaling solutions
+
+---
+
+**Welcome to CeLesteCMS Pro!** You now have a powerful foundation for both content management and application development. Start with the admin interface, then explore the development capabilities as your needs grow.
+
+For immediate setup help, see [LocalDevelopment.md](../Development/LocalDevelopment.md).  
+For development guidance, see [Development.md](../Development/Development.md).
+
+**Last Updated**: August 2025  
+**Version**: Alpha (MVP Foundation Complete)  
+**Status**: Admin system ready, public site generation coming soon

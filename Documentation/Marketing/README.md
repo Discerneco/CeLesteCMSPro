@@ -4,6 +4,20 @@ This directory contains marketing and positioning materials for CeLesteCMS Pro, 
 
 ## 📁 Documents Overview
 
+### **Marketing_Strategy.md**
+Core marketing strategy and positioning for CeLesteCMS Pro's upgrade journey model.
+
+**Use cases:**
+- Business strategy overview
+- "Start Free, Upgrade When Ready" positioning
+- Community building approach
+- Upgrade journey planning
+
+**Key highlights:**
+- Content-to-application transformation messaging
+- Free-to-Pro upgrade triggers
+- Community building strategy
+
 ### **Internationalization_Competitive_Advantages.md**
 Comprehensive competitive analysis highlighting CeLesteCMS Pro's superior internationalization capabilities.
 
@@ -89,11 +103,15 @@ Practical guide for applying marketing content across different channels and tou
 ## 📞 Contact
 
 For questions about marketing positioning or content usage:
-- Marketing: marketing@celestecms.com
-- Sales: sales@celestecms.com
-- Documentation: docs@celestecms.com
+- **General**: pro@celestecms.com
+- **Sales**: sales@celestecms.com  
+- **Documentation**: docs@celestecms.com
+
+*Note: Contact emails should be verified and updated as needed for production use.*
 
 ---
 
-**Last Updated**: January 2025
+**Last Updated**: August 2025
 **Version**: 1.0
+
+**Note**: This marketing strategy aligns perfectly with CeLesteCMS Pro's upgrade model - the free Standard CMS attracts users, while Pro's internationalization excellence drives upgrade conversions.

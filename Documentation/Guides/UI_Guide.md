@@ -1,8 +1,16 @@
 # CeLesteCMS Pro UI Guide
 
+> **Note**: This guide is being updated to reflect our current DaisyUI + Svelte 5 implementation. Some sections may reference older component patterns that are being modernized.
+
 ## Overview
 
-This guide documents the design system, component library, and styling principles used throughout CeLesteCMS Pro. Following these guidelines ensures a consistent, accessible, and visually appealing user experience across the application.
+This guide documents the design system, component library, and styling principles used throughout CeLesteCMS Pro. CeLesteCMS Pro uses DaisyUI components with custom CeLeste themes for consistent, accessible, and modern user interfaces.
+
+**Current Stack**:
+- **UI Framework**: DaisyUI 5.0+ with TailwindCSS 4
+- **Component Library**: Svelte 5 with runes reactivity
+- **Theme System**: CeLeste Light & Dark themes
+- **Icons**: Lucide Svelte icons
 
 ## Table of Contents
 
@@ -24,20 +32,23 @@ CeLesteCMS Pro follows these core design principles:
 4. **Flexibility**: The design should adapt gracefully to different screen sizes and devices.
 5. **Accessibility**: The application should be usable by people with diverse abilities.
 
-## Color Palette
+## Color Palette & Theme System
 
-CeLesteCMS Pro uses a carefully selected color palette that supports both light and dark modes while maintaining WCAG accessibility standards.
+CeLesteCMS Pro uses DaisyUI's theme system with custom CeLeste themes that support both light and dark modes while maintaining WCAG accessibility standards.
 
-### Primary Colors
+### DaisyUI Theme Variables
 
-| Name | Light Mode | Dark Mode | Usage |
-|------|------------|-----------|-------|
-| Primary | `indigo-600` | `indigo-500` | Primary actions, links, focus states |
-| Secondary | `gray-500` | `gray-400` | Secondary actions, less prominent elements |
-| Success | `green-500` | `green-400` | Success states, confirmations |
-| Warning | `amber-500` | `amber-400` | Warning states, alerts |
-| Error | `red-600` | `red-500` | Error states, destructive actions |
-| Info | `blue-500` | `blue-400` | Informational elements |
+| Theme Variable | CeLeste Light | CeLeste Dark | Usage |
+|----------------|---------------|--------------|-------|
+| `primary` | `#1d4ed8` | `#3b82f6` | Primary actions, links, focus states |
+| `secondary` | `#4f46e5` | `#818cf8` | Secondary actions, accents |
+| `accent` | `#0ea5e9` | `#38bdf8` | Highlighted elements, call-to-action |
+| `neutral` | `#2a323c` | `#191D24` | Text, borders, subtle backgrounds |
+| `base-100` | `#f3f4f6` | `#1f2937` | Main background color |
+| `info` | `#3abff8` | `#60a5fa` | Informational elements |
+| `success` | `#36d399` | `#34d399` | Success states, confirmations |
+| `warning` | `#fbbd23` | `#fbbf24` | Warning states, alerts |
+| `error` | `#f87272` | `#ef4444` | Error states, destructive actions |
 
 ### Background Colors
 
@@ -94,7 +105,7 @@ CeLesteCMS Pro uses a type system based on TailwindCSS's typography classes.
 
 ## Component Library
 
-CeLesteCMS Pro includes a growing library of reusable components built with Svelte 5 and TailwindCSS v4.
+CeLesteCMS Pro uses DaisyUI's component library enhanced with Svelte 5 runes and custom CeLeste theming.
 
 ### Core Components
 

@@ -1,5 +1,8 @@
-Revised CelesteCMS Strategy: Free Core with Premium Add-ons
-Core Product (Free & Open Source)
+CeLesteCMS Strategy: Free Foundation with Pro Upgrade
+
+## Product Architecture
+
+### CeLesteCMS Standard (Free & Open Source)
 
 Complete CMS functionality
 Visual page builder
@@ -10,7 +13,22 @@ Basic SEO tools
 Unlimited posts/pages
 Mobile responsive
 
-This free version would be fully functional and competitive with WordPress and Ghost's core offerings. The revenue would then come from:
+This free version provides a complete, modern CMS experience competitive with WordPress and Ghost's core offerings.
+
+### CeLesteCMS Pro (Paid Upgrade/Add-on)
+
+**Application Transformation Features:**
+- Transform content into interactive applications
+- Advanced data modeling and custom content types
+- Application-specific components and widgets
+- Enhanced API capabilities for application development
+- Custom application templates and builders
+
+**Note:** *Pro pricing currently under research - $10 baseline may be adjusted to $25-$99 based on value analysis*
+
+## Revenue Strategy
+
+The upgrade model allows users to start free and upgrade when they need application capabilities. Revenue comes from:
 Revenue Streams
 1. Premium Themes ($10-$49 each)
 
@@ -44,14 +62,15 @@ Premium support
 Integrated CDN
 
 
-5. Pro License ($10 one-time, per site)
+5. Pro Upgrade License (*pricing under research*, one-time per site)
 
-- 1 license is valid for 1 site (domain or project instance)
-- Unlocks all Pro features for that site
+- **Upgrade/Add-on** to existing CeLesteCMS Standard installation
+- 1 license valid for 1 site (transforms that site's capabilities)
+- Unlocks application development features and Pro components
 - Enables installation and use of premium apps and plugins
 - Allows commercial use (SMBs, freelancers, client work)
-- No recurring fees
-- Each additional site requires a separate Pro License
+- No recurring fees, seamless upgrade experience
+- Each additional site requires separate Pro License
 
 Business Model Comparison
 Let's look at how this compares to successful open source CMS platforms:

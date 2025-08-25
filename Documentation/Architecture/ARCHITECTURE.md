@@ -4,8 +4,8 @@
 
 | Package | Version | Purpose |
 |---------|---------|---------|
-| [Svelte](https://svelte.dev/) | 5.28.2 | Core UI framework with reactive components |
-| [SvelteKit](https://kit.svelte.dev/) | 2.20.8 | Full-stack framework for building web applications |
+| [Svelte](https://svelte.dev/) | 5.35.6 | Core UI framework with runes reactivity system |
+| [SvelteKit](https://kit.svelte.dev/) | 2.22.5 | Full-stack framework with WebSocket support and async routing |
 | [TypeScript](https://www.typescriptlang.org/) | 5.8.3 | Static typing for JavaScript |
 | [Vite](https://vitejs.dev/) | 6.3.5 | Next generation frontend tooling and dev server |
 
@@ -13,7 +13,8 @@
 
 | Package | Version | Purpose |
 |---------|---------|---------|
-| [TailwindCSS](https://tailwindcss.com/) | 4.1.6 | Utility-first CSS framework |
+| [TailwindCSS](https://tailwindcss.com/) | 4.1.11 | Utility-first CSS framework with Oxide engine |
+| [DaisyUI](https://daisyui.com/) | 5.0.46 | Modern component system with transparent styling |
 | [@tailwindcss/typography](https://tailwindcss.com/docs/typography-plugin) | 0.5.16 | Typography plugin for Tailwind |
 
 ## Database & ORM
@@ -21,7 +22,7 @@
 | Package | Version | Purpose |
 |---------|---------|---------|
 | [@libsql/client](https://github.com/libsql/libsql-client-js) | 0.15.4 | Client for LibSQL/Turso databases |
-| [Drizzle ORM](https://orm.drizzle.team/) | 0.43.1 | TypeScript ORM for SQL databases |
+| [Drizzle ORM](https://orm.drizzle.team/) | 0.44.2 | TypeScript ORM with 2025 features and optimal SQLite config |
 | [Drizzle Kit](https://orm.drizzle.team/kit-docs/overview) | 0.31.1 | CLI companion for Drizzle ORM |
 
 ## Deployment & Hosting
@@ -40,7 +41,7 @@
 
 | Package | Version | Purpose |
 |---------|---------|---------|
-| [@inlang/paraglide-js](https://inlang.com/m/gerre34r/library-inlang-paraglideJs) | 2.0.12 | Type-safe i18n solution optimized for SvelteKit |
+| [@inlang/paraglide-js](https://inlang.com/m/gerre34r/library-inlang-paraglideJs) | 2.2.0 | Universal i18n with flat message structure |
 
 ## Testing & Quality Assurance
 
@@ -63,20 +64,49 @@
 
 ## Architecture Overview
 
+### Hybrid Static/Dynamic Architecture
+CeLesteCMS Pro uses a modern hybrid architecture that combines static site generation with dynamic server-side features:
+- **Static Public Site**: Pre-rendered blog posts and pages for optimal performance
+- **Dynamic Admin Panel**: Server-side rendered admin interface with real-time updates
+- **Headless API**: RESTful endpoints for content delivery and external integrations
+- **Edge Functions**: Dynamic features like comments and search on static pages
+
 ### Frontend Architecture
-CeLesteCMS Pro uses a component-based architecture powered by Svelte 5, with SvelteKit providing the full-stack framework capabilities. The UI is built using TailwindCSS for a consistent and utility-first design system.
+CeLesteCMS Pro uses a component-based architecture powered by Svelte 5 with runes ($state, $effect, $derived), providing fine-grained reactivity. SvelteKit handles both static generation and server-side rendering. The UI is built using TailwindCSS 4 with DaisyUI components for consistent, modern design.
 
 ### Backend Architecture
-The backend is implemented using SvelteKit server endpoints, which provide API functionality. Data persistence is handled through Drizzle ORM connecting to Cloudflare D1 or other SQL databases via the LibSQL client.
+The backend provides dual functionality:
+- **Static Generation**: Pre-builds public pages at build time
+- **Dynamic API**: SvelteKit server endpoints for admin operations and headless consumption
+- **Authentication**: Oslo + Arctic secure authentication with session management
+- **Database**: Drizzle ORM with SQLite (development) and Cloudflare D1 (production)
 
 ### Content Management
 Content can be authored in Markdown using MDSvex, which allows embedding Svelte components directly within markdown content. This creates a powerful authoring experience that combines the simplicity of markdown with the interactivity of Svelte.
 
+### Authentication System
+Secure authentication powered by Oslo + Arctic:
+- **Oslo**: Cryptographic utilities for password hashing and session management
+- **Arctic**: OAuth providers integration for social authentication
+- **Session Management**: HTTP-only cookies with proper expiration
+- **Route Protection**: Server-side guards for admin pages
+
 ### Internationalization
-The application supports multiple languages through Paraglide, with built-in support for English (en) and Portuguese Brazil (pt-BR).
+The application supports multiple languages through Paraglide 2.2.0, with universal i18n and flat message structure for English (en) and Portuguese Brazil (pt-BR).
+
+### Headless API Capabilities
+CeLesteCMS Pro provides a complete headless CMS experience:
+- **Content API**: Public endpoints for consuming content in external applications
+- **Admin API**: Protected endpoints for content management
+- **RESTful Design**: Standard HTTP methods and status codes
+- **CORS Support**: Configurable cross-origin access for external consumption
 
 ### Deployment Strategy
-The application is designed to be deployed to Cloudflare Pages using the Cloudflare adapter, providing global distribution and edge computing capabilities.
+Hybrid deployment using Cloudflare Pages with `adapter-cloudflare`:
+- **Static Assets**: Pre-rendered public pages served from CDN
+- **Edge Functions**: Dynamic API endpoints and admin functionality
+- **Global Distribution**: Edge computing with automatic scaling
+- **D1 Database**: Serverless SQLite database with global replication
 
 ### Development Workflow
 The development workflow is supported by a comprehensive set of tools:

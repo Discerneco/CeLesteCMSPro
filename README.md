@@ -3,10 +3,10 @@
 <div align="center">
   <img src="static/logo.png" alt="CeLesteCMS Pro Logo" width="200" />
   
-  **A modern, performant content management system built with SvelteKit, Cloudflare, and edge computing technologies**
+  **A modern, performant content management system that generates static sites with dynamic features and provides headless API capabilities**
   
   [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-  [![SvelteKit](https://img.shields.io/badge/SvelteKit-2.21.0-ff3e00)](https://kit.svelte.dev/)
+  [![SvelteKit](https://img.shields.io/badge/SvelteKit-2.22.5-ff3e00)](https://kit.svelte.dev/)
   [![Cloudflare](https://img.shields.io/badge/Cloudflare-Pages%20%26%20D1-f38020)](https://pages.cloudflare.com/)
   [![TypeScript](https://img.shields.io/badge/TypeScript-5.8.3-blue)](https://www.typescriptlang.org/)
   
@@ -14,18 +14,21 @@
 
 ## 🚀 Overview
 
-CeLesteCMS Pro is a next-generation content management system designed for performance, scalability, and developer experience. Built on modern edge computing technologies, it delivers lightning-fast static sites with a powerful admin interface.
+CeLesteCMS Pro is a next-generation content management system that generates static sites with dynamic embeds and features. Ready for headless usage with comprehensive APIs for external applications. Built on modern edge computing technologies for optimal performance and scalability.
 
 ### Key Features
 
-- **⚡ Static Site Generation** - Pre-rendered pages for optimal performance
+- **🔗 Headless Ready** - Full REST API for external applications and integrations
+- **⚡ Static Site Generation** - Pre-rendered pages with dynamic interactive components
+- **🔌 API-First Design** - Content accessible via REST endpoints for multi-channel publishing
+- **🌐 Multi-Channel Publishing** - Static sites, mobile apps, and third-party integrations
 - **🎨 Modern Admin UI** - Built with Svelte 5 runes and TailwindCSS v4
 - **🌐 Edge-First Architecture** - Powered by Cloudflare Pages and D1
 - **🔒 Secure Authentication** - Role-based access with Oslo + Arctic (custom implementation)
 - **🌍 Internationalization** - Language switching from login page (English/Portuguese)
 - **🌓 Dark Mode** - Full dark mode support across the admin interface
 - **📱 Responsive Design** - Mobile-first approach with DaisyUI components
-- **🔌 Extensible** - Plugin architecture for custom functionality
+- **🔌 Extensible** - Plugin architecture for dynamic features and custom functionality
 
 ## 📋 Current Status
 
@@ -34,14 +37,38 @@ CeLesteCMS Pro is currently in **Phase 1: MVP Development**. See our [Roadmap](D
 ### MVP Features (In Progress)
 - ✅ **Admin UI with dashboard** (SvelteKit 5 + TailwindCSS v4 + DaisyUI)
 - ✅ **Authentication system** (Oslo + Arctic implementation - COMPLETE)
+- ✅ **Posts management** (CRUD operations with multilingual support)
+- ✅ **Media management** (File uploads and organization)
+- ✅ **Settings system** (Site configuration with timezone support)
+- ✅ **Users management** (Role-based access control)
+- ✅ **REST API endpoints** (Headless-ready for external consumption)
 - ✅ **Dark mode implementation** (full admin interface)
-- ✅ **Internationalization with language switching** (login/signup/auth pages)
-- ✅ **Session management** (secure HTTP-only cookies, auto-extension)
-- ✅ **Route protection** (SvelteKit hooks-based)
-- 🔄 Content management schemas
-- 🔄 Static site generation
-- 🔄 Basic SEO features
-- 🔄 Plugin foundation
+- ✅ **Internationalization** (English/Portuguese support)
+- 🔄 **Pages system** (Static page management)
+- 🔄 **Public site generation** (Templates and routing)
+- 🔄 **Static site generation** (Build process and deployment)
+- 🔄 **Dynamic embeds** (Comments, search, interactive features)
+- 🔄 **Plugin foundation** (Extensible architecture)
+
+## 🌐 What CeLesteCMS Generates
+
+CeLesteCMS Pro creates modern, performant websites with:
+
+### **Static Site Output**
+- **📄 Static HTML pages** - Homepage, blog listings, individual posts and pages
+- **🎨 Responsive design** - Mobile-first with optimized CSS and JavaScript
+- **⚡ Edge-optimized** - Pre-rendered for instant loading worldwide
+- **🔍 SEO-ready** - Meta tags, structured data, and sitemaps
+
+### **Dynamic Features**
+- **💬 Interactive components** - Comments, search, contact forms
+- **📊 Real-time data** - View counters, analytics, live updates
+- **🔌 Plugin extensibility** - Custom dynamic features via edge functions
+
+### **Headless API**
+- **📡 REST endpoints** - Full content API for mobile apps and integrations
+- **🔗 External consumption** - React, Vue, Flutter, or any client application
+- **🌐 Multi-platform** - One content source, multiple output channels
 
 ## 🛠️ Tech Stack
 
@@ -130,10 +157,12 @@ CeLesteCMS Pro/
 │   │   ├── components/     # Reusable UI components
 │   │   ├── server/         # Server-side utilities
 │   │   ├── db/            # Database schema and utilities
-│   │   └── stores/        # Svelte stores
+│   │   ├── stores/        # Svelte stores
+│   │   └── templates/     # Public site templates
 │   ├── routes/            # SvelteKit routes
+│   │   ├── (public)/      # Public site routes (/, /blog, /about)
 │   │   ├── admin/         # Admin panel routes
-│   │   └── api/           # API endpoints
+│   │   └── api/           # REST API endpoints (headless-ready)
 │   └── app.html           # App template
 ├── static/                # Static assets
 ├── Documentation/         # Project documentation

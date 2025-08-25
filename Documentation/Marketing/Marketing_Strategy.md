@@ -4,6 +4,27 @@
 
 Our marketing strategy focuses on CeLesteCMS Pro's unique ability to transform content into full-fledged applications, going beyond traditional content management.
 
+## Upgrade Journey Strategy
+
+CeLesteCMS follows a **"Start Free, Upgrade When Ready"** approach:
+
+### Phase 1: Adoption (CeLesteCMS Standard - Free)
+- Users start with full-featured content management capabilities
+- Experience the modern developer experience and performance benefits
+- Build trust and familiarity with the platform
+
+### Phase 2: Growth Recognition (Upgrade Trigger)
+- Users recognize need for application-level functionality
+- Content-driven business wants interactive features
+- Developers need advanced customization capabilities
+
+### Phase 3: Transformation (CeLesteCMS Pro Upgrade)
+- **Seamless upgrade process** - no migration, just feature unlock
+- **Immediate access** to application development tools
+- **Enhanced capabilities** without losing existing content/setup
+
+This progression creates a natural path from content management to application development.
+
 ## Community Building
 
 With our open-source approach, marketing focuses on building a community of both content creators and application developers:

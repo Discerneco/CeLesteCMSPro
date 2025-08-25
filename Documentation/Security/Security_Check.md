@@ -34,9 +34,9 @@ This document provides a comprehensive security checklist organized by domain. E
 - [ ] Test for horizontal and vertical privilege escalation
 
 ### Session Management
-- [ ] Implement secure session generation and validation with Oslo
-- [ ] Set appropriate session expiration times (7 days max)
-- [ ] Implement session refresh mechanism
+- [ ] Implement secure session generation and validation with Oslo crypto utilities
+- [ ] Set appropriate session expiration times (7 days max, auto-extend within 24h)
+- [ ] Implement session refresh mechanism with Oslo session management
 - [ ] Verify sessions are invalidated on logout
 - [ ] Ensure HTTP-only, secure cookies for session storage
 - [ ] Use proper CSRF protection with SameSite attributes
@@ -101,8 +101,8 @@ This document provides a comprehensive security checklist organized by domain. E
 - [ ] Ensure TLS 1.2+ for data in transit
 
 ### Password Security
-- [ ] Use strong hashing algorithms (bcrypt, Argon2, or PBKDF2)
-- [ ] Implement proper salt generation and storage
+- [ ] Use strong hashing algorithms (Oslo SHA-256 with salt, bcrypt, Argon2, or PBKDF2)
+- [ ] Implement proper salt generation and storage (Oslo crypto utilities)
 - [ ] Never store passwords in plain text or reversible encryption
 - [ ] Avoid password hints or security questions
 
@@ -264,7 +264,7 @@ curl -I https://your-site.com | grep -E 'Strict-Transport-Security|Content-Secur
 ## Security Incident Reporting
 
 **For security vulnerabilities:**
-- Email: [SECURITY_EMAIL]
+- Email: security@celestecms.com
 - Do not disclose publicly until patched
 - Include detailed reproduction steps
 - Expect response within 48 hours
@@ -293,4 +293,5 @@ curl -I https://your-site.com | grep -E 'Strict-Transport-Security|Content-Secur
 
 - **Version 1.0** - Initial security checklist
 - **Version 2.0** - Reorganized to eliminate redundancy and improve clarity
-- **Last Updated**: May 22, 2025
+- **Version 2.1** - Updated contact information and Oslo authentication references
+- **Last Updated**: August 2025

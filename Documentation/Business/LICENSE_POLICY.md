@@ -2,9 +2,10 @@
 
 ## License Types
 
-### 1. Pro License ($10 one-time)
+### 1. Pro License ($10 one-time - *pricing under research*)
+- **Upgrade/Add-on** to CeLesteCMS Standard (transforms content management into application development)
 - Valid for **one site** (one domain or project instance)
-- Unlocks all Pro features for that site
+- Unlocks all Pro features for that site, including application transformation capabilities
 - Allows commercial use (SMBs, freelancers, client work)
 - Enables installation and use of premium apps and plugins
 - No recurring fees
@@ -27,4 +28,4 @@
 - Please respect the license terms to support ongoing development.
 
 ## Questions?
-Contact us at [YOUR_EMAIL_HERE] for licensing questions or custom arrangements.
+Contact us at pro@celestecms.com for licensing questions or custom arrangements.
