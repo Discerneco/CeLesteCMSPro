@@ -14,7 +14,7 @@ This index provides an overview of all documentation available for CeLesteCMS Pr
 ### 💻 Development
 - **[Development Guide](Development/Development.md)** - Complete development roadmap with versioning and next steps
 - **[Local Development](Development/LocalDevelopment.md)** - Setting up local dev environment
-- **[Backup System](BACKUP_SYSTEM.md)** - Comprehensive backup and recovery system
+- **[Backup System](BACKUP_SYSTEM.md)** - Simple 3-second manual backup solution
 
 ### 📖 User Guides
 - **[Getting Started](Guides/GETTING_STARTED.md)** - Quick start guide for new users
