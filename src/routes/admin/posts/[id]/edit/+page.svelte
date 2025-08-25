@@ -12,15 +12,21 @@
   } from '@lucide/svelte';
   import { goto } from '$app/navigation';
   
-  // Import i18n with modern Paraglide pattern
+  // Import i18n messages
   import * as m from '$lib/paraglide/messages';
+  
+  // Import rich text editor
+  import RichTextEditor from '$lib/components/RichTextEditor.svelte';
+  
+  // Import featured image component
+  import FeaturedImageUpload from '$lib/components/FeaturedImageUpload.svelte';
   
   // Get data from load function (Svelte 5 runes mode)
   let { data } = $props();
   
   // Initialize state from existing post data
   let postId = data.post.id;
-  let postSlug = data.post.slug;
+  let postSlug = $state(data.post.slug);
   
   // Parse multilingual content from metaData if available
   let multilingualContent = data.post.metaData?.multilingual || null;
@@ -29,6 +35,7 @@
   let activeTab = $state('en');
   let isFeatured = $state(data.post.featured || false);
   let selectedAuthorId = $state(data.post.authorId || '');
+  let featuredImageId = $state(data.post.featuredImageId || null);
   let previewMode = $state(false);
   let isLoading = $state(false);
   
@@ -74,13 +81,20 @@
     }
   };
 
-  const handleContentInput = (event: Event) => {
-    const target = event.target as HTMLTextAreaElement;
+  const handleContentUpdate = (newContent: string) => {
     if (activeTab === 'en') {
-      content.en.content = target.value;
+      content.en.content = newContent;
     } else {
-      content.pt.content = target.value;
+      content.pt.content = newContent;
     }
+  };
+  
+  const handleFeaturedImageUpload = (mediaId: string) => {
+    featuredImageId = mediaId;
+  };
+  
+  const handleFeaturedImageRemove = () => {
+    featuredImageId = null;
   };
   
   const handleSave = async () => {
@@ -96,6 +110,7 @@
         status: status,
         featured: isFeatured,
         authorId: selectedAuthorId,
+        featuredImageId: featuredImageId,
         publishedAt: status === 'published' ? new Date(publicationDate).toISOString() : null,
         // Store the multilingual content
         metaData: JSON.stringify({
@@ -174,16 +189,16 @@
 
 <!-- Language Tabs -->
 {#if !previewMode}
-  <div class="tabs tabs-bordered mb-6">
+  <div class="tabs tabs-bordered mb-6 border-b border-base-300">
     <button
-      class="tab {activeTab === 'en' ? 'tab-active' : ''}"
+      class="tab {activeTab === 'en' ? 'tab-active border-b-2 border-primary text-primary' : 'text-base-content/70'}"
       onclick={() => activeTab = 'en'}
     >
       <Globe class="h-4 w-4 mr-2" />
       {m.posts_form_tab_english()}
     </button>
     <button
-      class="tab {activeTab === 'pt' ? 'tab-active' : ''}"
+      class="tab {activeTab === 'pt' ? 'tab-active border-b-2 border-primary text-primary' : 'text-base-content/70'}"
       onclick={() => activeTab = 'pt'}
     >
       <Globe class="h-4 w-4 mr-2" />
@@ -375,15 +390,23 @@
             <label class="label">
               <span class="label-text">{m.posts_form_content()}</span>
             </label>
-            <textarea 
-              class="textarea w-full h-64"
+            <RichTextEditor 
               value={activeTab === 'en' ? content.en.content : content.pt.content}
-              oninput={handleContentInput}
               placeholder={activeTab === 'en' ? m.posts_form_content_placeholder_en() : m.posts_form_content_placeholder_pt()}
-            ></textarea>
+              onUpdate={handleContentUpdate}
+            />
             <div class="label">
               <span class="label-text-alt">{m.posts_form_markdown_support()}</span>
             </div>
+          </div>
+          
+          <!-- Featured Image -->
+          <div>
+            <FeaturedImageUpload 
+              value={featuredImageId}
+              onUpload={handleFeaturedImageUpload}
+              onRemove={handleFeaturedImageRemove}
+            />
           </div>
         </div>
       </div>

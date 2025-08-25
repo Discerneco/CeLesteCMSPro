@@ -192,7 +192,7 @@
     <h1 class="cms-page-title">{m.pages_title()}</h1>
     <p class="cms-page-subtitle">
       {#if activeTab === 'all'}
-        {m.pages_showing({ count: data.pages?.length || 0 })}
+        {m.pages_subtitle()}
       {:else}
         {trashedPages.length === 1 ? 
           m.pages_showing_trashed_singular({ count: trashedPages.length }) : 

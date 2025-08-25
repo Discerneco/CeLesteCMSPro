@@ -193,7 +193,7 @@
     <h1 class="cms-page-title">{m.posts_title()}</h1>
     <p class="cms-page-subtitle">
       {#if activeTab === 'all'}
-        {m.posts_showing({ count: data.posts?.length || 0 })}
+        {m.posts_subtitle()}
       {:else}
         {trashedPosts.length === 1 ? 
           m.posts_showing_trashed_singular({ count: trashedPosts.length }) : 

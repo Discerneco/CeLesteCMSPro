@@ -48,25 +48,16 @@
     auth.logout();
   }
   
-  // Early locale initialization to prevent hydration race conditions
+  // Reactive locale tracking for component re-rendering (initialization handled by LanguageSwitcher)
+  let currentLocale = $state(getLocale());
+  
+  // Watch for locale changes and trigger reactivity without competing initialization
   $effect(() => {
-    if (browser) {
-      // Check both Paraglide's standard key and our custom key
-      const paraglideLocale = localStorage.getItem('PARAGLIDE_LOCALE');
-      const customLocale = localStorage.getItem('celestecms-language');
-      const savedLanguage = paraglideLocale || customLocale;
-      
-      if (savedLanguage && locales.includes(savedLanguage)) {
-        const currentLocale = getLocale();
-        if (currentLocale !== savedLanguage) {
-          console.log('🌍 Admin layout locale restoration:', currentLocale, '->', savedLanguage);
-          setLocale(savedLanguage);
-          
-          // Ensure both keys are synchronized
-          localStorage.setItem('PARAGLIDE_LOCALE', savedLanguage);
-          localStorage.setItem('celestecms-language', savedLanguage);
-        }
-      }
+    const newLocale = getLocale();
+    if (currentLocale !== newLocale) {
+      console.log('🔄 Admin layout detected locale change:', currentLocale, '->', newLocale);
+      currentLocale = newLocale;
+      // This reactive assignment triggers component re-evaluation throughout the app
     }
   });
 

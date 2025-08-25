@@ -57,6 +57,7 @@ export const GET: RequestHandler = async (event) => {
       excerpt: post.excerpt || '',
       status: post.status,
       featured: !!post.featured,
+      featuredImageId: post.featuredImageId,
       authorId: post.authorId,
       contentTypeId: post.contentTypeId,
       author: post.author?.username || 'Unknown',
@@ -68,7 +69,6 @@ export const GET: RequestHandler = async (event) => {
       createdAt: post.createdAt,
       updatedAt: post.updatedAt,
       publishedAt: post.publishedAt,
-      featuredImageId: post.featuredImageId,
       metaData: post.metaData,
       // Format dates for display
       createdAtFormatted: post.createdAt ? new Date(post.createdAt).toLocaleDateString('pt-BR') : '',
@@ -98,7 +98,7 @@ export const PUT: RequestHandler = async (event) => {
 
     // Parse the request body
     const body = await event.request.json();
-    const { title, slug, excerpt, content, status, featured, publishedAt, metaData, authorId } = body;
+    const { title, slug, excerpt, content, status, featured, featuredImageId, publishedAt, metaData, authorId } = body;
 
     // Validate required fields
     if (!title || !content) {
@@ -132,6 +132,7 @@ export const PUT: RequestHandler = async (event) => {
       excerpt: excerpt || '',
       status: status || 'draft',
       featured: !!featured,
+      featuredImageId: featuredImageId || null,
       authorId: authorId || null,
       publishedAt: status === 'published' && publishedAt ? new Date(publishedAt) : null,
       metaData: metaData ? JSON.parse(typeof metaData === 'string' ? metaData : JSON.stringify(metaData)) : null,
