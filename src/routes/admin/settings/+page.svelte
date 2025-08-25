@@ -310,10 +310,11 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
           <!-- Site Title -->
           <div class="form-control">
-            <label class="label">
+            <label for="site-title" class="label">
               <span class="label-text">{m.settings_general_site_title()}</span>
             </label>
             <input 
+              id="site-title"
               type="text" 
               bind:value={siteTitle}
               class="input w-full" 
@@ -323,10 +324,10 @@
           
           <!-- Default Language -->
           <div class="form-control">
-            <label class="label">
+            <label for="default-language" class="label">
               <span class="label-text">{m.settings_general_language()}</span>
             </label>
-            <select bind:value={defaultLanguage} class="select w-full">
+            <select id="default-language" bind:value={defaultLanguage} class="select w-full">
               <option value="en">English</option>
               <option value="pt-br">Português (Brasil)</option>
             </select>
@@ -335,10 +336,11 @@
         
         <!-- Site Description -->
         <div class="form-control mt-6">
-          <label class="label">
+          <label for="site-description" class="label">
             <span class="label-text">{m.settings_general_site_description()}</span>
           </label>
           <textarea 
+            id="site-description"
             bind:value={siteDescription}
             class="textarea w-full" 
             rows="3"
@@ -348,11 +350,11 @@
         
         <!-- Timezone -->
         <div class="form-control mt-6">
-          <label class="label">
+          <label for="timezone-select" class="label">
             <span class="label-text">{m.settings_general_timezone()}</span>
           </label>
           <div class="space-y-2">
-            <select bind:value={timezone} class="select w-full max-w-xs">
+            <select id="timezone-select" bind:value={timezone} class="select w-full max-w-xs">
               <!-- Choose timezone placeholder - selectable for reset -->
               <option value="">
                 {m.settings_timezone_choose()}
@@ -457,11 +459,12 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
           <!-- Primary Color -->
           <div class="form-control">
-            <label class="label">
+            <label for="primary-color" class="label">
               <span class="label-text">{m.settings_appearance_primary_color()}</span>
             </label>
             <div class="flex gap-2">
               <input 
+                id="primary-color"
                 type="color" 
                 bind:value={primaryColor}
                 class="w-12 h-12 rounded-lg border border-base-300 cursor-pointer"
@@ -477,11 +480,12 @@
           
           <!-- Secondary Color -->
           <div class="form-control">
-            <label class="label">
+            <label for="secondary-color" class="label">
               <span class="label-text">{m.settings_appearance_secondary_color()}</span>
             </label>
             <div class="flex gap-2">
               <input 
+                id="secondary-color"
                 type="color" 
                 bind:value={secondaryColor}
                 class="w-12 h-12 rounded-lg border border-base-300 cursor-pointer"
@@ -497,11 +501,12 @@
           
           <!-- Accent Color -->
           <div class="form-control">
-            <label class="label">
+            <label for="accent-color" class="label">
               <span class="label-text">{m.settings_appearance_accent_color()}</span>
             </label>
             <div class="flex gap-2">
               <input 
+                id="accent-color"
                 type="color" 
                 bind:value={accentColor}
                 class="w-12 h-12 rounded-lg border border-base-300 cursor-pointer"
