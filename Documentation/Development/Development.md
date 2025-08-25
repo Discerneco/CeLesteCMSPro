@@ -70,17 +70,36 @@ CeLesteCMS Pro follows semantic versioning (MAJOR.MINOR.PATCH):
 
 ## Next Development Priorities
 
-### 🎯 1. Pages System Implementation (CURRENT PRIORITY)
+### 🎯 1. Pages & Templates System Implementation (CURRENT PRIORITY)
+
+#### Pages System
 - Add `pages` table to database schema
 - Create `/admin/pages` CRUD interface
 - Implement `/api/pages` REST endpoints  
+- Integrate with template selection system
 - Seed with About page content
 
-### 🎯 2. Public Site Templates
-- Create homepage, blog, and page templates
-- Implement hybrid static+dynamic routing
-- Build responsive public theme
-- Enable content delivery for static pages
+#### Template System (Hybrid Approach)
+- Add `templates` and `template_sections` tables to database
+- Build template parser for `[section:variant,prop=value]` syntax
+- Create core section components (menu, header, hero, posts, footer)
+- Implement `/admin/templates` management interface
+- Build dual-mode editor (code + visual builder)
+
+#### Integration & Public Site
+- Connect pages to templates for rendering
+- Implement server-side template rendering
+- Create responsive public theme with template system
+- Enable hybrid static+dynamic content delivery
+
+**Development Order**:
+1. Pages foundation with simple template field (1-2 days)
+2. Template parser and core sections (2-3 days)
+3. Admin interfaces for both systems (2-3 days)
+4. Visual template builder (3-4 days)
+5. Public site generation (1-2 days)
+
+See `Documentation/Development/TEMPLATE_SYSTEM.md` for complete architecture details.
 
 ### 🎯 3. Static Site Generation with Dynamic Features
 - Use `adapter-cloudflare` for hybrid architecture

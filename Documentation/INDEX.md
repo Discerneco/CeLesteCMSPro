@@ -13,6 +13,7 @@ This index provides an overview of all documentation available for CeLesteCMS Pr
 
 ### 💻 Development
 - **[Development Guide](Development/Development.md)** - Complete development roadmap with versioning and next steps
+- **[Template System](Development/TEMPLATE_SYSTEM.md)** - Hybrid template architecture with visual builder
 - **[Local Development](Development/LocalDevelopment.md)** - Setting up local dev environment
 - **[Backup System](BACKUP_SYSTEM.md)** - Simple 3-second manual backup solution
 
@@ -55,9 +56,11 @@ This index provides an overview of all documentation available for CeLesteCMS Pr
 - **Security** ✅ - Updated contact information and Oslo authentication references
 
 ### 🎯 Next Development Priorities
-- **Pages System Implementation** - Database, admin interface, and API for static pages
-- **Public Site Templates** - Homepage, blog, and page templates for hybrid architecture
-- **Content Delivery** - Enable public site generation with dynamic embeds
+- **Pages & Templates System** - Integrated content and template management with hybrid approach
+  - Pages database, admin interface, and API
+  - Template system with `[section]` placeholder syntax
+  - Visual builder and code editor dual-mode interface
+- **Public Site Generation** - Hybrid static+dynamic content delivery with template rendering
 
 ### 📝 Future Documentation Additions
 - API Reference (after Pages system completion)
