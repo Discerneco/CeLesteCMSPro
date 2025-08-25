@@ -770,6 +770,317 @@ celeste plugin sign my-plugin.celeste --key ~/.celeste/dev-key.pem
 celeste plugin verify my-plugin.celeste --trust-level medium
 ```
 
+## Plugin Ideas from Microfolio Analysis
+
+*Inspired by microfolio's clean architecture, file-based content management, and performance-first approach*
+
+### High Priority Plugins (MVP Candidates)
+
+#### **@celestecms/maps** 🗺️
+```yaml
+Priority: Post-MVP
+Scope: Frontend + Backend
+Tier: Official
+Dependencies: leaflet, @types/leaflet
+```
+
+**Features:**
+- Interactive project/content location mapping
+- Location-based content filtering and discovery
+- Geolocation metadata for posts/pages
+- Custom map markers and styling
+
+**Horizonte Integration:**
+```horizonte
+[content:article]
+[map:project-locations,zoom=10,style=dark]
+[related-posts:nearby,radius=50km]
+```
+
+**Use Cases:**
+- Travel blogs with location-based posts
+- Architecture/design portfolios with project locations
+- Local business directories
+- Event listings with venue mapping
+
+#### **@celestecms/media-exif** 📷
+```yaml
+Priority: Post-MVP  
+Scope: Backend (Admin Interface)
+Tier: Official
+Dependencies: exifr
+```
+
+**Features:**
+- Automatic EXIF data extraction from uploaded images
+- Camera settings display (ISO, aperture, shutter speed)
+- GPS coordinates extraction for location mapping
+- Professional photography metadata management
+
+**Admin Integration:**
+- Enhanced media library with technical details
+- Bulk EXIF data processing
+- Privacy controls for location data
+- Automatic image organization by camera/date
+
+**Use Cases:**
+- Photography portfolios
+- Stock photo management
+- Professional media libraries
+- Location-based image collections
+
+#### **@celestecms/file-content** 📝
+```yaml
+Priority: Post-MVP
+Scope: Backend (Developer Workflow)
+Tier: Official  
+Dependencies: marked, yaml, chokidar
+```
+
+**Features:**
+- Hybrid content management: Database + Markdown files
+- Git-based content version control
+- File-based content hot-reloading in development
+- Automatic sync between files and database
+
+**Developer Workflow:**
+```bash
+# Create content via files
+echo "---\ntitle: My Post\nstatus: draft\n---\n# Content" > content/posts/my-post.md
+
+# Auto-syncs to database
+# Editable in admin interface
+# Changes sync back to files
+```
+
+**Use Cases:**
+- Developer-friendly content workflows  
+- Content version control via Git
+- Collaborative writing with markdown
+- Content backups and portability
+
+#### **@celestecms/advanced-filters** 🔍
+```yaml
+Priority: Post-MVP
+Scope: Frontend
+Tier: Official
+Dependencies: fuse.js
+```
+
+**Features:**
+- Multi-dimensional content filtering
+- Smart search with fuzzy matching
+- Multiple view modes (grid, list, map, timeline)
+- Advanced sorting and categorization
+
+**Horizonte Integration:**
+```horizonte
+[header:search]
+[filters:multi-select,categories+tags+date]
+[content-grid:filterable,view=cards]
+[pagination:infinite-scroll]
+```
+
+**Use Cases:**
+- Large content collections
+- E-commerce product catalogs
+- Portfolio filtering by skills/technologies
+- Advanced blog navigation
+
+### Medium Priority Plugins (Post-MVP)
+
+#### **@celestecms/static-optimizer** ⚡
+```yaml
+Priority: Post-MVP
+Scope: Build Process
+Tier: Official
+Dependencies: sharp, @squoosh/lib
+```
+
+**Features:**
+- Automatic image optimization and resizing
+- WebP/AVIF generation with fallbacks
+- Critical CSS extraction and inlining
+- JavaScript bundle optimization
+
+**Performance Benefits:**
+- Faster page load times
+- Reduced bandwidth usage
+- Better Core Web Vitals scores
+- Automatic responsive image generation
+
+#### **@celestecms/theme-builder** 🎨
+```yaml
+Priority: Post-MVP  
+Scope: Admin Interface
+Tier: Official
+Dependencies: css-tree, postcss
+```
+
+**Features:**
+- Visual theme customization interface
+- Live theme preview with sample content
+- CSS custom property management
+- Theme export/import functionality
+
+**Integration:**
+- Extend existing DaisyUI theming
+- Real-time color palette updates  
+- Typography and spacing controls
+- Component-level styling options
+
+#### **@celestecms/backup-sync** 💾
+```yaml
+Priority: Post-MVP
+Scope: Backend
+Tier: Official  
+Dependencies: archiver, aws-sdk
+```
+
+**Features:**
+- Automated content and media backups
+- Multiple storage providers (S3, Google Cloud, Dropbox)
+- Incremental backup strategies
+- One-click restore functionality
+
+**Admin Interface:**
+- Backup scheduling and monitoring
+- Storage usage analytics
+- Restore point management
+- Cross-site content migration
+
+### Advanced Plugins (Specialized Use Cases)
+
+#### **@celestecms/e-commerce** 🛒
+```yaml
+Priority: Advanced
+Scope: Frontend + Backend
+Tier: Verified Third-Party
+Dependencies: stripe, paypal-checkout
+```
+
+**Features:**
+- Product catalog management
+- Shopping cart and checkout flows
+- Payment processing integration
+- Order management and fulfillment
+
+**Horizonte Integration:**
+```horizonte
+[header:cart-icon]
+[content:product-gallery]
+[product:add-to-cart,variants=true]
+[related-products:similar,limit=4]
+[reviews:verified-purchase]
+```
+
+#### **@celestecms/analytics-pro** 📊
+```yaml
+Priority: Advanced
+Scope: Frontend + Backend  
+Tier: Official (Pro Tier)
+Dependencies: @google-analytics/data, mixpanel
+```
+
+**Features:**
+- Advanced analytics dashboard
+- Custom event tracking
+- User behavior analysis
+- A/B testing framework
+
+**Privacy-First:**
+- GDPR compliance tools
+- Consent management
+- Data anonymization options
+- Client-side analytics control
+
+#### **@celestecms/membership** 👥
+```yaml
+Priority: Advanced
+Scope: Frontend + Backend
+Tier: Official (Pro Tier)
+Dependencies: stripe-subscriptions
+```
+
+**Features:**
+- Member-only content areas
+- Subscription management
+- Tiered access controls
+- Member dashboard and profiles
+
+**Content Protection:**
+```horizonte
+[content:public-excerpt]
+[paywall:membership-required,tier=premium]
+[content:member-exclusive]
+```
+
+### Developer Experience Plugins
+
+#### **@celestecms/dev-tools** 🛠️
+```yaml
+Priority: MVP (Development)
+Scope: Development Environment
+Tier: Official
+Dependencies: chokidar, ws
+```
+
+**Features:**
+- Hot-reloading for template changes
+- Development-only placeholder content
+- Debug toolbar with performance metrics
+- Component inspection tools
+
+#### **@celestecms/deployment** 🚀
+```yaml
+Priority: Post-MVP
+Scope: Build Process
+Tier: Official
+Dependencies: @cloudflare/pages, @vercel/build-utils
+```
+
+**Features:**
+- One-click deployment to multiple platforms
+- Environment-specific configuration
+- Automatic cache invalidation
+- Deployment rollback capabilities
+
+**Supported Platforms:**
+- Cloudflare Pages
+- Vercel
+- Netlify
+- GitHub Pages
+
+### Plugin Architecture Patterns from Microfolio
+
+#### **Minimal Dependencies Philosophy**
+```yaml
+Core Principle: Each plugin should minimize runtime dependencies
+Example: Maps plugin uses lightweight Leaflet instead of heavy mapping libraries
+Benefit: Faster loading, smaller bundle sizes, fewer security vulnerabilities
+```
+
+#### **File-Based Configuration**
+```yaml  
+Pattern: Plugins use simple config files instead of complex admin interfaces
+Example: Map plugin reads locations from YAML/JSON files in content directory
+Benefit: Version control friendly, easy backup and migration
+```
+
+#### **Performance-First Components**
+```yaml
+Pattern: All plugin components optimize for static generation
+Example: EXIF plugin pre-processes all metadata at build time
+Benefit: Fast runtime performance, better SEO, lower server load
+```
+
+#### **Progressive Enhancement**
+```yaml
+Pattern: Plugins work without JavaScript, enhance with it
+Example: Filter plugin provides working HTML forms, enhances with dynamic filtering
+Benefit: Better accessibility, works on all devices, SEO-friendly
+```
+
 ## Future Enhancements
 
 ### Plugin Marketplace

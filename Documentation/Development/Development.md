@@ -84,6 +84,36 @@ CeLesteCMS Pro follows semantic versioning (MAJOR.MINOR.PATCH):
 **Days 11-12**: Core section components (menu, header, hero, posts, footer)
 **Days 13-14**: Template rendering engine + server-side rendering
 
+**🏗️ Public Site Architecture Strategy (Hybrid Approach)**
+*Inspired by microfolio analysis - maintain admin flexibility while optimizing public performance*
+
+- **Admin Interface**: Keep database-driven (current working approach) ✅
+  - Settings remain in database for dynamic admin functionality  
+  - User management, content editing stay as-is
+  - Zero risk to existing working systems
+
+- **Public Site Generation**: Apply optimizations for static performance 🎯
+  - **Dynamic Route Discovery**: Auto-generate prerender entries from database
+    ```javascript
+    // svelte.config.js enhancement
+    prerender: {
+      entries: [
+        '/', '/blog',                    // Static routes
+        ...await getPostRoutes(),        // Dynamic: /blog/[slug] 
+        ...await getPageRoutes()         // Dynamic: /[page-slug]
+      ]
+    }
+    ```
+  - **Public Site Config**: Fast-loading site metadata (title, description, nav)
+  - **Static Generation**: Pre-render all public content for SEO and speed
+  - **Hybrid Performance**: Database for admin, static files for visitors
+
+**Implementation Notes:**
+- Implement during public route creation (Week 2-3)
+- No changes to existing admin functionality  
+- Best of both worlds: admin flexibility + public performance
+- Minimal risk, maximum optimization impact
+
 #### Week 3: Horizonte Visual Builder (September 8-14, 2025) 
 **Days 15-17**: Drag-and-drop visual interface + section library
 **Days 18-19**: Section configuration panels + live preview

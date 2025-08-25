@@ -224,6 +224,10 @@ Built with amazing open source technologies:
 - [DaisyUI](https://daisyui.com/) - Component library
 - [Drizzle ORM](https://orm.drizzle.team/) - TypeScript ORM
 
+### Architectural Inspiration
+
+- **[Microfolio](https://github.com/aker-dev/microfolio)** by [aker-dev](https://github.com/aker-dev) - Clean architecture patterns, performance-first approach, and elegant static site generation strategies inspired our hybrid admin/public architecture and plugin system design
+
 ## 📞 Support
 
 - 📧 Email: [support@celestecms.com](mailto:support@celestecms.com)
