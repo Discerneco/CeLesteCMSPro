@@ -12,8 +12,10 @@ This index provides an overview of all documentation available for CeLesteCMS Pr
 - **[Authentication System](Security/Authentication.md)** - Complete auth implementation guide
 
 ### 💻 Development
-- **[Development Guide](Development/Development.md)** - Complete development roadmap with versioning and next steps
-- **[Template System](Development/TEMPLATE_SYSTEM.md)** - Hybrid template architecture with visual builder
+- **[Development Guide](Development/Development.md)** - Complete development roadmap with 30-day MVP timeline
+- **[Horizonte Template System](Development/TEMPLATE_SYSTEM.md)** - Revolutionary visual builder + [section] syntax
+- **[Plugin System](Development/PLUGIN_SYSTEM.md)** - Extensible plugin architecture with security
+- **[WordPress Migration](Development/WORDPRESS_MIGRATION.md)** - Strategic migration tool for market adoption
 - **[Local Development](Development/LocalDevelopment.md)** - Setting up local dev environment
 - **[Backup System](BACKUP_SYSTEM.md)** - Simple 3-second manual backup solution
 
@@ -55,12 +57,21 @@ This index provides an overview of all documentation available for CeLesteCMS Pr
 - **Performance** ✅ - Updated KNOWN_BUGS.md to reflect August 2025 status
 - **Security** ✅ - Updated contact information and Oslo authentication references
 
-### 🎯 Next Development Priorities
-- **Pages & Templates System** - Integrated content and template management with hybrid approach
-  - Pages database, admin interface, and API
-  - Template system with `[section]` placeholder syntax
-  - Visual builder and code editor dual-mode interface
-- **Public Site Generation** - Hybrid static+dynamic content delivery with template rendering
+### 🎯 Development Roadmap
+
+#### **MVP Completion (30 days)** - September 24, 2025
+- **Pages System** - Database, admin interface, and API for static pages
+- **Horizonte Templates** - Revolutionary visual builder with `[section]` syntax
+- **Public Site Generation** - Template rendering with hybrid static+dynamic architecture
+
+#### **Post-MVP Strategic Features** - October 2025
+- **WordPress Migration Tool** - Primary customer acquisition strategy
+- **Plugin System** - Hot-loading, crash-protected extensible architecture 
+- **Comments Plugin** - First free plugin proving the ecosystem
+
+#### **Pro Tier Launch** - November 2025
+- **Advanced Plugins** - Custom post types, e-commerce, forms, analytics
+- **Polar.sh Integration** - License verification and payment processing
 
 ### 📝 Future Documentation Additions
 - API Reference (after Pages system completion)

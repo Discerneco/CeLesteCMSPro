@@ -230,7 +230,7 @@ export class TemplateRenderer {
 
 ## Available Template Sections
 
-### Core Sections
+### Core Sections (Built-in)
 | Section | Variants | Description |
 |---------|----------|-------------|
 | `[menu]` | main, minimal, sidebar | Navigation menus |
@@ -240,14 +240,84 @@ export class TemplateRenderer {
 | `[content]` | full, sidebar, columns | Page content area |
 | `[footer]` | minimal, full, social | Site footer |
 
-### Advanced Sections
-| Section | Variants | Description |
-|---------|----------|-------------|
-| `[gallery]` | grid, masonry, slider | Image galleries |
-| `[testimonials]` | carousel, grid, list | Customer testimonials |
-| `[cta]` | center, left, banner | Call-to-action blocks |
-| `[newsletter]` | inline, popup, footer | Email signup forms |
-| `[custom]` | - | User-defined HTML sections |
+### Plugin Sections (Extensible)
+| Section | Plugin | Variants | Description |
+|---------|--------|----------|-------------|
+| `[comments]` | Comments Plugin (Free) | threaded, flat, minimal | Comment display and management |
+| `[gallery]` | Media Plugin (Pro) | grid, masonry, slider | Advanced image galleries |
+| `[testimonials]` | Marketing Plugin (Pro) | carousel, grid, list | Customer testimonials |
+| `[products]` | E-commerce Plugin (Pro) | grid, list, single | Product displays |
+| `[contact]` | Forms Plugin (Pro) | simple, advanced | Contact forms |
+| `[newsletter]` | Email Plugin (Pro) | inline, popup, footer | Email signup forms |
+| `[analytics]` | Analytics Plugin (Pro) | dashboard, charts | Analytics displays |
+| `[custom]` | Custom Plugin | - | User-defined sections |
+
+### Plugin Integration Architecture
+
+#### Unknown Section Handling
+When Horizonte encounters a section that requires a plugin:
+
+```svelte
+<!-- When Comments Plugin is installed -->
+[comments:threaded,moderation=true]
+↓
+<CommentsSection variant="threaded" moderation={true} />
+
+<!-- When Comments Plugin is NOT installed -->
+[comments:threaded,moderation=true]  
+↓ (if showMissingPlugins = true in admin)
+<MissingPluginPlaceholder 
+  sectionName="comments" 
+  variant="threaded"
+  installUrl="/admin/plugins/install/comments-plugin" 
+/>
+
+<!-- When showMissingPlugins = false -->
+[comments:threaded,moderation=true]
+↓ (silently skipped)
+<!-- No output -->
+```
+
+#### Plugin Section Registration
+```javascript
+// Comments Plugin registers its sections
+class CommentsPlugin {
+  getSections() {
+    return {
+      'comments': {
+        component: CommentsSection,
+        variants: ['threaded', 'flat', 'minimal'],
+        props: {
+          moderation: { type: 'boolean', default: false },
+          limit: { type: 'number', default: 50 },
+          sortOrder: { type: 'string', default: 'newest' }
+        }
+      }
+    };
+  }
+}
+
+// Horizonte parser checks plugin sections
+class HorizonteParser {
+  parseSection(sectionString) {
+    const { component } = this.extractSectionInfo(sectionString);
+    
+    // Check core sections first
+    if (this.coreSections.has(component)) {
+      return this.coreSections.get(component);
+    }
+    
+    // Check plugin sections
+    const pluginSection = this.pluginManager.getSection(component);
+    if (pluginSection) {
+      return pluginSection;
+    }
+    
+    // Handle missing plugin section
+    return this.handleMissingSection(component);
+  }
+}
+```
 
 ## Section Configuration Schema
 

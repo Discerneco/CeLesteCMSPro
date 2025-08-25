@@ -70,40 +70,82 @@ CeLesteCMS Pro follows semantic versioning (MAJOR.MINOR.PATCH):
 
 ## Next Development Priorities
 
-### 🎯 1. Pages & Templates System Implementation (CURRENT PRIORITY)
+### 🎯 1. MVP Completion - 30-Day Sprint (CURRENT PRIORITY)
 
-#### Pages System
-- Add `pages` table to database schema
-- Create `/admin/pages` CRUD interface
-- Implement `/api/pages` REST endpoints  
-- Integrate with template selection system
-- Seed with About page content
+**Target Completion**: September 24, 2025 (30 days from August 25, 2025)
 
-#### Template System (Hybrid Approach)
-- Add `templates` and `template_sections` tables to database
-- Build template parser for `[section:variant,prop=value]` syntax
-- Create core section components (menu, header, hero, posts, footer)
-- Implement `/admin/templates` management interface
-- Build dual-mode editor (code + visual builder)
+#### Week 1: Pages Foundation (August 25-31, 2025)
+**Days 1-2**: Pages database table + basic API endpoints
+**Days 3-4**: Pages admin interface (`/admin/pages`) 
+**Days 5-7**: Basic page rendering + integration with existing routing
 
-#### Integration & Public Site
-- Connect pages to templates for rendering
-- Implement server-side template rendering
-- Create responsive public theme with template system
-- Enable hybrid static+dynamic content delivery
+#### Week 2: Horizonte Template Core (September 1-7, 2025)
+**Days 8-10**: Horizonte template parser (`[section:variant,prop=value]` syntax)
+**Days 11-12**: Core section components (menu, header, hero, posts, footer)
+**Days 13-14**: Template rendering engine + server-side rendering
 
-**Development Order**:
-1. Pages foundation with simple template field (1-2 days)
-2. Template parser and core sections (2-3 days)
-3. Admin interfaces for both systems (2-3 days)
-4. Visual template builder (3-4 days)
-5. Public site generation (1-2 days)
+#### Week 3: Horizonte Visual Builder (September 8-14, 2025) 
+**Days 15-17**: Drag-and-drop visual interface + section library
+**Days 18-19**: Section configuration panels + live preview
+**Days 20-21**: Template admin interface (`/admin/templates`)
 
-See `Documentation/Development/TEMPLATE_SYSTEM.md` for complete architecture details.
+#### Week 4: Polish & Integration (September 15-24, 2025)
+**Days 22-24**: Taxonomy/Tags admin UI completion
+**Days 25-27**: Headless API completion + documentation
+**Days 28-30**: Testing, bug fixes, MVP deployment preparation
 
-### 🎯 3. Static Site Generation with Dynamic Features
-- Use `adapter-cloudflare` for hybrid architecture
-- Pre-render public pages for performance
+**Deliverables**: 
+- Functional CeLesteCMS Pro with Horizonte templates
+- Complete admin interface for all content types
+- Public site generation with template system
+- Foundation ready for plugin system
+
+See `Documentation/Development/TEMPLATE_SYSTEM.md` for complete Horizonte architecture.
+
+### 🎯 2. Post-MVP: Plugin Ecosystem (October 2025)
+
+#### WordPress Migration Tool (Strategic Priority)
+**Timeline**: 30 days after MVP completion
+- WordPress database connection and content analysis
+- Core content migration (Posts, Pages, Media, Comments, Users)
+- Content transformation (shortcodes → Horizonte sections)
+- Auto-generated template creation from WordPress themes
+- Migration wizard interface in CeLeste admin
+- **Strategic Value**: Primary customer acquisition tool
+
+See `Documentation/Development/WORDPRESS_MIGRATION.md` for complete migration strategy.
+
+#### Plugin System Foundation (Parallel Development)
+**Timeline**: Weeks 2-4 of WordPress migration development
+- Plugin architecture with 3-tier security (Official/Verified/Community)
+- Hot-loading plugin system with crash protection
+- Signed plugin packages (.celeste format)
+- Plugin admin interface (`/admin/plugins`)
+- Comments plugin as first free plugin implementation
+
+See `Documentation/Development/PLUGIN_SYSTEM.md` for complete plugin architecture.
+
+#### Horizonte + Plugin Integration
+- Plugin section registration system
+- Unknown section placeholder handling (admin toggle)
+- Plugin-powered template sections
+- Visual builder plugin section library
+
+### 🎯 3. Pro Tier Features (November-December 2025)
+
+#### Advanced Plugin Development
+- Custom post types via plugins
+- Field type extensions and content modeling
+- Advanced Horizonte sections (e-commerce, forms, analytics)
+- Plugin marketplace preparation
+
+#### Polar.sh Integration
+- License verification system
+- One-time payment processing
+- Pro feature activation
+- Revenue sharing for plugin developers
+
+### 🎯 4. Static Site Generation with Dynamic Features
 - Dynamic islands for comments, search, analytics
 - SEO implementation and sitemaps
   - **Problem**: Portuguese users navigate to English pages during auth flows  
