@@ -45,6 +45,7 @@ export const users = sqliteTable('users', {
 export const userRelations = relations(typeTable(users), ({ many }) => ({
   sessions: many(typeTable(sessions)),
   posts: many(typeTable(posts)),
+  pages: many(typeTable(pages)),
   media: many(typeTable(media)),
 }));
 
@@ -188,6 +189,34 @@ export const postTagRelations = relations(typeTable(postTags), ({ one }) => ({
   tag: one(typeTable(tags), { fields: [typeTable(postTags.tagId)], references: [typeTable(tags.id)] }),
 }));
 
+// ================ PAGES ================
+
+export const pages = sqliteTable('pages', {
+  id: text('id').primaryKey().$defaultFn(() => createId()),
+  title: text('title').notNull(),
+  slug: text('slug').notNull().unique(),
+  content: text('content').notNull(),
+  excerpt: text('excerpt'),
+  authorId: text('author_id').notNull().references(() => users.id),
+  status: text('status', { enum: ['draft', 'published', 'archived', 'trash'] }).notNull().default('draft'),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
+  updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
+  publishedAt: integer('published_at', { mode: 'timestamp' }),
+  trashedAt: integer('trashed_at', { mode: 'timestamp' }),
+  trashedBy: text('trashed_by').references(() => users.id),
+  metaData: text('meta_data', { mode: 'json' }).$type<{
+    title?: string,
+    description?: string,
+    keywords?: string[],
+    ogImage?: string
+  }>(),
+});
+
+// @ts-ignore - Suppress TypeScript errors for relations API with SQLite tables
+export const pageRelations = relations(typeTable(pages), ({ one }) => ({
+  author: one(typeTable(users), { fields: [typeTable(pages.authorId)], references: [typeTable(users.id)] }),
+}));
+
 // ================ MEDIA ================
 
 export const media = sqliteTable('media', {
@@ -221,3 +250,22 @@ export const settings = sqliteTable('settings', {
   value: text('value', { mode: 'json' }).notNull(),
   updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
 });
+
+// ================ TYPES ================
+
+export type User = InferSelectModel<typeof users>;
+export type NewUser = InferInsertModel<typeof users>;
+export type Session = InferSelectModel<typeof sessions>;
+export type NewSession = InferInsertModel<typeof sessions>;
+export type Post = InferSelectModel<typeof posts>;
+export type NewPost = InferInsertModel<typeof posts>;
+export type Page = InferSelectModel<typeof pages>;
+export type NewPage = InferInsertModel<typeof pages>;
+export type Category = InferSelectModel<typeof categories>;
+export type NewCategory = InferInsertModel<typeof categories>;
+export type Tag = InferSelectModel<typeof tags>;
+export type NewTag = InferInsertModel<typeof tags>;
+export type Media = InferSelectModel<typeof media>;
+export type NewMedia = InferInsertModel<typeof media>;
+export type Setting = InferSelectModel<typeof settings>;
+export type NewSetting = InferInsertModel<typeof settings>;
