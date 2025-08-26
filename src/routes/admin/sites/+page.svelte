@@ -29,18 +29,31 @@
     try {
       console.log(`🏗️ Starting site generation for: ${site.name}`);
       
-      // TODO: Implement actual site generation API call
-      await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate generation
-      
-      // Update build status
+      // Update site status to building immediately
       const updatedSites = sites.map(s => 
         s.id === site.id 
-          ? { ...s, buildStatus: 'success', lastBuildAt: new Date() }
+          ? { ...s, buildStatus: 'building' }
           : s
       );
       sites = updatedSites;
       
-      console.log(`✅ Site generation completed for: ${site.name}`);
+      // Call actual site generation API
+      const response = await fetch(`/api/sites/${site.id}/generate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      
+      const result = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(result.error || 'Site generation failed');
+      }
+      
+      console.log(`✅ Site generation completed for: ${site.name}`, result);
+      
+      // Reload sites to get updated build status
+      await loadSites();
+      
     } catch (error) {
       console.error('❌ Site generation failed:', error);
       
@@ -51,6 +64,9 @@
           : s
       );
       sites = updatedSites;
+      
+      // Show error to user
+      alert(`Site generation failed: ${error.message}`);
     } finally {
       loading = false;
       generatingId = null;
@@ -60,7 +76,14 @@
   // Preview site
   function previewSite(site) {
     console.log(`👁️ Opening preview for: ${site.name}`);
-    // TODO: Open preview in new window/tab
+    
+    // Check if site has been generated
+    if (site.buildStatus !== 'success') {
+      alert('Please generate the site first before previewing.');
+      return;
+    }
+    
+    // Open preview in new window/tab
     window.open(`/preview/${site.id}`, '_blank');
   }
 

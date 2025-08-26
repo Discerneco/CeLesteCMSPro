@@ -1,13 +1,11 @@
 /**
  * Horizonte Template Renderer
  * 
- * Renders parsed Horizonte templates to HTML using section components
+ * Renders parsed Horizonte templates to HTML using Svelte section components
  */
 
 import type { Section, ParsedTemplate } from './parser';
-import { getDbFromEvent } from '$lib/server/db/utils';
-import { posts, users, pages, settings, templates } from '$lib/server/db/schema';
-import { eq, desc, ne } from 'drizzle-orm';
+import { getSection, hasSection } from '$lib/sections/index.js';
 
 export interface RenderContext {
   page?: any;
@@ -26,7 +24,7 @@ export interface RenderedSection {
 
 export class TemplateRenderer {
   /**
-   * Render template sections to HTML
+   * Render template sections to HTML using Svelte components
    */
   async render(
     template: ParsedTemplate, 
@@ -42,7 +40,7 @@ export class TemplateRenderer {
       } catch (error) {
         console.error(`Failed to render section [${section.component}]:`, error);
         // In production, we might want to show placeholder or skip
-        rendered.push(`<!-- Error rendering section [${section.component}] -->`);
+        rendered.push(`<!-- Error rendering section [${section.component}]: ${error.message} -->`);
       }
     }
     
@@ -50,41 +48,43 @@ export class TemplateRenderer {
   }
   
   /**
-   * Render individual section
+   * Render individual section using Svelte component
    */
   private async renderSection(
     section: Section, 
     context: RenderContext,
     overrides?: Record<string, any>
   ): Promise<string> {
-    // Merge section props with overrides
+    // Check if section component exists
+    if (!hasSection(section.component)) {
+      return this.renderUnknownSection(section.component, section.props);
+    }
+
+    // Get the Svelte component
+    const Component = getSection(section.component);
+    if (!Component) {
+      return this.renderUnknownSection(section.component, section.props);
+    }
+
+    // Load section-specific data
+    const sectionData = await this.loadSectionData(section.component, section.props, context);
+    
+    // Merge section props with overrides and loaded data
     const props = {
       ...section.props,
+      ...sectionData,
       ...(overrides?.[section.component] || {}),
       variant: section.variant,
       context
     };
     
-    // Load section-specific data
-    const sectionData = await this.loadSectionData(section.component, props, context);
-    const finalProps = { ...props, ...sectionData };
-    
-    // Render based on component type
-    switch (section.component) {
-      case 'menu':
-        return this.renderMenu(finalProps);
-      case 'header':
-        return this.renderHeader(finalProps);
-      case 'hero':
-        return this.renderHero(finalProps);
-      case 'posts':
-        return this.renderPosts(finalProps);
-      case 'content':
-        return this.renderContent(finalProps);
-      case 'footer':
-        return this.renderFooter(finalProps);
-      default:
-        return this.renderUnknownSection(section.component, finalProps);
+    try {
+      // Server-side render the Svelte component
+      const result = Component.render(props);
+      return result.html || '';
+    } catch (error) {
+      console.error(`Failed to render Svelte component [${section.component}]:`, error);
+      return this.renderUnknownSection(section.component, props, error.message);
     }
   }
   
@@ -107,277 +107,53 @@ export class TemplateRenderer {
   }
   
   private async loadPostsData(props: Record<string, any>, context: RenderContext) {
-    // This would normally use the database, but for now we'll use context
     const limit = props.limit || 6;
     const featured = props.featured || false;
     
-    // In a real implementation, we'd query the database here
+    // Use posts from context, filter if needed
+    let posts = context.posts || [];
+    
+    if (featured) {
+      posts = posts.filter(post => post.featured);
+    }
+    
     return {
-      posts: context.posts?.slice(0, limit) || [],
+      posts: posts.slice(0, limit)
     };
   }
   
   private async loadMenuData(props: Record<string, any>, context: RenderContext) {
-    // Load menu items - for now return static items
+    // Load menu items with relative links
     return {
       menuItems: [
-        { title: 'Home', url: '/', active: true },
-        { title: 'Blog', url: '/blog' },
-        { title: 'About', url: '/about' },
-        { title: 'Contact', url: '/contact' }
-      ]
+        { title: 'Home', url: './', active: true },
+        { title: 'Blog', url: './blog/', active: false },
+        { title: 'About', url: './about/', active: false },
+        { title: 'Contact', url: './contact/', active: false }
+      ],
+      siteName: context.site?.name || 'Site'
     };
   }
   
-  // Section Renderers
-  
-  private renderMenu(props: Record<string, any>): string {
-    const variant = props.variant || 'main';
-    const menuItems = props.menuItems || [];
-    
-    if (variant === 'minimal') {
-      return `
-        <nav class="navbar bg-base-100 border-b">
-          <div class="container mx-auto">
-            <div class="navbar-brand">
-              <a href="/" class="text-xl font-bold">${props.context?.site?.name || 'Site'}</a>
-            </div>
-            <div class="navbar-nav">
-              ${menuItems.map(item => `
-                <a href="${item.url}" class="nav-link ${item.active ? 'active' : ''}">${item.title}</a>
-              `).join('')}
-            </div>
-          </div>
-        </nav>
-      `;
-    }
-    
-    // Main navigation (default)
-    return `
-      <nav class="navbar bg-base-100 shadow-md">
-        <div class="container mx-auto px-4">
-          <div class="navbar-start">
-            <a href="/" class="text-xl font-bold">${props.context?.site?.name || 'Site'}</a>
-          </div>
-          <div class="navbar-center hidden lg:flex">
-            <ul class="menu menu-horizontal px-1">
-              ${menuItems.map(item => `
-                <li><a href="${item.url}" class="${item.active ? 'active' : ''}">${item.title}</a></li>
-              `).join('')}
-            </ul>
-          </div>
-        </div>
-      </nav>
-    `;
-  }
-  
-  private renderHeader(props: Record<string, any>): string {
-    const variant = props.variant || 'simple';
-    const title = props.title || props.context?.page?.title || 'Page Title';
-    const subtitle = props.subtitle || props.context?.page?.excerpt || '';
-    
-    if (variant === 'breadcrumb') {
-      return `
-        <header class="bg-base-200 py-8">
-          <div class="container mx-auto px-4">
-            <nav class="breadcrumbs text-sm mb-4">
-              <ul>
-                <li><a href="/">Home</a></li>
-                <li>${title}</li>
-              </ul>
-            </nav>
-            <h1 class="text-3xl font-bold">${title}</h1>
-            ${subtitle ? `<p class="text-lg text-base-content/70 mt-2">${subtitle}</p>` : ''}
-          </div>
-        </header>
-      `;
-    }
-    
-    // Simple header (default)
-    return `
-      <header class="bg-primary text-primary-content py-12">
-        <div class="container mx-auto px-4 text-center">
-          <h1 class="text-4xl font-bold mb-4">${title}</h1>
-          ${subtitle ? `<p class="text-xl opacity-90">${subtitle}</p>` : ''}
-        </div>
-      </header>
-    `;
-  }
-  
-  private renderHero(props: Record<string, any>): string {
-    const variant = props.variant || 'center';
-    const title = props.title || 'Welcome';
-    const subtitle = props.subtitle || 'Your journey starts here';
-    const background = props.background || 'gradient';
-    
-    const backgroundClass = background === 'gradient' 
-      ? 'bg-gradient-to-br from-primary to-secondary'
-      : 'bg-primary';
-    
-    return `
-      <section class="hero min-h-[60vh] ${backgroundClass} text-primary-content">
-        <div class="hero-content text-center">
-          <div class="max-w-md">
-            <h1 class="text-5xl font-bold">${title}</h1>
-            <p class="py-6">${subtitle}</p>
-            <button class="btn btn-secondary">Get Started</button>
-          </div>
-        </div>
-      </section>
-    `;
-  }
-  
-  private renderPosts(props: Record<string, any>): string {
-    const variant = props.variant || 'grid';
-    const posts = props.posts || [];
-    const limit = props.limit || 6;
-    
-    const displayPosts = posts.slice(0, limit);
-    
-    if (variant === 'list') {
-      return `
-        <section class="py-16">
-          <div class="container mx-auto px-4">
-            <div class="space-y-8">
-              ${displayPosts.map(post => `
-                <article class="card bg-base-100 shadow-lg">
-                  <div class="card-body">
-                    <h2 class="card-title">${post.title}</h2>
-                    <p>${post.excerpt || ''}</p>
-                    <div class="card-actions justify-end">
-                      <a href="/blog/${post.slug}" class="btn btn-primary">Read More</a>
-                    </div>
-                  </div>
-                </article>
-              `).join('')}
-            </div>
-          </div>
-        </section>
-      `;
-    }
-    
-    // Grid layout (default)
-    return `
-      <section class="py-16">
-        <div class="container mx-auto px-4">
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            ${displayPosts.map(post => `
-              <article class="card bg-base-100 shadow-lg hover:shadow-xl transition-shadow">
-                <div class="card-body">
-                  <h2 class="card-title text-lg">${post.title}</h2>
-                  <p class="text-sm text-base-content/70">${post.excerpt || ''}</p>
-                  <div class="card-actions justify-end">
-                    <a href="/blog/${post.slug}" class="btn btn-primary btn-sm">Read</a>
-                  </div>
-                </div>
-              </article>
-            `).join('')}
-          </div>
-        </div>
-      </section>
-    `;
-  }
-  
-  private renderContent(props: Record<string, any>): string {
-    const content = props.context?.page?.content || 'Content goes here';
-    const variant = props.variant || 'full';
-    
-    if (variant === 'sidebar') {
-      return `
-        <main class="py-16">
-          <div class="container mx-auto px-4">
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              <div class="lg:col-span-2">
-                <div class="prose max-w-none">
-                  ${this.formatContent(content)}
-                </div>
-              </div>
-              <aside class="lg:col-span-1">
-                <div class="bg-base-200 p-6 rounded-lg">
-                  <h3 class="text-lg font-semibold mb-4">Sidebar</h3>
-                  <p>Sidebar content goes here.</p>
-                </div>
-              </aside>
-            </div>
-          </div>
-        </main>
-      `;
-    }
-    
-    // Full width content (default)
-    return `
-      <main class="py-16">
-        <div class="container mx-auto px-4">
-          <div class="prose max-w-none mx-auto">
-            ${this.formatContent(content)}
-          </div>
-        </div>
-      </main>
-    `;
-  }
-  
-  private renderFooter(props: Record<string, any>): string {
-    const variant = props.variant || 'minimal';
-    const siteName = props.context?.site?.name || 'Site';
-    
-    if (variant === 'full') {
-      return `
-        <footer class="footer footer-center bg-base-200 text-base-content p-10">
-          <div>
-            <p class="font-bold text-lg">${siteName}</p>
-            <p class="text-base-content/70">Built with CeLeste CMS</p>
-          </div>
-          <div>
-            <div class="grid grid-flow-col gap-4">
-              <a href="/" class="link link-hover">Home</a>
-              <a href="/blog" class="link link-hover">Blog</a>
-              <a href="/about" class="link link-hover">About</a>
-              <a href="/contact" class="link link-hover">Contact</a>
-            </div>
-          </div>
-          <div>
-            <p class="text-sm">© ${new Date().getFullYear()} ${siteName}. All rights reserved.</p>
-          </div>
-        </footer>
-      `;
-    }
-    
-    // Minimal footer (default)
-    return `
-      <footer class="footer footer-center bg-base-300 text-base-content p-4">
-        <div>
-          <p>© ${new Date().getFullYear()} ${siteName}. Built with CeLeste CMS.</p>
-        </div>
-      </footer>
-    `;
-  }
-  
-  private renderUnknownSection(component: string, props: Record<string, any>): string {
+  /**
+   * Render unknown section placeholder
+   */
+  private renderUnknownSection(component: string, props: Record<string, any>, error?: string): string {
     return `
       <!-- Unknown section: ${component} -->
-      <div class="bg-error/10 border border-error/20 rounded-lg p-4 my-4">
-        <p class="text-error">Unknown section: [${component}]</p>
-        <p class="text-sm text-base-content/70 mt-2">
+      <div class="bg-red-50 border border-red-200 rounded-lg p-4 my-4">
+        <p class="text-red-600 font-medium">Unknown section: [${component}]</p>
+        <p class="text-sm text-red-500 mt-2">
           This section type is not supported. Check your template syntax.
+          ${error ? `Error: ${error}` : ''}
         </p>
       </div>
     `;
   }
-  
-  private formatContent(content: string): string {
-    if (!content) return '';
-    
-    // Simple paragraph formatting
-    return content
-      .split('\n\n')
-      .filter(p => p.trim())
-      .map(p => `<p>${p.trim()}</p>`)
-      .join('\n');
-  }
 }
 
 /**
- * Generate complete HTML page with template
+ * Generate complete HTML page with clean Tailwind CSS (no DaisyUI)
  */
 export async function generatePage(
   template: ParsedTemplate,
@@ -392,16 +168,59 @@ export async function generatePage(
   const pageDescription = context.page?.excerpt || context.site?.description || '';
   
   return `<!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${pageTitle} - ${siteName}</title>
   <meta name="description" content="${pageDescription}">
-  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.14/dist/full.min.css" rel="stylesheet" type="text/css" />
+  <meta name="generator" content="CeLeste CMS">
+  
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+          },
+        }
+      }
+    }
+  </script>
+  
+  <!-- Custom Styles -->
+  <style>
+    /* Smooth scrolling and focus styles */
+    html { scroll-behavior: smooth; }
+    
+    /* Focus styles for accessibility */
+    *:focus-visible {
+      outline: 2px solid #3b82f6;
+      outline-offset: 2px;
+    }
+    
+    /* Container max-width consistent with Tailwind */
+    .container {
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    /* Typography improvements */
+    .prose {
+      color: #374151;
+      line-height: 1.75;
+    }
+    
+    .prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+      color: #111827;
+      font-weight: 600;
+    }
+  </style>
 </head>
-<body>
+<body class="bg-white text-gray-900 antialiased">
 ${body}
 </body>
 </html>`;
