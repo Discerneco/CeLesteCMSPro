@@ -199,6 +199,8 @@ export const pages = sqliteTable('pages', {
   excerpt: text('excerpt'),
   featuredImageId: text('featured_image_id').references(() => media.id),
   authorId: text('author_id').notNull().references(() => users.id),
+  templateId: text('template_id').references(() => templates.id),
+  sectionsData: text('sections_data', { mode: 'json' }).$type<Record<string, any>>(), // Section-specific overrides
   status: text('status', { enum: ['draft', 'published', 'archived', 'trash'] }).notNull().default('draft'),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
   updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
@@ -217,6 +219,7 @@ export const pages = sqliteTable('pages', {
 export const pageRelations = relations(typeTable(pages), ({ one }) => ({
   author: one(typeTable(users), { fields: [typeTable(pages.authorId)], references: [typeTable(users.id)] }),
   featuredImage: one(typeTable(media), { fields: [typeTable(pages.featuredImageId)], references: [typeTable(media.id)] }),
+  template: one(typeTable(templates), { fields: [typeTable(pages.templateId)], references: [typeTable(templates.id)] }),
 }));
 
 // ================ MEDIA ================
@@ -253,6 +256,59 @@ export const settings = sqliteTable('settings', {
   updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
 });
 
+// ================ TEMPLATES (HORIZONTE SYSTEM) ================
+
+export const templates = sqliteTable('templates', {
+  id: text('id').primaryKey().$defaultFn(() => createId()),
+  name: text('name').notNull(),
+  slug: text('slug').notNull().unique(),
+  description: text('description'),
+  content: text('content').notNull(), // Complete .horizonte file content
+  advancedConfig: text('advanced_config', { mode: 'json' }).$type<Record<string, any>>(),
+  visualBuilderState: text('visual_builder_state', { mode: 'json' }).$type<Record<string, any>>(),
+  type: text('type', { enum: ['page', 'post', 'homepage', 'blog'] }).default('page'),
+  isDefault: integer('is_default', { mode: 'boolean' }).notNull().default(false),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
+  updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
+});
+
+export const templateSections = sqliteTable('template_sections', {
+  id: text('id').primaryKey().$defaultFn(() => createId()),
+  name: text('name').notNull(),
+  componentName: text('component_name').notNull(), // Svelte component name
+  schema: text('schema', { mode: 'json' }).$type<Record<string, any>>(), // Configuration options
+  previewImage: text('preview_image'), // URL to preview image
+  category: text('category').notNull(), // 'navigation', 'content', 'media', etc.
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
+  updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
+});
+
+export const sites = sqliteTable('sites', {
+  id: text('id').primaryKey().$defaultFn(() => createId()),
+  name: text('name').notNull(),
+  domain: text('domain'),
+  description: text('description'),
+  defaultTemplateId: text('default_template_id').references(() => templates.id),
+  settings: text('settings', { mode: 'json' }).$type<Record<string, any>>(),
+  buildStatus: text('build_status', { enum: ['idle', 'building', 'success', 'error'] }).default('idle'),
+  lastBuildAt: integer('last_build_at', { mode: 'timestamp' }),
+  buildLog: text('build_log'),
+  isDefault: integer('is_default', { mode: 'boolean' }).notNull().default(false),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
+  updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
+});
+
+// @ts-ignore - Suppress TypeScript errors for relations API with SQLite tables
+export const templateRelations = relations(typeTable(templates), ({ many }) => ({
+  pages: many(typeTable(pages)),
+  sites: many(typeTable(sites))
+}));
+
+// @ts-ignore - Suppress TypeScript errors for relations API with SQLite tables  
+export const siteRelations = relations(typeTable(sites), ({ one }) => ({
+  defaultTemplate: one(typeTable(templates), { fields: [typeTable(sites.defaultTemplateId)], references: [typeTable(templates.id)] }),
+}));
+
 // ================ TYPES ================
 
 export type User = InferSelectModel<typeof users>;
@@ -271,3 +327,9 @@ export type Media = InferSelectModel<typeof media>;
 export type NewMedia = InferInsertModel<typeof media>;
 export type Setting = InferSelectModel<typeof settings>;
 export type NewSetting = InferInsertModel<typeof settings>;
+export type Template = InferSelectModel<typeof templates>;
+export type NewTemplate = InferInsertModel<typeof templates>;
+export type TemplateSection = InferSelectModel<typeof templateSections>;
+export type NewTemplateSection = InferInsertModel<typeof templateSections>;
+export type Site = InferSelectModel<typeof sites>;
+export type NewSite = InferInsertModel<typeof sites>;
