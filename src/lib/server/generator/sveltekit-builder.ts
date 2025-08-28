@@ -6,7 +6,7 @@
  */
 
 import { join, dirname } from 'path';
-import { mkdir, writeFile, copyFile, readFile, rm } from 'fs/promises';
+import { mkdir, writeFile, copyFile, readFile, rm, readdir, stat } from 'fs/promises';
 import { existsSync } from 'fs';
 import { exec } from 'child_process';
 import { promisify } from 'util';
@@ -146,11 +146,14 @@ export class SvelteKitBuilder {
       }
       await this.copyDir(buildOutputDir, finalBuildDir);
 
-      // Step 7: Generate additional files
+      // Step 7: Process HTML files for preview URLs
+      await this.processHtmlFilesForPreview(finalBuildDir, siteData);
+
+      // Step 8: Generate additional files
       await this.generateSitemap(finalBuildDir, siteData);
       await this.generateRobotsTxt(finalBuildDir, siteData);
 
-      // Step 8: Cleanup temp project
+      // Step 9: Cleanup temp project
       await rm(tempProjectDir, { recursive: true });
 
       console.log(`✅ Site generation completed successfully`);
@@ -608,5 +611,107 @@ Allow: /
 Sitemap: ${baseUrl}/sitemap.xml`;
 
     await writeFile(join(buildDir, 'robots.txt'), robots);
+  }
+
+  /**
+   * Process HTML files to fix links for preview URLs during generation
+   */
+  private async processHtmlFilesForPreview(buildDir: string, siteData: SiteData): Promise<void> {
+    console.log('🔄 Processing HTML files for preview URLs...');
+    
+    // Get site slug - try to derive from siteData or use ID as fallback  
+    const siteSlug = this.getSiteSlugFromData(siteData);
+    
+    if (!siteSlug) {
+      console.log('⚠️  No site slug found, skipping HTML processing');
+      return;
+    }
+    
+    // Find all HTML files recursively
+    const htmlFiles = await this.findHtmlFiles(buildDir);
+    console.log(`📝 Found ${htmlFiles.length} HTML files to process`);
+    
+    let processedCount = 0;
+    for (const htmlFile of htmlFiles) {
+      try {
+        const html = await readFile(htmlFile, 'utf-8');
+        const processedHtml = this.processHtmlForPreview(html, siteSlug);
+        
+        // Only write if content changed
+        if (processedHtml !== html) {
+          await writeFile(htmlFile, processedHtml);
+          processedCount++;
+        }
+      } catch (error) {
+        console.error(`❌ Failed to process ${htmlFile}:`, error);
+      }
+    }
+    
+    console.log(`✅ Processed ${processedCount} HTML files for preview URLs`);
+  }
+
+  /**
+   * Get site slug from site data (TODO: integrate with site slug system)
+   */
+  private getSiteSlugFromData(siteData: SiteData): string | null {
+    // For now, generate slug from site name
+    // Later this should come from the database slug field
+    if (siteData.name) {
+      return siteData.name
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, '-')
+        .replace(/[^a-z0-9-]/g, '')
+        .replace(/-+/g, '-')
+        .replace(/^-|-$/g, '');
+    }
+    return null;
+  }
+
+  /**
+   * Find all HTML files recursively in a directory
+   */
+  private async findHtmlFiles(dir: string): Promise<string[]> {
+    const htmlFiles: string[] = [];
+    
+    const items = await readdir(dir);
+    
+    for (const item of items) {
+      const fullPath = join(dir, item);
+      const stats = await stat(fullPath);
+      
+      if (stats.isDirectory()) {
+        // Skip node_modules and hidden directories
+        if (!item.startsWith('.') && item !== 'node_modules') {
+          const subFiles = await this.findHtmlFiles(fullPath);
+          htmlFiles.push(...subFiles);
+        }
+      } else if (stats.isFile() && item.endsWith('.html')) {
+        htmlFiles.push(fullPath);
+      }
+    }
+    
+    return htmlFiles;
+  }
+
+  /**
+   * Process HTML to fix relative links for preview under /preview/slug/ path
+   */
+  private processHtmlForPreview(html: string, siteSlug: string): string {
+    return html
+      // Fix relative links: href="./" -> href="/preview/site-slug/"
+      .replace(/href="\.\/"/g, `href="/preview/${siteSlug}/"`)
+      // Fix relative links: href="./page" -> href="/preview/site-slug/page"
+      .replace(/href="\.\/([^"]+)"/g, `href="/preview/${siteSlug}/$1"`)
+      // Fix parent directory links: href="../page" -> href="/preview/site-slug/page"
+      .replace(/href="\.\.\/([^"]+)"/g, `href="/preview/${siteSlug}/$1"`)
+      // Fix absolute links: href="/page" -> href="/preview/site-slug/page" (but skip already processed and external URLs)
+      .replace(/href="\/(?!preview\/)([^"/][^"]*)"(?![^>]*(?:http|mailto|tel))/g, `href="/preview/${siteSlug}/$1"`)
+      // Fix relative assets: src="./_app/" -> src="/preview/site-slug/_app/"
+      .replace(/src="\.\/(_app\/[^"]+)"/g, `src="/preview/${siteSlug}/$1"`)
+      // Fix absolute assets: src="/assets/" -> src="/preview/site-slug/assets/" (but skip already processed)
+      .replace(/src="\/(?!preview\/)([^"/][^"]*)"(?![^>]*http)/g, `src="/preview/${siteSlug}/$1"`)
+      // Fix relative preload: href="./_app/" -> href="/preview/site-slug/_app/"
+      .replace(/href="\.\/(_app\/[^"]+)"/g, `href="/preview/${siteSlug}/$1"`);
   }
 }

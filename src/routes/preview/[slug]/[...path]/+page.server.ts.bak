@@ -97,8 +97,14 @@ function processHtmlForPreview(html: string, siteSlug: string): string {
     .replace(/href="\.\/"/g, `href="/preview/${siteSlug}/"`)
     // Fix relative links: href="./page" -> href="/preview/site-slug/page"
     .replace(/href="\.\/([^"]+)"/g, `href="/preview/${siteSlug}/$1"`)
+    // Fix parent directory links: href="../page" -> href="/preview/site-slug/page"
+    .replace(/href="\.\.\/([^"]+)"/g, `href="/preview/${siteSlug}/$1"`)
+    // Fix absolute links: href="/page" -> href="/preview/site-slug/page" (but skip already processed and external URLs)
+    .replace(/href="\/(?!preview\/)([^"/][^"]*)"(?![^>]*(?:http|mailto|tel))/g, `href="/preview/${siteSlug}/$1"`)
     // Fix relative assets: src="./_app/" -> src="/preview/site-slug/_app/"
     .replace(/src="\.\/(_app\/[^"]+)"/g, `src="/preview/${siteSlug}/$1"`)
+    // Fix absolute assets: src="/assets/" -> src="/preview/site-slug/assets/" (but skip already processed)
+    .replace(/src="\/(?!preview\/)([^"/][^"]*)"(?![^>]*http)/g, `src="/preview/${siteSlug}/$1"`)
     // Fix relative preload: href="./_app/" -> href="/preview/site-slug/_app/"
     .replace(/href="\.\/(_app\/[^"]+)"/g, `href="/preview/${siteSlug}/$1"`);
 }
