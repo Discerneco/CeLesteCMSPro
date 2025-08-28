@@ -3,6 +3,7 @@ import type { RequestHandler } from './$types';
 import { getDbFromEvent } from '$lib/server/db/utils';
 import { sites, templates } from '$lib/server/db/schema';
 import { eq } from 'drizzle-orm';
+import { generateSlug, generateUniqueSlug } from '$lib/server/utils/slug';
 
 export const GET: RequestHandler = async ({ url, locals }) => {
   try {
@@ -13,6 +14,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
       .select({
         id: sites.id,
         name: sites.name,
+        slug: sites.slug,
         domain: sites.domain,
         description: sites.description,
         templateId: sites.defaultTemplateId,
@@ -44,11 +46,18 @@ export const POST: RequestHandler = async ({ request, locals }) => {
       return json({ error: 'Site name is required' }, { status: 400 });
     }
 
+    // Generate unique slug
+    const baseSlug = generateSlug(data.name);
+    const existingSites = await db.select({ slug: sites.slug }).from(sites);
+    const existingSlugs = existingSites.map(site => site.slug);
+    const uniqueSlug = generateUniqueSlug(baseSlug, existingSlugs);
+
     // Create new site
     const [newSite] = await db
       .insert(sites)
       .values({
         name: data.name,
+        slug: uniqueSlug,
         domain: data.domain || null,
         description: data.description || null,
         defaultTemplateId: data.templateId || null,
@@ -65,6 +74,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
       .select({
         id: sites.id,
         name: sites.name,
+        slug: sites.slug,
         domain: sites.domain,
         description: sites.description,
         templateId: sites.defaultTemplateId,

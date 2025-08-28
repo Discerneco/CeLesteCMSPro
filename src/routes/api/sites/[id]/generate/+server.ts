@@ -2,16 +2,33 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { getDbFromEvent } from '$lib/server/db/utils';
 import { sites, templates, posts, pages, settings } from '$lib/server/db/schema';
-import { eq, desc } from 'drizzle-orm';
+import { eq, desc, or } from 'drizzle-orm';
 import { SvelteKitBuilder } from '$lib/server/generator/sveltekit-builder';
 import type { SiteData } from '$lib/server/generator/sveltekit-builder';
 
 export const POST: RequestHandler = async ({ params, locals }) => {
-  const siteId = params.id;
+  const siteIdOrSlug = params.id;
   
   try {
     const db = getDbFromEvent({ locals });
     
+    // Find site by ID or slug
+    const [site] = await db
+      .select({
+        id: sites.id,
+        name: sites.name,
+        slug: sites.slug,
+        domain: sites.domain,
+        description: sites.description,
+        settings: sites.settings,
+      })
+      .from(sites)
+      .where(or(eq(sites.id, siteIdOrSlug), eq(sites.slug, siteIdOrSlug)));
+    
+    if (!site) {
+      throw new Error('Site not found');
+    }
+
     // Update build status to building
     await db
       .update(sites)
@@ -20,25 +37,9 @@ export const POST: RequestHandler = async ({ params, locals }) => {
         buildLog: 'Starting SvelteKit-based site generation...',
         updatedAt: new Date()
       })
-      .where(eq(sites.id, siteId));
+      .where(eq(sites.id, site.id));
 
-    console.log(`🏗️ Starting SvelteKit site generation for site: ${siteId}`);
-
-    // Load site data
-    const [site] = await db
-      .select({
-        id: sites.id,
-        name: sites.name,
-        domain: sites.domain,
-        description: sites.description,
-        settings: sites.settings,
-      })
-      .from(sites)
-      .where(eq(sites.id, siteId));
-
-    if (!site) {
-      throw new Error('Site not found');
-    }
+    console.log(`🏗️ Starting SvelteKit site generation for site: ${site.name} (${site.slug})`);
 
     console.log(`📄 Loading content for site: ${site.name}`);
 
@@ -102,7 +103,7 @@ export const POST: RequestHandler = async ({ params, locals }) => {
         buildLog,
         updatedAt: new Date()
       })
-      .where(eq(sites.id, siteId));
+      .where(eq(sites.id, site.id));
 
     console.log(`✅ Site generation completed successfully`);
 
@@ -129,7 +130,7 @@ export const POST: RequestHandler = async ({ params, locals }) => {
           buildLog,
           updatedAt: new Date()
         })
-        .where(eq(sites.id, siteId));
+        .where(eq(sites.id, site.id));
     } catch (dbError) {
       console.error('Failed to update build status:', dbError);
     }

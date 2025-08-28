@@ -1,4 +1,5 @@
 <script>
+  import { base } from '$app/paths';
   import Hero from '$lib/components/Hero.svelte';
   import Posts from '$lib/components/Posts.svelte';
   
@@ -13,7 +14,7 @@
   title="Welcome to {siteName}" 
   subtitle="Your journey starts here" 
   buttonText="Get Started" 
-  buttonUrl="/blog"
+  buttonUrl="{base}/blog"
 />
 
 <Posts 

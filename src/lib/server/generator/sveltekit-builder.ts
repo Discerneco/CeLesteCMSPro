@@ -54,10 +54,12 @@ export interface BuildResult {
 export class SvelteKitBuilder {
   private templateDir: string;
   private buildsDir: string;
+  private buildTempDir: string;
 
   constructor() {
     this.templateDir = join(process.cwd(), 'templates', 'sveltekit-base');
     this.buildsDir = join(process.cwd(), 'builds');
+    this.buildTempDir = join(process.cwd(), 'build_temp');
   }
 
   /**
@@ -65,7 +67,7 @@ export class SvelteKitBuilder {
    */
   async generateSite(siteData: SiteData): Promise<BuildResult> {
     const siteId = siteData.id;
-    const tempProjectDir = join(this.buildsDir, `temp-${siteId}`);
+    const tempProjectDir = join(this.buildTempDir, `temp-${siteId}`);
     const finalBuildDir = join(this.buildsDir, siteId);
 
     // Create debug log file

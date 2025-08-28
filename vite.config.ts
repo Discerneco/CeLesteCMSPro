@@ -12,5 +12,10 @@ export default defineConfig({
 			outdir: './src/lib/paraglide',
 			strategy: ['localStorage', 'cookie', 'url', 'baseLocale']
 		})
-	]
+	],
+	server: {
+		watch: {
+			ignored: ['**/build_temp/**', '**/builds/**']
+		}
+	}
 });

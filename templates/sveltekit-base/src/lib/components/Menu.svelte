@@ -1,12 +1,14 @@
 <script>
+  import { base } from '$app/paths';
+  
   // Props with defaults
   export let variant = 'main';
   export let siteName = 'Site';
   export let menuItems = [
-    { title: 'Home', url: '/', active: true },
-    { title: 'Blog', url: '/blog', active: false },
-    { title: 'About', url: '/about', active: false },
-    { title: 'Contact', url: '/contact', active: false }
+    { title: 'Home', url: `${base}/`, active: true },
+    { title: 'Blog', url: `${base}/blog`, active: false },
+    { title: 'About', url: `${base}/about`, active: false },
+    { title: 'Contact', url: `${base}/contact`, active: false }
   ];
 </script>
 
@@ -14,7 +16,7 @@
   <nav class="bg-white border-b border-gray-200 sticky top-0 z-50">
     <div class="container mx-auto py-3">
       <div class="flex items-center justify-between">
-        <a href="/" class="text-xl font-bold text-gray-900 hover:text-gray-700">
+        <a href="{base}/" class="text-xl font-bold text-gray-900 hover:text-gray-700">
           {siteName}
         </a>
         <div class="hidden md:flex items-center space-x-6">
@@ -42,7 +44,7 @@
     <div class="container mx-auto">
       <div class="flex items-center justify-between h-16">
         <div class="flex items-center">
-          <a href="/" class="text-2xl font-bold text-gray-900 hover:text-gray-700">
+          <a href="{base}/" class="text-2xl font-bold text-gray-900 hover:text-gray-700">
             {siteName}
           </a>
         </div>

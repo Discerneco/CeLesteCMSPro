@@ -286,6 +286,7 @@ export const templateSections = sqliteTable('template_sections', {
 export const sites = sqliteTable('sites', {
   id: text('id').primaryKey().$defaultFn(() => createId()),
   name: text('name').notNull(),
+  slug: text('slug').notNull().unique(),
   domain: text('domain'),
   description: text('description'),
   defaultTemplateId: text('default_template_id').references(() => templates.id),

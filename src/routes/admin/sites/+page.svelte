@@ -83,8 +83,9 @@
       return;
     }
     
-    // Open preview in new window/tab
-    window.open(`/preview/${site.id}`, '_blank');
+    // Open preview in new window/tab using slug
+    const previewUrl = site.slug ? `/preview/${site.slug}` : `/preview/${site.id}`;
+    window.open(previewUrl, '_blank');
   }
 
   // Configure site
@@ -136,7 +137,7 @@
       const sitesData = await response.json();
       sites = sitesData;
       
-      console.log('✅ Loaded sites:', sites);
+      console.log('✅ Loaded sites:', $state.snapshot(sites));
     } catch (error) {
       console.error('❌ Failed to load sites:', error);
     } finally {

@@ -1,4 +1,6 @@
 <script>
+  import { base } from '$app/paths';
+  
   // Props with defaults
   export let variant = 'minimal';
   export let siteName = 'Site';
@@ -28,10 +30,10 @@
           <div class="lg:col-span-1">
             <h4 class="text-lg font-semibold text-white mb-4">Quick Links</h4>
             <ul class="space-y-2">
-              <li><a href="/" class="text-gray-400 hover:text-white transition-colors">Home</a></li>
-              <li><a href="/blog" class="text-gray-400 hover:text-white transition-colors">Blog</a></li>
-              <li><a href="/about" class="text-gray-400 hover:text-white transition-colors">About</a></li>
-              <li><a href="/contact" class="text-gray-400 hover:text-white transition-colors">Contact</a></li>
+              <li><a href="{base}/" class="text-gray-400 hover:text-white transition-colors">Home</a></li>
+              <li><a href="{base}/blog" class="text-gray-400 hover:text-white transition-colors">Blog</a></li>
+              <li><a href="{base}/about" class="text-gray-400 hover:text-white transition-colors">About</a></li>
+              <li><a href="{base}/contact" class="text-gray-400 hover:text-white transition-colors">Contact</a></li>
             </ul>
           </div>
 
@@ -39,7 +41,7 @@
           <div class="lg:col-span-1">
             <h4 class="text-lg font-semibold text-white mb-4">Resources</h4>
             <ul class="space-y-2">
-              <li><a href="/contact" class="text-gray-400 hover:text-white transition-colors">Contact Us</a></li>
+              <li><a href="{base}/contact" class="text-gray-400 hover:text-white transition-colors">Contact Us</a></li>
             </ul>
           </div>
         {/if}
@@ -49,7 +51,7 @@
           <h4 class="text-lg font-semibold text-white mb-4">Get in Touch</h4>
           <ul class="space-y-2 text-gray-400">
             <li>
-              <a href="/contact" class="hover:text-white transition-colors">
+              <a href="{base}/contact" class="hover:text-white transition-colors">
                 Contact Us
               </a>
             </li>
@@ -90,7 +92,7 @@
         
         {#if showLinks}
           <div class="flex justify-center space-x-4 mt-4 text-sm">
-            <a href="/contact" class="text-gray-600 hover:text-gray-900 transition-colors">Contact</a>
+            <a href="{base}/contact" class="text-gray-600 hover:text-gray-900 transition-colors">Contact</a>
           </div>
         {/if}
       </div>

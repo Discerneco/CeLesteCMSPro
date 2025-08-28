@@ -1,4 +1,6 @@
 <script>
+  import { base } from '$app/paths';
+  
   // Props with defaults
   export let variant = 'grid';
   export let posts = [];
@@ -59,7 +61,7 @@
           {#each displayPosts as post}
             <article class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow p-8 border border-gray-100">
               <h3 class="text-2xl font-bold text-gray-900 mb-3 hover:text-blue-600 transition-colors">
-                <a href="/blog/{post.slug}">{post.title}</a>
+                <a href="{base}/blog/{post.slug}">{post.title}</a>
               </h3>
               
               <!-- Meta information -->
@@ -85,7 +87,7 @@
               <!-- Read more link -->
               <div class="flex justify-end">
                 <a 
-                  href="/blog/{post.slug}"
+                  href="{base}/blog/{post.slug}"
                   class="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium"
                 >
                   Read More
@@ -104,7 +106,7 @@
             <article class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow overflow-hidden border border-gray-100">
               <div class="p-6">
                 <h3 class="text-xl font-bold text-gray-900 mb-3 hover:text-blue-600 transition-colors">
-                  <a href="/blog/{post.slug}">{post.title}</a>
+                  <a href="{base}/blog/{post.slug}">{post.title}</a>
                 </h3>
                 
                 <!-- Meta information -->
@@ -129,7 +131,7 @@
                 
                 <!-- Read more link -->
                 <a 
-                  href="/blog/{post.slug}"
+                  href="{base}/blog/{post.slug}"
                   class="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium text-sm"
                 >
                   Read More
@@ -147,7 +149,7 @@
       {#if posts.length > limit}
         <div class="text-center mt-12">
           <a 
-            href="/blog"
+            href="{base}/blog"
             class="inline-flex items-center bg-gray-100 text-gray-900 px-6 py-3 rounded-lg font-medium hover:bg-gray-200 transition-colors"
           >
             View All Posts

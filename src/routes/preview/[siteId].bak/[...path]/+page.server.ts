@@ -22,8 +22,14 @@ export const load: PageServerLoad = async ({ params }) => {
     let filePath: string;
     
     if (path) {
-      // Handle nested paths (e.g., blog/post-slug)
-      filePath = join(buildDir, path, 'index.html');
+      // Try multiple possible file locations
+      const possiblePaths = [
+        join(buildDir, path, 'index.html'),  // /blog/index.html
+        join(buildDir, `${path}.html`),      // /blog.html
+        join(buildDir, path)                 // /blog (direct file)
+      ];
+      
+      filePath = possiblePaths.find(p => existsSync(p)) || possiblePaths[0];
     } else {
       // Root path
       filePath = join(buildDir, 'index.html');

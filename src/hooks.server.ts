@@ -3,14 +3,20 @@ import { sequence } from '@sveltejs/kit/hooks';
 import { paraglideMiddleware } from '$lib/paraglide/server';
 import { validateSession, deleteSession } from '$lib/server/auth-oslo';
 
-const handleParaglide: Handle = ({ event, resolve }) =>
-	paraglideMiddleware(event.request, ({ request, locale }) => {
+const handleParaglide: Handle = ({ event, resolve }) => {
+	// Skip i18n for preview routes - serve them without locale prefix
+	if (event.url.pathname.startsWith('/preview/')) {
+		return resolve(event);
+	}
+	
+	return paraglideMiddleware(event.request, ({ request, locale }) => {
 		event.request = request;
 
 		return resolve(event, {
 			transformPageChunk: ({ html }) => html.replace('%paraglide.lang%', locale)
 		});
 	});
+};
 
 const handleAuth: Handle = async ({ event, resolve }) => {
 	// Get session ID from cookies

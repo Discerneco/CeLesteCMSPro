@@ -43,6 +43,13 @@
       "when": 1756167244580,
       "tag": "0005_sad_boomerang",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1756349239552,
+      "tag": "0006_late_mindworm",
+      "breakpoints": true
     }
   ]
 }
