@@ -22,6 +22,9 @@ export const GET: RequestHandler = async ({ url, locals }) => {
         buildStatus: sites.buildStatus,
         lastBuildAt: sites.lastBuildAt,
         isDefault: sites.isDefault,
+        generationMode: sites.generationMode,
+        optimizationSettings: sites.optimizationSettings,
+        deploymentSettings: sites.deploymentSettings,
         createdAt: sites.createdAt,
         updatedAt: sites.updatedAt,
       })
@@ -64,6 +67,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
         settings: data.settings || null,
         buildStatus: 'idle',
         isDefault: data.isDefault || false,
+        generationMode: data.generationMode || 'dynamic',
+        optimizationSettings: data.optimizationSettings || null,
+        deploymentSettings: data.deploymentSettings || null,
         createdAt: new Date(),
         updatedAt: new Date(),
       })
@@ -82,6 +88,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
         buildStatus: sites.buildStatus,
         lastBuildAt: sites.lastBuildAt,
         isDefault: sites.isDefault,
+        generationMode: sites.generationMode,
+        optimizationSettings: sites.optimizationSettings,
+        deploymentSettings: sites.deploymentSettings,
         createdAt: sites.createdAt,
         updatedAt: sites.updatedAt,
       })

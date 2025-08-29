@@ -50,6 +50,13 @@
       "when": 1756349239552,
       "tag": "0006_late_mindworm",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1756436344600,
+      "tag": "0007_puzzling_swordsman",
+      "breakpoints": true
     }
   ]
 }

@@ -1,7 +1,6 @@
 import { drizzle } from 'drizzle-orm/better-sqlite3';
 import { migrate } from 'drizzle-orm/better-sqlite3/migrator';
 import Database from 'better-sqlite3';
-import { env } from '$env/dynamic/private';
 
 /**
  * Run database migrations for local development
@@ -11,12 +10,8 @@ import { env } from '$env/dynamic/private';
  * pnpm run db:migrate
  */
 async function runMigrations() {
-  if (!env.DATABASE_URL?.startsWith('file:')) {
-    console.error('Error: DATABASE_URL must start with "file:" for local migrations');
-    process.exit(1);
-  }
-
-  const dbPath = env.DATABASE_URL.replace('file:', '');
+  // Use default local database path
+  const dbPath = 'local.db';
   console.log(`Running migrations on database at ${dbPath}`);
   
   try {

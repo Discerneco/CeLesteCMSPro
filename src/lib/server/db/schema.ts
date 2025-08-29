@@ -295,6 +295,24 @@ export const sites = sqliteTable('sites', {
   lastBuildAt: integer('last_build_at', { mode: 'timestamp' }),
   buildLog: text('build_log'),
   isDefault: integer('is_default', { mode: 'boolean' }).notNull().default(false),
+  // Enhanced generation mode fields
+  generationMode: text('generation_mode', { enum: ['dynamic', 'static'] }).notNull().default('dynamic'),
+  optimizationSettings: text('optimization_settings', { mode: 'json' }).$type<{
+    minifyHtml?: boolean,
+    minifyCSS?: boolean,
+    minifyJS?: boolean,
+    optimizeImages?: boolean,
+    generateSitemap?: boolean,
+    enableGzip?: boolean,
+    buildStrategy?: 'full' | 'incremental' | 'ondemand'
+  }>(),
+  deploymentSettings: text('deployment_settings', { mode: 'json' }).$type<{
+    target?: 'cloudflare' | 'vercel' | 'netlify',
+    environment?: 'production' | 'staging' | 'development',
+    autoDeploy?: boolean,
+    previewDeploys?: boolean,
+    edgeFunctions?: boolean
+  }>(),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
   updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
 });
