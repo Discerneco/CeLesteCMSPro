@@ -498,7 +498,7 @@
         <div class="cms-table-row">
           <div class="grid items-center gap-2" style="grid-template-columns: minmax(200px, 2fr) minmax(100px, 1fr) minmax(80px, 1fr) minmax(100px, 1fr) minmax(100px, 1fr);">
             <!-- Name -->
-            <div class="flex items-center gap-3 cursor-pointer" onclick={() => openMediaDetails(item)}>
+            <button class="flex items-center gap-3 cursor-pointer text-left" onclick={() => openMediaDetails(item)}>
               {#if item.type === 'image' && item.thumbnail}
                 <img 
                   src={item.thumbnail} 
@@ -515,7 +515,7 @@
                 <div class="font-medium text-base-content truncate">{item.name}</div>
                 <div class="text-sm text-base-content/60">{m.media_table_id()}: {item.id}</div>
               </div>
-            </div>
+            </button>
             
             <!-- Dimensions -->
             <div class="text-center">

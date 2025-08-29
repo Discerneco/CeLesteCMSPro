@@ -334,10 +334,11 @@
       <div class="space-y-4">
         <!-- Name -->
         <div class="form-control">
-          <label class="label">
+          <label class="label" for="template-name">
             <span class="label-text">{m.templates_form_name()}</span>
           </label>
           <input 
+            id="template-name"
             type="text" 
             class="input input-bordered w-full" 
             bind:value={editorName}
@@ -347,10 +348,11 @@
 
         <!-- Description -->
         <div class="form-control">
-          <label class="label">
+          <label class="label" for="template-description">
             <span class="label-text">{m.templates_form_description()}</span>
           </label>
           <textarea 
+            id="template-description"
             class="textarea textarea-bordered" 
             rows="2"
             bind:value={editorDescription}
@@ -376,9 +378,9 @@
 [content]
 [footer:minimal]"
           ></textarea>
-          <label class="label">
+          <div class="label">
             <span class="label-text-alt">{m.templates_form_syntax_help()}</span>
-          </label>
+          </div>
         </div>
       </div>
 
@@ -398,7 +400,7 @@
         </button>
       </div>
     </div>
-    <div class="modal-backdrop" onclick={closeEditor}></div>
+    <button class="modal-backdrop" onclick={closeEditor} aria-label="Close modal"></button>
   </div>
 {/if}
 

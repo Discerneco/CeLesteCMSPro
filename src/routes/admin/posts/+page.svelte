@@ -532,6 +532,6 @@
       </button>
     </div>
   </div>
-  <div class="modal-backdrop" onclick={cancelDelete}></div>
+  <button class="modal-backdrop" onclick={cancelDelete} aria-label="Close modal"></button>
 </div>
 {/if}

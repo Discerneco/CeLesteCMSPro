@@ -610,9 +610,9 @@
         
         <!-- Time Period Selector -->
         <div class="form-control mb-6">
-          <label class="label">
+          <div class="label">
             <span class="label-text font-medium">{m.settings_statistics_time_period()}</span>
-          </label>
+          </div>
           <div class="join">
             <button 
               class="join-item btn btn-sm {selectedTimeframe === 'total' ? 'btn-active' : 'btn-outline'}"
