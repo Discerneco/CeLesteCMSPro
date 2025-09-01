@@ -2,12 +2,15 @@
   import { 
     Eye, 
     Globe2, 
+    Globe,
     Play, 
     Settings, 
     Upload, 
     Zap,
+    Rocket,
     ExternalLink,
     Calendar,
+    Clock,
     User,
     Server,
     FileDown,
@@ -167,8 +170,8 @@
   // Get generation mode colors and styling
   function getGenerationModeStyle(mode) {
     return mode === 'dynamic' 
-      ? { color: 'indigo', bgClass: 'bg-indigo-50 border-indigo-200', textClass: 'text-indigo-700', badgeClass: 'badge-info' }
-      : { color: 'emerald', bgClass: 'bg-emerald-50 border-emerald-200', textClass: 'text-emerald-700', badgeClass: 'badge-success' };
+      ? { color: 'indigo', buttonClass: 'btn-primary', textClass: 'text-indigo-600' }
+      : { color: 'emerald', buttonClass: 'btn-success', textClass: 'text-emerald-600' };
   }
 
   // Load sites from API
@@ -218,168 +221,116 @@
 </div>
 
 <!-- Sites List -->
-<div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+<div class="grid gap-6" style="grid-template-columns: repeat(auto-fit, minmax(380px, 600px));">
   {#each sites as site (site.id)}
     {@const modeStyle = getGenerationModeStyle(site.generationMode)}
-    <div class="card bg-base-100 shadow-lg hover:shadow-xl transition-all duration-200 border-2 {modeStyle.bgClass}">
+    <div class="card bg-base-100 shadow-sm border border-base-200">
       <div class="card-body">
-        <!-- Enhanced Site Header -->
-        <div class="flex items-start justify-between mb-4">
-          <div class="flex-1 min-w-0">
-            <div class="flex items-center gap-2 mb-1">
-              <h3 class="card-title text-lg truncate {modeStyle.textClass}">
-                {site.name}
-              </h3>
-              {#if site.isDefault}
-                <div class="badge badge-primary badge-sm">Default</div>
-              {/if}
+        <!-- Site Header - Single Line -->
+        <div class="flex items-start justify-between mb-3 flex-wrap gap-2">
+          <div class="flex items-center gap-2 flex-1 min-w-0">
+            <h3 class="text-lg font-semibold">
+              {site.name}
+            </h3>
+            {#if site.isDefault}
+              <div class="badge badge-ghost badge-sm text-primary">Default</div>
+            {/if}
+            <div class="badge badge-ghost badge-sm {site.buildStatus === 'success' ? 'text-success' : site.buildStatus === 'error' ? 'text-error' : 'text-warning'}">
+              {getBuildStatusText(site.buildStatus)}
             </div>
-            
-            {#if site.domain}
-              <p class="text-sm text-base-content/60 truncate">
-                <ExternalLink class="h-3 w-3 inline mr-1" />
-                {site.domain}
-              </p>
-            {/if}
-            
-            {#if site.description}
-              <p class="text-xs text-base-content/50 mt-1 line-clamp-2">
-                {site.description}
-              </p>
-            {/if}
           </div>
           
-          <!-- Dropdown Menu -->
-          <div class="dropdown dropdown-end">
-            <button class="btn btn-ghost btn-sm btn-circle">
-              <MoreVertical class="h-4 w-4" />
-            </button>
-            <ul class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52 z-10">
-              <li>
-                <button onclick={() => configureSite(site)}>
-                  <Edit3 class="h-4 w-4" />
-                  Edit Site
-                </button>
-              </li>
-              <li>
-                <button class="text-error hover:text-error">
-                  <Trash2 class="h-4 w-4" />
-                  Delete Site
-                </button>
-              </li>
-            </ul>
+          <div class="flex items-center gap-2 text-sm text-base-content/60">
+            <Globe class="h-4 w-4" />
+            <span>{site.domain || site.slug || 'localhost:5173'}</span>
           </div>
         </div>
 
-        <!-- Generation Mode Toggle -->
-        <div class="bg-base-200 rounded-lg p-3 mb-4">
+        <!-- Site Description -->
+        {#if site.description}
+          <p class="text-sm text-base-content/70 mb-4">
+            {site.description}
+          </p>
+        {/if}
+
+        <!-- Generation Mode Section -->
+        <div class="bg-base-200 rounded-lg p-4 mb-4">
           <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              {#if site.generationMode === 'dynamic'}
-                <Server class="h-4 w-4 text-indigo-600" />
-                <span class="text-sm font-medium text-indigo-700">Dynamic Site</span>
-              {:else}
-                <FileDown class="h-4 w-4 text-emerald-600" />
-                <span class="text-sm font-medium text-emerald-700">Static Site</span>
-              {/if}
+            <div>
+              <h4 class="text-sm font-medium mb-1">Generation Mode</h4>
+              <p class="text-xs text-base-content/60">Choose how your site will be generated</p>
             </div>
-            
-            <label class="swap swap-flip">
+            <div class="flex items-center gap-3">
+              <span class="text-sm font-medium">
+                {site.generationMode === 'dynamic' ? 'Dynamic' : 'Static'}
+              </span>
               <input 
-                type="checkbox" 
+                type="checkbox"
+                class="toggle toggle-sm bg-indigo-600 border-transparent checked:bg-emerald-600 checked:border-transparent shadow-inner [&:before]:!bg-white"
                 checked={site.generationMode === 'static'}
                 onchange={() => toggleGenerationMode(site)}
                 disabled={toggleGenerationId === site.id || loading}
               />
-              
-              <!-- Dynamic Mode Icon -->
-              <div class="swap-off">
-                <div class="badge {site.generationMode === 'dynamic' ? 'badge-info' : 'badge-ghost'} badge-sm gap-1">
-                  <Server class="h-3 w-3" />
-                  Dynamic
-                </div>
-              </div>
-              
-              <!-- Static Mode Icon -->
-              <div class="swap-on">
-                <div class="badge {site.generationMode === 'static' ? 'badge-success' : 'badge-ghost'} badge-sm gap-1">
-                  <FileDown class="h-3 w-3" />
-                  Static
-                </div>
-              </div>
-            </label>
+            </div>
           </div>
           
-          <!-- Generation Mode Description -->
-          <p class="text-xs text-base-content/60 mt-2">
+          <div class="mt-3 text-xs text-base-content/70">
             {#if site.generationMode === 'dynamic'}
-              Server-side rendering with real-time content updates
+              <strong class="{modeStyle.textClass}">Dynamic Generation:</strong> Real-time content updates, server-side rendering, interactive features
             {:else}
-              Pre-built HTML files for maximum performance and CDN caching
-            {/if}
-          </p>
-        </div>
-
-        <!-- Enhanced Site Metadata -->
-        <div class="grid grid-cols-2 gap-3 text-xs text-base-content/60 mb-4">
-          <div class="space-y-1">
-            <div class="flex items-center gap-1">
-              <User class="h-3 w-3" />
-              <span class="truncate">Template: {site.templateName || 'None'}</span>
-            </div>
-            
-            <div class="flex items-center gap-1">
-              <div class="badge {getBuildStatusClass(site.buildStatus)} badge-xs">
-                {getBuildStatusText(site.buildStatus)}
-              </div>
-            </div>
-          </div>
-          
-          <div class="space-y-1">
-            {#if site.lastBuildAt}
-              <div class="flex items-center gap-1">
-                <Calendar class="h-3 w-3" />
-                <span class="truncate">Built: {formatDate(site.lastBuildAt)}</span>
-              </div>
+              <strong class="{modeStyle.textClass}">Static Generation:</strong> Pre-built HTML files, ultra-fast loading, CDN-optimized, perfect for SEO
             {/if}
           </div>
         </div>
 
-        <!-- Enhanced Action Buttons -->
+        <!-- Site Metadata -->
+        <div class="text-xs text-base-content/60 mb-4 space-y-1">
+          <div class="flex items-center gap-2">
+            <Calendar class="h-3 w-3" />
+            Template: {site.templateName || 'None'}
+          </div>
+          {#if site.lastBuildAt}
+            <div class="flex items-center gap-2">
+              <Clock class="h-3 w-3" />
+              Last built: {formatDate(site.lastBuildAt)}
+            </div>
+          {/if}
+        </div>
+
+        <!-- Action Buttons -->
         <div class="card-actions justify-end gap-2">
+          <button 
+            class="btn btn-ghost btn-sm"
+            onclick={() => configureSite(site)}
+            disabled={loading}
+          >
+            <Settings class="h-4 w-4" />
+            Config
+          </button>
+          
           <button 
             class="btn btn-ghost btn-sm"
             onclick={() => previewSite(site)}
             disabled={loading}
           >
-            <Eye class="h-3 w-3" />
+            <Eye class="h-4 w-4" />
             Preview
           </button>
           
           <button 
-            class="btn btn-outline btn-sm"
-            onclick={() => configureSite(site)}
-            disabled={loading}
-          >
-            <Settings class="h-3 w-3" />
-            Configure
-          </button>
-          
-          <button 
-            class="btn {site.generationMode === 'dynamic' ? 'btn-info' : 'btn-success'} btn-sm"
+            class="btn {modeStyle.buttonClass} btn-sm"
             onclick={() => generateSite(site)}
             disabled={loading}
           >
             {#if generatingId === site.id}
               <span class="loading loading-spinner loading-xs"></span>
-              {#if toggleGenerationId === site.id}
-                Updating...
-              {:else}
-                Building
-              {/if}
+              Building
+            {:else if site.generationMode === 'static'}
+              <Rocket class="h-4 w-4" />
+              Build Static
             {:else}
-              <Zap class="h-3 w-3" />
-              {site.generationMode === 'dynamic' ? 'Deploy' : 'Generate'}
+              <Zap class="h-4 w-4" />
+              Generate
             {/if}
           </button>
         </div>
@@ -412,59 +363,12 @@
 {/if}
 
 <style>
-  .line-clamp-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  /* Color-coded site cards */
-  .bg-indigo-50 {
-    background-color: rgb(238 242 255);
-  }
-  
-  .border-indigo-200 {
-    border-color: rgb(199 210 254);
-  }
-  
-  .text-indigo-700 {
-    color: rgb(67 56 202);
-  }
-  
+  /* Custom text colors for generation modes */
   .text-indigo-600 {
     color: rgb(79 70 229);
   }
   
-  .bg-emerald-50 {
-    background-color: rgb(236 253 245);
-  }
-  
-  .border-emerald-200 {
-    border-color: rgb(167 243 208);
-  }
-  
-  .text-emerald-700 {
-    color: rgb(4 120 87);
-  }
-  
   .text-emerald-600 {
     color: rgb(5 150 105);
-  }
-
-  /* Enhanced hover effects */
-  .card:hover {
-    transform: translateY(-2px);
-  }
-
-  /* Swap animation improvements */
-  .swap {
-    cursor: pointer;
-    user-select: none;
-  }
-  
-  .swap input[type="checkbox"]:disabled ~ * {
-    opacity: 0.6;
-    cursor: not-allowed;
   }
 </style>
