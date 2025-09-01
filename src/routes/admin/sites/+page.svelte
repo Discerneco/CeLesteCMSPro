@@ -8,7 +8,12 @@
     Zap,
     ExternalLink,
     Calendar,
-    User
+    User,
+    Server,
+    FileDown,
+    MoreVertical,
+    Edit3,
+    Trash2
   } from '@lucide/svelte';
   
   import * as m from '$lib/paraglide/messages';
@@ -20,6 +25,7 @@
 
   let loading = $state(false);
   let generatingId = $state(null);
+  let toggleGenerationId = $state(null);
 
   // Generate site static files
   async function generateSite(site) {
@@ -114,6 +120,39 @@
     }
   }
 
+  // Toggle generation mode
+  async function toggleGenerationMode(site) {
+    toggleGenerationId = site.id;
+    
+    try {
+      const newMode = site.generationMode === 'dynamic' ? 'static' : 'dynamic';
+      
+      const response = await fetch(`/api/sites/${site.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...site,
+          generationMode: newMode
+        })
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to update generation mode');
+      }
+      
+      const updatedSite = await response.json();
+      
+      // Update the sites array with the new data
+      sites = sites.map(s => s.id === site.id ? updatedSite : s);
+      
+    } catch (error) {
+      console.error('Failed to toggle generation mode:', error);
+      alert(`Failed to update generation mode: ${error.message}`);
+    } finally {
+      toggleGenerationId = null;
+    }
+  }
+
   // Format date for display
   function formatDate(date) {
     if (!date) return 'Never';
@@ -123,6 +162,13 @@
       hour: '2-digit',
       minute: '2-digit'
     }).format(new Date(date));
+  }
+
+  // Get generation mode colors and styling
+  function getGenerationModeStyle(mode) {
+    return mode === 'dynamic' 
+      ? { color: 'indigo', bgClass: 'bg-indigo-50 border-indigo-200', textClass: 'text-indigo-700', badgeClass: 'badge-info' }
+      : { color: 'emerald', bgClass: 'bg-emerald-50 border-emerald-200', textClass: 'text-emerald-700', badgeClass: 'badge-success' };
   }
 
   // Load sites from API
@@ -174,65 +220,135 @@
 <!-- Sites List -->
 <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
   {#each sites as site (site.id)}
-    <div class="card bg-base-100 shadow-lg hover:shadow-xl transition-shadow">
+    {@const modeStyle = getGenerationModeStyle(site.generationMode)}
+    <div class="card bg-base-100 shadow-lg hover:shadow-xl transition-all duration-200 border-2 {modeStyle.bgClass}">
       <div class="card-body">
-        <!-- Site Header -->
+        <!-- Enhanced Site Header -->
         <div class="flex items-start justify-between mb-4">
           <div class="flex-1 min-w-0">
-            <h3 class="card-title text-lg truncate">
-              {site.name}
+            <div class="flex items-center gap-2 mb-1">
+              <h3 class="card-title text-lg truncate {modeStyle.textClass}">
+                {site.name}
+              </h3>
               {#if site.isDefault}
                 <div class="badge badge-primary badge-sm">Default</div>
               {/if}
-            </h3>
+            </div>
+            
             {#if site.domain}
               <p class="text-sm text-base-content/60 truncate">
                 <ExternalLink class="h-3 w-3 inline mr-1" />
                 {site.domain}
               </p>
             {/if}
+            
+            {#if site.description}
+              <p class="text-xs text-base-content/50 mt-1 line-clamp-2">
+                {site.description}
+              </p>
+            {/if}
           </div>
           
-          <div class="badge {getBuildStatusClass(site.buildStatus)} badge-sm">
-            {getBuildStatusText(site.buildStatus)}
+          <!-- Dropdown Menu -->
+          <div class="dropdown dropdown-end">
+            <button class="btn btn-ghost btn-sm btn-circle">
+              <MoreVertical class="h-4 w-4" />
+            </button>
+            <ul class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52 z-10">
+              <li>
+                <button onclick={() => configureSite(site)}>
+                  <Edit3 class="h-4 w-4" />
+                  Edit Site
+                </button>
+              </li>
+              <li>
+                <button class="text-error hover:text-error">
+                  <Trash2 class="h-4 w-4" />
+                  Delete Site
+                </button>
+              </li>
+            </ul>
           </div>
         </div>
 
-        <!-- Site Description -->
-        {#if site.description}
-          <p class="text-sm text-base-content/70 mb-4 line-clamp-2">
-            {site.description}
-          </p>
-        {/if}
-
-        <!-- Site Metadata -->
-        <div class="text-xs text-base-content/60 mb-4 space-y-1">
-          <div class="flex items-center gap-1">
-            <User class="h-3 w-3" />
-            Template: {site.templateName}
-          </div>
-          
-          {#if site.lastBuildAt}
-            <div class="flex items-center gap-1">
-              <Calendar class="h-3 w-3" />
-              Last built: {formatDate(site.lastBuildAt)}
+        <!-- Generation Mode Toggle -->
+        <div class="bg-base-200 rounded-lg p-3 mb-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              {#if site.generationMode === 'dynamic'}
+                <Server class="h-4 w-4 text-indigo-600" />
+                <span class="text-sm font-medium text-indigo-700">Dynamic Site</span>
+              {:else}
+                <FileDown class="h-4 w-4 text-emerald-600" />
+                <span class="text-sm font-medium text-emerald-700">Static Site</span>
+              {/if}
             </div>
-          {/if}
+            
+            <label class="swap swap-flip">
+              <input 
+                type="checkbox" 
+                checked={site.generationMode === 'static'}
+                onchange={() => toggleGenerationMode(site)}
+                disabled={toggleGenerationId === site.id || loading}
+              />
+              
+              <!-- Dynamic Mode Icon -->
+              <div class="swap-off">
+                <div class="badge {site.generationMode === 'dynamic' ? 'badge-info' : 'badge-ghost'} badge-sm gap-1">
+                  <Server class="h-3 w-3" />
+                  Dynamic
+                </div>
+              </div>
+              
+              <!-- Static Mode Icon -->
+              <div class="swap-on">
+                <div class="badge {site.generationMode === 'static' ? 'badge-success' : 'badge-ghost'} badge-sm gap-1">
+                  <FileDown class="h-3 w-3" />
+                  Static
+                </div>
+              </div>
+            </label>
+          </div>
+          
+          <!-- Generation Mode Description -->
+          <p class="text-xs text-base-content/60 mt-2">
+            {#if site.generationMode === 'dynamic'}
+              Server-side rendering with real-time content updates
+            {:else}
+              Pre-built HTML files for maximum performance and CDN caching
+            {/if}
+          </p>
         </div>
 
-        <!-- Action Buttons -->
+        <!-- Enhanced Site Metadata -->
+        <div class="grid grid-cols-2 gap-3 text-xs text-base-content/60 mb-4">
+          <div class="space-y-1">
+            <div class="flex items-center gap-1">
+              <User class="h-3 w-3" />
+              <span class="truncate">Template: {site.templateName || 'None'}</span>
+            </div>
+            
+            <div class="flex items-center gap-1">
+              <div class="badge {getBuildStatusClass(site.buildStatus)} badge-xs">
+                {getBuildStatusText(site.buildStatus)}
+              </div>
+            </div>
+          </div>
+          
+          <div class="space-y-1">
+            {#if site.lastBuildAt}
+              <div class="flex items-center gap-1">
+                <Calendar class="h-3 w-3" />
+                <span class="truncate">Built: {formatDate(site.lastBuildAt)}</span>
+              </div>
+            {/if}
+          </div>
+        </div>
+
+        <!-- Enhanced Action Buttons -->
         <div class="card-actions justify-end gap-2">
           <button 
             class="btn btn-ghost btn-sm"
-            onclick={() => configureSite(site)}
-            disabled={loading}
-          >
-            <Settings class="h-3 w-3" />
-            Config
-          </button>
-          
-          <button 
-            class="btn btn-outline btn-sm"
             onclick={() => previewSite(site)}
             disabled={loading}
           >
@@ -241,16 +357,29 @@
           </button>
           
           <button 
-            class="btn btn-primary btn-sm"
+            class="btn btn-outline btn-sm"
+            onclick={() => configureSite(site)}
+            disabled={loading}
+          >
+            <Settings class="h-3 w-3" />
+            Configure
+          </button>
+          
+          <button 
+            class="btn {site.generationMode === 'dynamic' ? 'btn-info' : 'btn-success'} btn-sm"
             onclick={() => generateSite(site)}
             disabled={loading}
           >
             {#if generatingId === site.id}
               <span class="loading loading-spinner loading-xs"></span>
-              Building
+              {#if toggleGenerationId === site.id}
+                Updating...
+              {:else}
+                Building
+              {/if}
             {:else}
               <Zap class="h-3 w-3" />
-              Generate
+              {site.generationMode === 'dynamic' ? 'Deploy' : 'Generate'}
             {/if}
           </button>
         </div>
@@ -288,5 +417,54 @@
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+  }
+
+  /* Color-coded site cards */
+  .bg-indigo-50 {
+    background-color: rgb(238 242 255);
+  }
+  
+  .border-indigo-200 {
+    border-color: rgb(199 210 254);
+  }
+  
+  .text-indigo-700 {
+    color: rgb(67 56 202);
+  }
+  
+  .text-indigo-600 {
+    color: rgb(79 70 229);
+  }
+  
+  .bg-emerald-50 {
+    background-color: rgb(236 253 245);
+  }
+  
+  .border-emerald-200 {
+    border-color: rgb(167 243 208);
+  }
+  
+  .text-emerald-700 {
+    color: rgb(4 120 87);
+  }
+  
+  .text-emerald-600 {
+    color: rgb(5 150 105);
+  }
+
+  /* Enhanced hover effects */
+  .card:hover {
+    transform: translateY(-2px);
+  }
+
+  /* Swap animation improvements */
+  .swap {
+    cursor: pointer;
+    user-select: none;
+  }
+  
+  .swap input[type="checkbox"]:disabled ~ * {
+    opacity: 0.6;
+    cursor: not-allowed;
   }
 </style>
