@@ -170,8 +170,8 @@
   // Get generation mode colors and styling
   function getGenerationModeStyle(mode) {
     return mode === 'dynamic' 
-      ? { color: 'indigo', buttonClass: 'btn-primary', textClass: 'text-indigo-600' }
-      : { color: 'emerald', buttonClass: 'btn-success', textClass: 'text-emerald-600' };
+      ? { color: 'indigo', buttonClass: 'bg-indigo-600 hover:bg-indigo-700', textClass: 'text-indigo-600' }
+      : { color: 'emerald', buttonClass: 'bg-emerald-600 hover:bg-emerald-700', textClass: 'text-emerald-600' };
   }
 
   // Load sites from API
@@ -221,7 +221,7 @@
 </div>
 
 <!-- Sites List -->
-<div class="grid gap-6" style="grid-template-columns: repeat(auto-fit, minmax(380px, 600px));">
+<div class="grid gap-6" style="grid-template-columns: repeat(auto-fit, minmax(380px, 540px));">
   {#each sites as site (site.id)}
     {@const modeStyle = getGenerationModeStyle(site.generationMode)}
     <div class="card bg-base-100 shadow-sm border border-base-200">
@@ -233,9 +233,9 @@
               {site.name}
             </h3>
             {#if site.isDefault}
-              <div class="badge badge-ghost badge-sm text-primary">Default</div>
+              <div class="badge badge-sm bg-primary/10 text-primary">Default</div>
             {/if}
-            <div class="badge badge-ghost badge-sm {site.buildStatus === 'success' ? 'text-success' : site.buildStatus === 'error' ? 'text-error' : 'text-warning'}">
+            <div class="badge badge-sm {site.buildStatus === 'success' ? 'bg-success/10 text-success' : site.buildStatus === 'error' ? 'bg-error/10 text-error' : 'bg-warning/10 text-warning'}">
               {getBuildStatusText(site.buildStatus)}
             </div>
           </div>
@@ -300,7 +300,7 @@
         <!-- Action Buttons -->
         <div class="card-actions justify-end gap-2">
           <button 
-            class="btn btn-ghost btn-sm"
+            class="btn btn-outline btn-sm"
             onclick={() => configureSite(site)}
             disabled={loading}
           >
@@ -309,7 +309,7 @@
           </button>
           
           <button 
-            class="btn btn-ghost btn-sm"
+            class="btn btn-outline btn-sm"
             onclick={() => previewSite(site)}
             disabled={loading}
           >
@@ -318,7 +318,7 @@
           </button>
           
           <button 
-            class="btn {modeStyle.buttonClass} btn-sm"
+            class="btn {modeStyle.buttonClass} btn-sm text-white"
             onclick={() => generateSite(site)}
             disabled={loading}
           >
