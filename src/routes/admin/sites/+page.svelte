@@ -21,6 +21,7 @@
   
   import * as m from '$lib/paraglide/messages';
   import { page } from '$app/stores';
+  import { goto } from '$app/navigation';
   import { onMount } from 'svelte';
 
   // Sites data loaded from API
@@ -100,7 +101,7 @@
   // Configure site
   function configureSite(site) {
     console.log(`⚙️ Opening configuration for: ${site.name}`);
-    // TODO: Navigate to site configuration page
+    goto(`/admin/sites/${site.id}/config`);
   }
 
   // Get build status badge class
