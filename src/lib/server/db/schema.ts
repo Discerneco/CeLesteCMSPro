@@ -304,7 +304,8 @@ export const sites = sqliteTable('sites', {
     optimizeImages?: boolean,
     generateSitemap?: boolean,
     enableGzip?: boolean,
-    buildStrategy?: 'full' | 'incremental' | 'ondemand'
+    buildStrategy?: 'full' | 'incremental' | 'ondemand',
+    outputFormat?: 'html' | 'spa' | 'hybrid'
   }>(),
   deploymentSettings: text('deployment_settings', { mode: 'json' }).$type<{
     target?: 'cloudflare' | 'vercel' | 'netlify',

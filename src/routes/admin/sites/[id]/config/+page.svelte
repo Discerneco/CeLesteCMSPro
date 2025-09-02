@@ -29,6 +29,7 @@
   let edgeFunctions = $state();
   
   let buildStrategy = $state();
+  let outputFormat = $state();
   let minifyHtml = $state();
   let minifyCSS = $state();
   let minifyJS = $state();
@@ -48,6 +49,7 @@
       edgeFunctions = site.deploymentSettings?.edgeFunctions || false;
       
       buildStrategy = site.optimizationSettings?.buildStrategy || 'full';
+      outputFormat = site.optimizationSettings?.outputFormat || 'html';
       minifyHtml = site.optimizationSettings?.minifyHtml !== false;
       minifyCSS = site.optimizationSettings?.minifyCSS !== false;
       minifyJS = site.optimizationSettings?.minifyJS !== false;
@@ -77,6 +79,7 @@
           },
           optimizationSettings: {
             buildStrategy,
+            outputFormat,
             minifyHtml,
             minifyCSS,
             minifyJS,
@@ -403,6 +406,21 @@
                     <option value="full">Full Site Generation</option>
                     <option value="incremental">Incremental Builds</option>
                     <option value="ondemand">On-Demand ISR</option>
+                  </select>
+                </div>
+                
+                <div>
+                  <label for="output-format" class="label">
+                    <span class="label-text">Output Format</span>
+                  </label>
+                  <select 
+                    id="output-format"
+                    class="select select-bordered w-full"
+                    bind:value={outputFormat}
+                  >
+                    <option value="html">HTML + Assets</option>
+                    <option value="spa">SPA (Single Page App)</option>
+                    <option value="hybrid">Hybrid (SSG + SPA)</option>
                   </select>
                 </div>
                 
