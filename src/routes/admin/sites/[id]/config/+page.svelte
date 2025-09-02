@@ -5,7 +5,6 @@
     Rocket, 
     Check, 
     Clock, 
-    Eye, 
     Globe,
     Users,
     Search,
@@ -104,12 +103,6 @@
     }
   }
   
-  // Generate or deploy site
-  async function generateSite() {
-    console.log('Generating/deploying site...');
-    // TODO: Implement actual generation/deployment
-    alert(`${activeTab === 'dynamic' ? 'Deploying' : 'Building'} site...`);
-  }
   
   // Format date
   function formatDate(date) {
@@ -416,30 +409,13 @@
               Last static build: {formatDate(site.lastBuildAt)}
             {/if}
           </div>
-          <div class="flex items-center gap-3">
+          <div>
             <button 
-              class="btn btn-outline btn-sm"
+              class="btn btn-sm text-white {activeTab === 'dynamic' ? 'bg-indigo-600 hover:bg-indigo-700' : 'bg-emerald-600 hover:bg-emerald-700'}"
               disabled={saving}
               onclick={saveConfiguration}
             >
               Save Changes
-            </button>
-            <button class="btn btn-outline btn-sm">
-              <Eye class="h-4 w-4" />
-              Preview
-            </button>
-            <button 
-              class="btn btn-sm text-white {activeTab === 'dynamic' ? 'bg-indigo-600 hover:bg-indigo-700' : 'bg-emerald-600 hover:bg-emerald-700'}"
-              onclick={generateSite}
-              disabled={saving}
-            >
-              {#if activeTab === 'dynamic'}
-                <Zap class="h-4 w-4" />
-                Deploy Dynamic
-              {:else}
-                <Rocket class="h-4 w-4" />
-                Build Static
-              {/if}
             </button>
           </div>
         </div>
