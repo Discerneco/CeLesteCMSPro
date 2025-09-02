@@ -11,6 +11,7 @@
     ExternalLink,
     Calendar,
     Clock,
+    Check,
     User,
     Server,
     FileDown,
@@ -690,8 +691,13 @@
               <span class="loading loading-spinner loading-sm"></span>
               Creating...
             {:else}
-              {createForm.generationMode === 'dynamic' ? <Zap class="w-4 h-4" /> : <Rocket class="w-4 h-4" />}
-              {createForm.generationMode === 'dynamic' ? 'Create Dynamic Site' : 'Create Static Site'}
+              {#if createForm.generationMode === 'dynamic'}
+                <Zap class="w-4 h-4" />
+                Create Dynamic Site
+              {:else}
+                <Rocket class="w-4 h-4" />
+                Create Static Site
+              {/if}
             {/if}
           </button>
         </div>
