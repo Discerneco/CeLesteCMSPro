@@ -19,23 +19,44 @@
   let { data } = $props();
   
   let site = $state(data.site);
-  let activeTab = $state(site.generationMode || 'dynamic');
+  let activeTab = $state();
   let saving = $state(false);
   
-  // Form states
-  let deploymentTarget = $state(site.deploymentSettings?.target || 'cloudflare');
-  let environment = $state(site.deploymentSettings?.environment || 'production');
-  let autoDeploy = $state(site.deploymentSettings?.autoDeploy || false);
-  let previewDeploys = $state(site.deploymentSettings?.previewDeploys || true);
-  let edgeFunctions = $state(site.deploymentSettings?.edgeFunctions || false);
+  // Form states - Use derived for initial values, separate state for user input
+  let deploymentTarget = $state();
+  let environment = $state();
+  let autoDeploy = $state();
+  let previewDeploys = $state();
+  let edgeFunctions = $state();
   
-  let buildStrategy = $state(site.optimizationSettings?.buildStrategy || 'full');
-  let minifyHtml = $state(site.optimizationSettings?.minifyHtml !== false);
-  let minifyCSS = $state(site.optimizationSettings?.minifyCSS !== false);
-  let minifyJS = $state(site.optimizationSettings?.minifyJS !== false);
-  let optimizeImages = $state(site.optimizationSettings?.optimizeImages !== false);
-  let generateSitemap = $state(site.optimizationSettings?.generateSitemap !== false);
-  let enableGzip = $state(site.optimizationSettings?.enableGzip !== false);
+  let buildStrategy = $state();
+  let minifyHtml = $state();
+  let minifyCSS = $state();
+  let minifyJS = $state();
+  let optimizeImages = $state();
+  let generateSitemap = $state();
+  let enableGzip = $state();
+  
+  // Initialize form state when site data is available
+  $effect(() => {
+    if (site) {
+      activeTab = site.generationMode || 'dynamic';
+      
+      deploymentTarget = site.deploymentSettings?.target || 'cloudflare';
+      environment = site.deploymentSettings?.environment || 'production';
+      autoDeploy = site.deploymentSettings?.autoDeploy || false;
+      previewDeploys = site.deploymentSettings?.previewDeploys || true;
+      edgeFunctions = site.deploymentSettings?.edgeFunctions || false;
+      
+      buildStrategy = site.optimizationSettings?.buildStrategy || 'full';
+      minifyHtml = site.optimizationSettings?.minifyHtml !== false;
+      minifyCSS = site.optimizationSettings?.minifyCSS !== false;
+      minifyJS = site.optimizationSettings?.minifyJS !== false;
+      optimizeImages = site.optimizationSettings?.optimizeImages !== false;
+      generateSitemap = site.optimizationSettings?.generateSitemap !== false;
+      enableGzip = site.optimizationSettings?.enableGzip !== false;
+    }
+  });
   
   // Save configuration
   async function saveConfiguration() {
