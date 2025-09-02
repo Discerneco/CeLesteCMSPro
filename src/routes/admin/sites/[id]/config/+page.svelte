@@ -225,7 +225,7 @@
             </div>
             
             <div>
-              <h3 class="text-lg font-semibold mb-4">Configuration</h3>
+              <h3 class="text-lg font-semibold mb-4">Deployment Configuration</h3>
               <div class="space-y-4">
                 <div>
                   <label for="deployment-target" class="label">
@@ -274,6 +274,14 @@
                     />
                     <span class="label-text">Generate preview deployments</span>
                   </label>
+                </div>
+              </div>
+            </div>
+            
+            <div>
+              <h3 class="text-lg font-semibold mb-4">Dynamic Server Options</h3>
+              <div class="space-y-4">
+                <div class="space-y-3">
                   <label class="flex items-center gap-2 cursor-pointer">
                     <input 
                       type="checkbox" 
@@ -322,6 +330,60 @@
                 <div>
                   <div class="font-semibold text-emerald-700">Best for:</div>
                   <p class="text-sm text-emerald-700">Marketing sites, portfolios, blogs, and content that doesn't change frequently</p>
+                </div>
+              </div>
+            </div>
+            
+            <div>
+              <h3 class="text-lg font-semibold mb-4">Deployment Configuration</h3>
+              <div class="space-y-4">
+                <div>
+                  <label for="deployment-target-static" class="label">
+                    <span class="label-text">Deployment Target</span>
+                  </label>
+                  <select 
+                    id="deployment-target-static"
+                    class="select select-bordered w-full"
+                    bind:value={deploymentTarget}
+                  >
+                    <option value="cloudflare">Cloudflare Pages</option>
+                    <option value="vercel">Vercel</option>
+                    <option value="netlify">Netlify</option>
+                  </select>
+                </div>
+                
+                <div>
+                  <label for="environment-static" class="label">
+                    <span class="label-text">Environment</span>
+                  </label>
+                  <select 
+                    id="environment-static"
+                    class="select select-bordered w-full"
+                    bind:value={environment}
+                  >
+                    <option value="production">Production</option>
+                    <option value="staging">Staging</option>
+                    <option value="development">Development</option>
+                  </select>
+                </div>
+                
+                <div class="space-y-3">
+                  <label class="flex items-center gap-2 cursor-pointer">
+                    <input 
+                      type="checkbox" 
+                      class="checkbox checkbox-success checkbox-sm"
+                      bind:checked={autoDeploy}
+                    />
+                    <span class="label-text">Auto-deploy on content changes</span>
+                  </label>
+                  <label class="flex items-center gap-2 cursor-pointer">
+                    <input 
+                      type="checkbox" 
+                      class="checkbox checkbox-success checkbox-sm"
+                      bind:checked={previewDeploys}
+                    />
+                    <span class="label-text">Generate preview deployments</span>
+                  </label>
                 </div>
               </div>
             </div>
