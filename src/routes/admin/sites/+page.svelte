@@ -30,6 +30,18 @@
   let loading = $state(false);
   let generatingId = $state(null);
   let toggleGenerationId = $state(null);
+  
+  // Create site modal state
+  let showCreateModal = $state(false);
+  let creating = $state(false);
+  
+  // Create site form state
+  let createForm = $state({
+    name: '',
+    description: '',
+    slug: '',
+    generationMode: 'dynamic'
+  });
 
   // Generate site static files
   async function generateSite(site) {
@@ -195,6 +207,75 @@
     }
   }
 
+  // Create new site
+  async function createSite() {
+    if (!createForm.name.trim() || !createForm.slug.trim()) {
+      alert('Please fill in required fields');
+      return;
+    }
+    
+    creating = true;
+    
+    try {
+      const response = await fetch('/api/sites', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: createForm.name.trim(),
+          description: createForm.description.trim() || null,
+          slug: createForm.slug.trim(),
+          generationMode: createForm.generationMode,
+          // Default deployment settings
+          deploymentSettings: {
+            target: 'cloudflare',
+            environment: 'production',
+            autoDeploy: false,
+            previewDeploys: true
+          },
+          // Default optimization settings
+          optimizationSettings: {
+            buildStrategy: 'full',
+            outputFormat: 'html',
+            minifyHtml: true,
+            minifyCSS: true,
+            minifyJS: true,
+            optimizeImages: true,
+            generateSitemap: true,
+            enableGzip: true
+          }
+        })
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to create site');
+      }
+      
+      const newSite = await response.json();
+      
+      // Add to sites list
+      sites = [...sites, newSite];
+      
+      // Reset form and close modal
+      createForm = {
+        name: '',
+        description: '',
+        slug: '',
+        generationMode: 'dynamic'
+      };
+      showCreateModal = false;
+      
+      // Redirect to configuration page
+      goto(`/admin/sites/${newSite.id}/config`);
+      
+    } catch (error) {
+      console.error('Failed to create site:', error);
+      alert(`Failed to create site: ${error.message}`);
+    } finally {
+      creating = false;
+    }
+  }
+
   onMount(() => {
     console.log('📡 Loading sites...');
     loadSites();
@@ -214,7 +295,10 @@
       {m.sites_global_settings()}
     </button>
     
-    <button class="btn btn-primary" disabled>
+    <button 
+      class="btn btn-primary"
+      onclick={() => showCreateModal = true}
+    >
       <Globe2 class="h-4 w-4" />
       {m.sites_create_new()}
     </button>
@@ -365,7 +449,10 @@
     <Globe2 class="h-16 w-16 mx-auto text-base-content/30 mb-4" />
     <h3 class="text-xl font-semibold mb-2">{m.sites_empty_title()}</h3>
     <p class="text-base-content/70 mb-6">{m.sites_empty_description()}</p>
-    <button class="btn btn-primary">
+    <button 
+      class="btn btn-primary"
+      onclick={() => showCreateModal = true}
+    >
       <Globe2 class="h-4 w-4" />
       {m.sites_create_first()}
     </button>
@@ -378,6 +465,135 @@
     <div class="bg-base-100 p-8 rounded-lg shadow-xl text-center">
       <span class="loading loading-spinner loading-lg"></span>
       <p class="mt-4 text-base-content/70">{m.sites_loading()}</p>
+    </div>
+  </div>
+{/if}
+
+<!-- Create Site Modal -->
+{#if showCreateModal}
+  <div class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-base-100 rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between p-6 border-b border-base-200">
+        <h2 class="text-2xl font-bold">Create New Site</h2>
+        <button 
+          class="btn btn-ghost btn-sm btn-circle"
+          onclick={() => showCreateModal = false}
+        >
+          ✕
+        </button>
+      </div>
+      
+      <!-- Modal Content -->
+      <div class="p-6">
+        <p class="text-base-content/70 mb-6">Create a new site with your preferred generation mode and configuration.</p>
+        
+        <!-- Basic Information -->
+        <div class="space-y-4 mb-6">
+          <h3 class="text-lg font-semibold">Site Information</h3>
+          <div class="grid gap-4">
+            <div>
+              <label class="label">
+                <span class="label-text">Site Name *</span>
+              </label>
+              <input 
+                type="text" 
+                class="input input-bordered w-full" 
+                placeholder="My Awesome Site"
+                bind:value={createForm.name}
+              />
+            </div>
+            <div>
+              <label class="label">
+                <span class="label-text">Description</span>
+              </label>
+              <textarea 
+                class="textarea textarea-bordered w-full" 
+                placeholder="A brief description of your site"
+                rows="3"
+                bind:value={createForm.description}
+              ></textarea>
+            </div>
+            <div>
+              <label class="label">
+                <span class="label-text">Site Slug *</span>
+              </label>
+              <input 
+                type="text" 
+                class="input input-bordered w-full" 
+                placeholder="my-awesome-site"
+                bind:value={createForm.slug}
+              />
+              <div class="label">
+                <span class="label-text-alt text-base-content/60">Will be used for preview URL and deployment</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Generation Mode Selection -->
+        <div class="space-y-4 mb-6">
+          <h3 class="text-lg font-semibold">Generation Mode</h3>
+          <div class="grid gap-4 md:grid-cols-2">
+            <!-- Dynamic Option -->
+            <div class="card bg-base-200 border border-indigo-200 cursor-pointer hover:border-indigo-300 transition-colors">
+              <div class="card-body p-4">
+                <div class="flex items-center gap-3 mb-3">
+                  <input type="radio" name="generationMode" value="dynamic" class="radio radio-primary" bind:group={createForm.generationMode} />
+                  <Zap class="h-5 w-5 text-indigo-600" />
+                  <span class="font-semibold text-indigo-700">Dynamic Generation</span>
+                </div>
+                <ul class="text-sm space-y-1 text-base-content/80">
+                  <li>• Real-time content updates</li>
+                  <li>• Server-side rendering</li>
+                  <li>• Interactive features</li>
+                  <li>• User authentication</li>
+                </ul>
+              </div>
+            </div>
+            
+            <!-- Static Option -->
+            <div class="card bg-base-200 border border-emerald-200 cursor-pointer hover:border-emerald-300 transition-colors">
+              <div class="card-body p-4">
+                <div class="flex items-center gap-3 mb-3">
+                  <input type="radio" name="generationMode" value="static" class="radio radio-success" bind:group={createForm.generationMode} />
+                  <Rocket class="h-5 w-5 text-emerald-600" />
+                  <span class="font-semibold text-emerald-700">Static Generation</span>
+                </div>
+                <ul class="text-sm space-y-1 text-base-content/80">
+                  <li>• Ultra-fast loading</li>
+                  <li>• Perfect SEO</li>
+                  <li>• CDN distribution</li>
+                  <li>• High security</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Modal Footer -->
+      <div class="flex items-center justify-end gap-3 p-6 border-t border-base-200">
+        <button 
+          class="btn btn-ghost"
+          onclick={() => showCreateModal = false}
+          disabled={creating}
+        >
+          Cancel
+        </button>
+        <button 
+          class="btn btn-primary"
+          onclick={createSite}
+          disabled={creating}
+        >
+          {#if creating}
+            <span class="loading loading-spinner loading-sm"></span>
+            Creating...
+          {:else}
+            Create Site
+          {/if}
+        </button>
+      </div>
     </div>
   </div>
 {/if}
