@@ -408,10 +408,12 @@
         </div>
 
         <!-- Site Description -->
-        {#if site.description}
+        {#if site.description?.trim() && site.description.trim() !== site.name}
           <p class="text-sm text-base-content/70 mb-4">
-            {site.description}
+            {site.description.trim()}
           </p>
+        {:else}
+          <div class="mb-4"></div>
         {/if}
 
         <!-- Generation Mode Section -->
