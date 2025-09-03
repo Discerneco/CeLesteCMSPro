@@ -44,8 +44,52 @@
     generationMode: 'dynamic'
   });
   
-  // Progressive disclosure state
-  let showConfiguration = $state(false);
+  // Wizard state management
+  let currentStep = $state(1);
+  const totalSteps = 3;
+  
+  // Auto-slug generation
+  const generateSlug = (name) => {
+    return name
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/^-+|-+$/g, '');
+  };
+  
+  // Wizard navigation
+  const nextStep = () => {
+    if (currentStep < totalSteps) {
+      currentStep += 1;
+    }
+  };
+  
+  const prevStep = () => {
+    if (currentStep > 1) {
+      currentStep -= 1;
+    }
+  };
+  
+  // Auto-generate slug from name
+  const handleNameChange = (event) => {
+    createForm.name = event.target.value;
+    if (!createForm.slug || createForm.slug === generateSlug(createForm.name)) {
+      createForm.slug = generateSlug(event.target.value);
+    }
+  };
+  
+  // Step validation
+  const canProceed = (step) => {
+    switch (step) {
+      case 1:
+        return createForm.name.trim() && createForm.slug.trim();
+      case 2:
+        return createForm.generationMode;
+      default:
+        return true;
+    }
+  };
 
   // Generate site static files
   async function generateSite(site) {
@@ -267,7 +311,7 @@
         slug: '',
         generationMode: 'dynamic'
       };
-      showConfiguration = false;
+      currentStep = 1;
       showCreateModal = false;
       
       // Redirect to configuration page
@@ -474,206 +518,278 @@
   </div>
 {/if}
 
-<!-- Create Site Modal -->
+<!-- Create Site Modal - Wizard -->
 {#if showCreateModal}
   <div class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-base-100 rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-      <!-- Modal Header -->
-      <div class="flex items-center justify-between p-6 border-b border-base-200">
-        <div>
-          <h2 class="text-xl font-bold">Create New Site</h2>
-          <p class="text-sm text-base-content/60 mt-1">Choose your deployment method to get started</p>
+    <div class="bg-base-100 rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <!-- Modal Header with Progress -->
+      <div class="p-6 border-b border-base-200">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h2 class="text-xl font-bold">Create New Site</h2>
+            <p class="text-sm text-base-content/60 mt-1">
+              {currentStep === 1 ? 'Tell us about your site' : currentStep === 2 ? 'Choose your deployment method' : 'Review your site configuration'}
+            </p>
+          </div>
+          <button 
+            class="btn btn-ghost btn-sm btn-circle"
+            onclick={() => showCreateModal = false}
+          >
+            ✕
+          </button>
         </div>
-        <button 
-          class="btn btn-ghost btn-sm btn-circle"
-          onclick={() => showCreateModal = false}
-        >
-          ✕
-        </button>
+        
+        <!-- Progress Indicator -->
+        <div class="flex items-center justify-center mb-2">
+          <div class="flex items-center space-x-4">
+            <div class="flex items-center">
+              <div class="w-8 h-8 rounded-full {currentStep >= 1 ? 'bg-primary text-primary-content' : 'bg-base-300 text-base-content/60'} flex items-center justify-center text-sm font-semibold">
+                1
+              </div>
+              <div class="ml-2 text-sm {currentStep === 1 ? 'text-primary font-medium' : 'text-base-content/60'}">Site Details</div>
+            </div>
+            <div class="w-8 h-1 {currentStep >= 2 ? 'bg-primary' : 'bg-base-300'}"></div>
+            <div class="flex items-center">
+              <div class="w-8 h-8 rounded-full {currentStep >= 2 ? 'bg-primary text-primary-content' : 'bg-base-300 text-base-content/60'} flex items-center justify-center text-sm font-semibold">
+                2
+              </div>
+              <div class="ml-2 text-sm {currentStep === 2 ? 'text-primary font-medium' : 'text-base-content/60'}">Generation Mode</div>
+            </div>
+            <div class="w-8 h-1 {currentStep >= 3 ? 'bg-primary' : 'bg-base-300'}"></div>
+            <div class="flex items-center">
+              <div class="w-8 h-8 rounded-full {currentStep >= 3 ? 'bg-primary text-primary-content' : 'bg-base-300 text-base-content/60'} flex items-center justify-center text-sm font-semibold">
+                3
+              </div>
+              <div class="ml-2 text-sm {currentStep === 3 ? 'text-primary font-medium' : 'text-base-content/60'}">Review & Create</div>
+            </div>
+          </div>
+        </div>
       </div>
       
-      <!-- Modal Content -->
+      <!-- Step Content -->
       <div class="p-6">
-        <!-- Generation Mode Selection Cards -->
-        <div class="grid md:grid-cols-2 gap-6 mb-6">
-          <!-- Dynamic Site Card -->
-          <div 
-            class="border-2 rounded-xl p-6 cursor-pointer transition-all {createForm.generationMode === 'dynamic' ? 'border-indigo-500 bg-indigo-50' : 'border-base-300 hover:border-indigo-300'}"
-            onclick={() => createForm.generationMode = 'dynamic'}
-          >
-            <div class="flex items-center justify-between mb-4">
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center text-white">
-                  <Zap class="w-5 h-5" />
-                </div>
-                <div>
-                  <h3 class="text-lg font-semibold">Dynamic Site</h3>
-                  <p class="text-sm text-base-content/60">Server-side rendering & real-time updates</p>
-                </div>
-              </div>
+        {#if currentStep === 1}
+          <!-- Step 1: Site Details -->
+          <div class="space-y-4">
+            <div>
+              <label class="label">
+                <span class="label-text">Site Name <span class="text-error">*</span></span>
+              </label>
               <input 
-                type="radio" 
-                name="generationMode" 
-                value="dynamic" 
-                class="radio radio-primary" 
-                bind:group={createForm.generationMode}
+                type="text" 
+                class="input input-bordered w-full" 
+                placeholder="My Awesome Site"
+                bind:value={createForm.name}
+                oninput={handleNameChange}
               />
             </div>
             
-            <ul class="space-y-2 text-sm text-base-content/80 mb-4">
-              <li class="flex items-center gap-2">
-                <Check class="w-4 h-4 text-success" />
-                Real-time content updates
-              </li>
-              <li class="flex items-center gap-2">
-                <Check class="w-4 h-4 text-success" />
-                Interactive features & forms
-              </li>
-              <li class="flex items-center gap-2">
-                <Check class="w-4 h-4 text-success" />
-                User authentication
-              </li>
-              <li class="flex items-center gap-2">
-                <Check class="w-4 h-4 text-success" />
-                Database connectivity
-              </li>
-            </ul>
-            
-            <div class="bg-indigo-600/10 border border-indigo-200 rounded-lg p-3 mb-4">
-              <p class="text-xs text-indigo-700">
-                <strong>Perfect for:</strong> Web apps, user portals, e-commerce sites
-              </p>
+            <div>
+              <label class="label">
+                <span class="label-text">Site Slug <span class="text-error">*</span></span>
+              </label>
+              <div class="flex items-center">
+                <span class="text-sm text-base-content/60 bg-base-200 px-3 py-2 rounded-l-lg border border-r-0">yoursite.com/</span>
+                <input 
+                  type="text" 
+                  class="input input-bordered w-full rounded-l-none" 
+                  placeholder="my-awesome-site"
+                  bind:value={createForm.slug}
+                />
+              </div>
             </div>
             
-            <div class="pt-3 border-t border-base-200">
-              <div class="text-xs text-base-content/60 space-y-1">
-                <div class="flex items-center gap-2">
-                  <Clock class="w-3 h-3" />
-                  <span><strong>Setup time:</strong> ~5-10 minutes</span>
+            <div>
+              <label class="label">
+                <span class="label-text">Description</span>
+              </label>
+              <textarea 
+                class="textarea textarea-bordered w-full" 
+                placeholder="A brief description of your site..."
+                rows="3"
+                bind:value={createForm.description}
+              ></textarea>
+            </div>
+          </div>
+          
+        {:else if currentStep === 2}
+          <!-- Step 2: Generation Mode -->
+          <div class="grid gap-6">
+            <!-- Dynamic Site Card -->
+            <div 
+              class="border-2 rounded-xl p-6 cursor-pointer transition-all {createForm.generationMode === 'dynamic' ? 'border-indigo-500 bg-indigo-50' : 'border-base-300 hover:border-indigo-300'}"
+              onclick={() => createForm.generationMode = 'dynamic'}
+            >
+              <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center text-white">
+                    <Zap class="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 class="text-lg font-semibold">Dynamic Site</h3>
+                    <p class="text-sm text-base-content/60">Server-side rendering & real-time updates</p>
+                  </div>
                 </div>
-                <div class="flex items-center gap-2">
-                  <Globe class="w-3 h-3" />
-                  <span><strong>Hosting:</strong> Cloudflare Pages</span>
+                <input 
+                  type="radio" 
+                  name="generationMode" 
+                  value="dynamic" 
+                  class="radio radio-primary" 
+                  bind:group={createForm.generationMode}
+                />
+              </div>
+              
+              <ul class="space-y-2 text-sm text-base-content/80 mb-4">
+                <li class="flex items-center gap-2">
+                  <Check class="w-4 h-4 text-success" />
+                  Real-time content updates
+                </li>
+                <li class="flex items-center gap-2">
+                  <Check class="w-4 h-4 text-success" />
+                  Interactive features & forms
+                </li>
+                <li class="flex items-center gap-2">
+                  <Check class="w-4 h-4 text-success" />
+                  User authentication
+                </li>
+                <li class="flex items-center gap-2">
+                  <Check class="w-4 h-4 text-success" />
+                  Database connectivity
+                </li>
+              </ul>
+              
+              <div class="bg-indigo-600/10 border border-indigo-200 rounded-lg p-3 mb-4">
+                <p class="text-xs text-indigo-700">
+                  <strong>Perfect for:</strong> Web apps, user portals, e-commerce sites
+                </p>
+              </div>
+              
+              <div class="pt-3 border-t border-base-200">
+                <div class="text-xs text-base-content/60 space-y-1">
+                  <div class="flex items-center gap-2">
+                    <Clock class="w-3 h-3" />
+                    <span><strong>Setup time:</strong> ~5-10 minutes</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <Globe class="w-3 h-3" />
+                    <span><strong>Hosting:</strong> Cloudflare Pages</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Static Site Card -->
+            <div 
+              class="border-2 rounded-xl p-6 cursor-pointer transition-all {createForm.generationMode === 'static' ? 'border-emerald-500 bg-emerald-50' : 'border-base-300 hover:border-emerald-300'}"
+              onclick={() => createForm.generationMode = 'static'}
+            >
+              <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 bg-emerald-600 rounded-lg flex items-center justify-center text-white">
+                    <Rocket class="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 class="text-lg font-semibold">Static Site</h3>
+                    <p class="text-sm text-base-content/60">Pre-built HTML for maximum performance</p>
+                  </div>
+                </div>
+                <input 
+                  type="radio" 
+                  name="generationMode" 
+                  value="static" 
+                  class="radio radio-success" 
+                  bind:group={createForm.generationMode}
+                />
+              </div>
+              
+              <ul class="space-y-2 text-sm text-base-content/80 mb-4">
+                <li class="flex items-center gap-2">
+                  <Check class="w-4 h-4 text-success" />
+                  Ultra-fast loading
+                </li>
+                <li class="flex items-center gap-2">
+                  <Check class="w-4 h-4 text-success" />
+                  Perfect SEO scores
+                </li>
+                <li class="flex items-center gap-2">
+                  <Check class="w-4 h-4 text-success" />
+                  Global CDN distribution
+                </li>
+                <li class="flex items-center gap-2">
+                  <Check class="w-4 h-4 text-success" />
+                  Maximum security
+                </li>
+              </ul>
+              
+              <div class="bg-emerald-600/10 border border-emerald-200 rounded-lg p-3 mb-4">
+                <p class="text-xs text-emerald-700">
+                  <strong>Perfect for:</strong> Marketing sites, portfolios, blogs, documentation
+                </p>
+              </div>
+              
+              <div class="pt-3 border-t border-base-200">
+                <div class="text-xs text-base-content/60 space-y-1">
+                  <div class="flex items-center gap-2">
+                    <Clock class="w-3 h-3" />
+                    <span><strong>Setup time:</strong> ~2-5 minutes</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <Globe class="w-3 h-3" />
+                    <span><strong>Hosting:</strong> CDN + Static hosting</span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
           
-          <!-- Static Site Card -->
-          <div 
-            class="border-2 rounded-xl p-6 cursor-pointer transition-all {createForm.generationMode === 'static' ? 'border-emerald-500 bg-emerald-50' : 'border-base-300 hover:border-emerald-300'}"
-            onclick={() => createForm.generationMode = 'static'}
-          >
-            <div class="flex items-center justify-between mb-4">
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-emerald-600 rounded-lg flex items-center justify-center text-white">
-                  <Rocket class="w-5 h-5" />
-                </div>
-                <div>
-                  <h3 class="text-lg font-semibold">Static Site</h3>
-                  <p class="text-sm text-base-content/60">Pre-built HTML for maximum performance</p>
-                </div>
-              </div>
-              <input 
-                type="radio" 
-                name="generationMode" 
-                value="static" 
-                class="radio radio-success" 
-                bind:group={createForm.generationMode}
-              />
-            </div>
+        {:else if currentStep === 3}
+          <!-- Step 3: Review & Create -->
+          <div class="space-y-6">
+            <h3 class="text-lg font-semibold">Review your site configuration</h3>
             
-            <ul class="space-y-2 text-sm text-base-content/80 mb-4">
-              <li class="flex items-center gap-2">
-                <Check class="w-4 h-4 text-success" />
-                Ultra-fast loading
-              </li>
-              <li class="flex items-center gap-2">
-                <Check class="w-4 h-4 text-success" />
-                Perfect SEO scores
-              </li>
-              <li class="flex items-center gap-2">
-                <Check class="w-4 h-4 text-success" />
-                Global CDN distribution
-              </li>
-              <li class="flex items-center gap-2">
-                <Check class="w-4 h-4 text-success" />
-                Maximum security
-              </li>
-            </ul>
-            
-            <div class="bg-emerald-600/10 border border-emerald-200 rounded-lg p-3 mb-4">
-              <p class="text-xs text-emerald-700">
-                <strong>Perfect for:</strong> Marketing sites, portfolios, blogs, documentation
-              </p>
-            </div>
-            
-            <div class="pt-3 border-t border-base-200">
-              <div class="text-xs text-base-content/60 space-y-1">
-                <div class="flex items-center gap-2">
-                  <Clock class="w-3 h-3" />
-                  <span><strong>Setup time:</strong> ~2-5 minutes</span>
+            <div class="space-y-4">
+              <div class="flex justify-between items-center py-2">
+                <span class="font-medium">Site Type:</span>
+                <span class="text-{createForm.generationMode === 'dynamic' ? 'indigo' : 'emerald'}-600 font-semibold">
+                  {createForm.generationMode === 'dynamic' ? 'Dynamic Site' : 'Static Site'}
+                </span>
+              </div>
+              
+              <div class="flex justify-between items-center py-2">
+                <span class="font-medium">Name:</span>
+                <span>{createForm.name}</span>
+              </div>
+              
+              <div class="flex justify-between items-center py-2">
+                <span class="font-medium">URL:</span>
+                <span class="text-base-content/70">yoursite.com/{createForm.slug}</span>
+              </div>
+              
+              {#if createForm.description}
+                <div class="py-2">
+                  <span class="font-medium">Description:</span>
+                  <p class="text-base-content/70 mt-1">{createForm.description}</p>
                 </div>
-                <div class="flex items-center gap-2">
-                  <Globe class="w-3 h-3" />
-                  <span><strong>Hosting:</strong> CDN + Static hosting</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Progressive Configuration Section -->
-        {#if showConfiguration}
-          <div class="border border-base-200 rounded-lg p-4 mb-6">
-            <h4 class="font-semibold mb-3">Site Configuration</h4>
-            <div class="grid md:grid-cols-2 gap-4">
-              <div>
-                <label class="label">
-                  <span class="label-text">Site Name *</span>
-                </label>
-                <input 
-                  type="text" 
-                  class="input input-bordered w-full" 
-                  placeholder="My Awesome Site"
-                  bind:value={createForm.name}
-                />
-              </div>
-              <div>
-                <label class="label">
-                  <span class="label-text">Site Slug *</span>
-                </label>
-                <input 
-                  type="text" 
-                  class="input input-bordered w-full" 
-                  placeholder="my-awesome-site"
-                  bind:value={createForm.slug}
-                />
-              </div>
-              <div class="md:col-span-2">
-                <label class="label">
-                  <span class="label-text">Description</span>
-                </label>
-                <textarea 
-                  class="textarea textarea-bordered w-full" 
-                  placeholder="A brief description of your site"
-                  rows="3"
-                  bind:value={createForm.description}
-                ></textarea>
-              </div>
+              {/if}
             </div>
           </div>
         {/if}
       </div>
       
       <!-- Modal Footer -->
-      <div class="flex items-center justify-between p-6 border-t border-base-200 bg-base-50">
-        <button 
-          class="text-sm font-medium {showConfiguration ? 'text-primary' : 'text-primary'} hover:text-primary-focus"
-          onclick={() => showConfiguration = !showConfiguration}
-        >
-          {showConfiguration ? 'Hide Configuration' : 'Show Configuration'}
-        </button>
+      <div class="flex items-center justify-between p-6 border-t border-base-200">
+        <div class="flex items-center gap-3">
+          {#if currentStep > 1}
+            <button 
+              class="btn btn-outline"
+              onclick={prevStep}
+              disabled={creating}
+            >
+              Back
+            </button>
+          {/if}
+        </div>
+        
         <div class="flex items-center gap-3">
           <button 
             class="btn btn-outline"
@@ -682,24 +798,29 @@
           >
             Cancel
           </button>
-          <button 
-            class="btn text-white {createForm.generationMode === 'static' ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-indigo-600 hover:bg-indigo-700'}"
-            onclick={createSite}
-            disabled={creating}
-          >
-            {#if creating}
-              <span class="loading loading-spinner loading-sm"></span>
-              Creating...
-            {:else}
-              {#if createForm.generationMode === 'dynamic'}
-                <Zap class="w-4 h-4" />
-                Create Dynamic Site
+          
+          {#if currentStep < totalSteps}
+            <button 
+              class="btn btn-primary"
+              onclick={nextStep}
+              disabled={!canProceed(currentStep)}
+            >
+              Next
+            </button>
+          {:else}
+            <button 
+              class="btn text-white {createForm.generationMode === 'static' ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-indigo-600 hover:bg-indigo-700'}"
+              onclick={createSite}
+              disabled={creating}
+            >
+              {#if creating}
+                <span class="loading loading-spinner loading-sm"></span>
+                Creating...
               {:else}
-                <Rocket class="w-4 h-4" />
-                Create Static Site
+                Create Site
               {/if}
-            {/if}
-          </button>
+            </button>
+          {/if}
         </div>
       </div>
     </div>
