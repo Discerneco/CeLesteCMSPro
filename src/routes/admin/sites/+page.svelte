@@ -368,7 +368,9 @@
     {@const modeStyle = getGenerationModeStyle(site.generationMode)}
     <div class="card bg-base-100 shadow-sm border border-base-200">
       <div class="card-body">
-        <!-- Site Header - Single Line -->
+        <!-- Content Area (Header + Deployment + Description) -->
+        <div class="content-area">
+          <!-- Site Header - Single Line -->
         <div class="flex items-start justify-between mb-3 flex-wrap gap-2">
           <div class="flex items-center gap-2 flex-1 min-w-0">
             <h3 class="text-lg font-semibold">
@@ -407,14 +409,15 @@
           {/if}
         </div>
 
-        <!-- Site Description -->
-        {#if site.description?.trim() && site.description.trim() !== site.name}
-          <p class="text-sm text-base-content/70 mb-4">
-            {site.description.trim()}
-          </p>
-        {:else}
-          <div class="mb-4"></div>
-        {/if}
+          <!-- Site Description -->
+          {#if site.description?.trim() && site.description.trim() !== site.name}
+            <p class="text-sm text-base-content/70 mb-4">
+              {site.description.trim()}
+            </p>
+          {:else}
+            <div class="mb-4"></div>
+          {/if}
+        </div>
 
         <!-- Generation Mode Section -->
         <div class="bg-base-200 rounded-lg p-4 mb-4">
@@ -865,5 +868,24 @@
   
   .text-emerald-600 {
     color: rgb(5 150 105);
+  }
+  
+  /* Site card layout improvements */
+  .card {
+    min-height: 420px;
+  }
+  
+  .card-body {
+    display: flex;
+    flex-direction: column;
+    min-height: inherit;
+  }
+  
+  .content-area {
+    min-height: 120px;
+  }
+  
+  .card-actions {
+    margin-top: auto;
   }
 </style>
