@@ -48,14 +48,16 @@
   let currentStep = $state(1);
   const totalSteps = 3;
   
-  // Auto-slug generation
+  // Auto-slug generation with accent conversion
   const generateSlug = (name) => {
     return name
       .toLowerCase()
       .trim()
-      .replace(/[^a-z0-9\s-]/g, '')
-      .replace(/\s+/g, '-')
-      .replace(/^-+|-+$/g, '');
+      .normalize('NFD')                    // Decompose accents from letters
+      .replace(/[\u0300-\u036f]/g, '')     // Remove the accent marks
+      .replace(/[^a-z0-9\s-]/g, '')        // Remove remaining special characters
+      .replace(/\s+/g, '-')                // Convert spaces to hyphens
+      .replace(/^-+|-+$/g, '');           // Remove leading/trailing hyphens
   };
   
   // Wizard navigation
@@ -73,9 +75,15 @@
   
   // Auto-generate slug from name
   const handleNameChange = (event) => {
-    createForm.name = event.target.value;
-    if (!createForm.slug || createForm.slug === generateSlug(createForm.name)) {
-      createForm.slug = generateSlug(event.target.value);
+    const newName = event.target.value;
+    const previousSlug = createForm.slug;
+    const expectedSlug = generateSlug(createForm.name);
+    
+    createForm.name = newName;
+    
+    // Auto-generate slug if it's empty or matches the previously generated slug
+    if (!previousSlug || previousSlug === expectedSlug) {
+      createForm.slug = generateSlug(newName);
     }
   };
   
@@ -521,10 +529,10 @@
 <!-- Create Site Modal - Wizard -->
 {#if showCreateModal}
   <div class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-base-100 rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-      <!-- Modal Header with Progress -->
+    <div class="bg-base-100 rounded-lg shadow-xl w-full {currentStep === 2 ? 'max-w-4xl' : 'max-w-[668px]'} max-h-[90vh] overflow-y-auto">
+      <!-- Modal Header -->
       <div class="p-6 border-b border-base-200">
-        <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center justify-between">
           <div>
             <h2 class="text-xl font-bold">Create New Site</h2>
             <p class="text-sm text-base-content/60 mt-1">
@@ -538,31 +546,32 @@
             ✕
           </button>
         </div>
-        
+      </div>
+      
+      <!-- Progress Section -->
+      <div class="py-4 px-6 bg-base-200 border-b border-base-300">
         <!-- Progress Indicator -->
-        <div class="flex items-center justify-center mb-2">
+        <div class="flex items-center justify-center mb-3">
           <div class="flex items-center space-x-4">
-            <div class="flex items-center">
-              <div class="w-8 h-8 rounded-full {currentStep >= 1 ? 'bg-primary text-primary-content' : 'bg-base-300 text-base-content/60'} flex items-center justify-center text-sm font-semibold">
-                1
-              </div>
-              <div class="ml-2 text-sm {currentStep === 1 ? 'text-primary font-medium' : 'text-base-content/60'}">Site Details</div>
+            <div class="w-8 h-8 rounded-full {currentStep >= 1 ? 'bg-primary text-primary-content' : 'bg-base-300 text-base-content/60'} flex items-center justify-center text-sm font-semibold">
+              1
             </div>
             <div class="w-8 h-1 {currentStep >= 2 ? 'bg-primary' : 'bg-base-300'}"></div>
-            <div class="flex items-center">
-              <div class="w-8 h-8 rounded-full {currentStep >= 2 ? 'bg-primary text-primary-content' : 'bg-base-300 text-base-content/60'} flex items-center justify-center text-sm font-semibold">
-                2
-              </div>
-              <div class="ml-2 text-sm {currentStep === 2 ? 'text-primary font-medium' : 'text-base-content/60'}">Generation Mode</div>
+            <div class="w-8 h-8 rounded-full {currentStep >= 2 ? 'bg-primary text-primary-content' : 'bg-base-300 text-base-content/60'} flex items-center justify-center text-sm font-semibold">
+              2
             </div>
             <div class="w-8 h-1 {currentStep >= 3 ? 'bg-primary' : 'bg-base-300'}"></div>
-            <div class="flex items-center">
-              <div class="w-8 h-8 rounded-full {currentStep >= 3 ? 'bg-primary text-primary-content' : 'bg-base-300 text-base-content/60'} flex items-center justify-center text-sm font-semibold">
-                3
-              </div>
-              <div class="ml-2 text-sm {currentStep === 3 ? 'text-primary font-medium' : 'text-base-content/60'}">Review & Create</div>
+            <div class="w-8 h-8 rounded-full {currentStep >= 3 ? 'bg-primary text-primary-content' : 'bg-base-300 text-base-content/60'} flex items-center justify-center text-sm font-semibold">
+              3
             </div>
           </div>
+        </div>
+        
+        <!-- Current Step Name -->
+        <div class="text-center">
+          <p class="text-sm font-medium text-base-content/60">
+            {currentStep === 1 ? 'Site Details' : currentStep === 2 ? 'Generation Mode' : 'Review & Create'}
+          </p>
         </div>
       </div>
       
@@ -579,7 +588,7 @@
                 type="text" 
                 class="input input-bordered w-full" 
                 placeholder="My Awesome Site"
-                bind:value={createForm.name}
+                value={createForm.name}
                 oninput={handleNameChange}
               />
             </div>
@@ -614,7 +623,7 @@
           
         {:else if currentStep === 2}
           <!-- Step 2: Generation Mode -->
-          <div class="grid gap-6">
+          <div class="grid md:grid-cols-2 gap-6 max-w-6xl mx-auto">
             <!-- Dynamic Site Card -->
             <div 
               class="border-2 rounded-xl p-6 cursor-pointer transition-all {createForm.generationMode === 'dynamic' ? 'border-indigo-500 bg-indigo-50' : 'border-base-300 hover:border-indigo-300'}"
@@ -750,9 +759,19 @@
             <div class="space-y-4">
               <div class="flex justify-between items-center py-2">
                 <span class="font-medium">Site Type:</span>
-                <span class="text-{createForm.generationMode === 'dynamic' ? 'indigo' : 'emerald'}-600 font-semibold">
-                  {createForm.generationMode === 'dynamic' ? 'Dynamic Site' : 'Static Site'}
-                </span>
+                <div class="flex items-center gap-2">
+                  {#if createForm.generationMode === 'dynamic'}
+                    <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white">
+                      <Zap class="w-4 h-4" />
+                    </div>
+                    <span class="text-indigo-600 font-semibold">Dynamic Site</span>
+                  {:else}
+                    <div class="w-8 h-8 bg-emerald-600 rounded-lg flex items-center justify-center text-white">
+                      <Rocket class="w-4 h-4" />
+                    </div>
+                    <span class="text-emerald-600 font-semibold">Static Site</span>
+                  {/if}
+                </div>
               </div>
               
               <div class="flex justify-between items-center py-2">
@@ -777,7 +796,7 @@
       </div>
       
       <!-- Modal Footer -->
-      <div class="flex items-center justify-between p-6 border-t border-base-200">
+      <div class="flex items-center justify-between p-6 border-t border-base-200 bg-base-200">
         <div class="flex items-center gap-3">
           {#if currentStep > 1}
             <button 
@@ -793,7 +812,16 @@
         <div class="flex items-center gap-3">
           <button 
             class="btn btn-outline"
-            onclick={() => showCreateModal = false}
+            onclick={() => {
+              createForm = {
+                name: '',
+                description: '',
+                slug: '',
+                generationMode: 'dynamic'
+              };
+              currentStep = 1;
+              showCreateModal = false;
+            }}
             disabled={creating}
           >
             Cancel
