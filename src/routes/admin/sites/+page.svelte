@@ -410,13 +410,9 @@
         </div>
 
           <!-- Site Description -->
-          {#if site.description?.trim() && site.description.trim() !== site.name}
-            <p class="text-sm text-base-content/70 mb-4">
-              {site.description.trim()}
-            </p>
-          {:else}
-            <div class="mb-4"></div>
-          {/if}
+          <p class="card-description text-sm text-base-content/70 mb-4">
+            {site.description?.trim() || 'No description provided'}
+          </p>
         </div>
 
         <!-- Generation Mode Section -->
@@ -882,7 +878,16 @@
   }
   
   .content-area {
-    min-height: 120px;
+    min-height: 90px;
+  }
+  
+  .card-description {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1.4;
+    height: calc(1.4em * 2); /* Exact height for 2 lines */
   }
   
   .card-actions {

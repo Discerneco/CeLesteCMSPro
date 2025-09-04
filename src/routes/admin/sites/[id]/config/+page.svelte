@@ -10,7 +10,8 @@
     Search,
     Shield,
     Database,
-    Smartphone
+    Smartphone,
+    Settings
   } from '@lucide/svelte';
   import { goto } from '$app/navigation';
   import * as m from '$lib/paraglide/messages';
@@ -20,6 +21,11 @@
   let site = $state(data.site);
   let activeTab = $state();
   let saving = $state(false);
+  
+  // General tab form states
+  let siteName = $state();
+  let siteDescription = $state();
+  let siteSlug = $state();
   
   // Form states - Use derived for initial values, separate state for user input
   let deploymentTarget = $state();
@@ -40,7 +46,12 @@
   // Initialize form state when site data is available
   $effect(() => {
     if (site) {
-      activeTab = site.generationMode || 'dynamic';
+      activeTab = activeTab || 'general';
+      
+      // General settings
+      siteName = site.name || '';
+      siteDescription = site.description || '';
+      siteSlug = site.slug || '';
       
       deploymentTarget = site.deploymentSettings?.target || 'cloudflare';
       environment = site.deploymentSettings?.environment || 'production';
@@ -69,7 +80,10 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...site,
-          generationMode: activeTab,
+          name: siteName?.trim(),
+          description: siteDescription?.trim() || null,
+          slug: siteSlug?.trim(),
+          generationMode: activeTab === 'general' ? site.generationMode : activeTab,
           deploymentSettings: {
             target: deploymentTarget,
             environment,
@@ -121,14 +135,27 @@
 </script>
 
 <div class="min-h-screen bg-base-100 p-6">
-  <!-- Back Navigation -->
-  <div class="mb-6">
+  <!-- Back Navigation with Top Save Button -->
+  <div class="mb-6 flex items-center justify-between">
     <button 
       onclick={() => goto('/admin/sites')}
       class="flex items-center gap-2 text-base-content/70 hover:text-base-content transition-colors"
     >
       <ArrowLeft class="h-4 w-4" />
       Back to Sites
+    </button>
+    
+    <button 
+      class="btn btn-sm text-white {activeTab === 'dynamic' ? 'bg-indigo-600 hover:bg-indigo-700' : activeTab === 'static' ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-primary hover:bg-primary-focus'}"
+      disabled={saving}
+      onclick={saveConfiguration}
+    >
+      {#if saving}
+        <span class="loading loading-spinner loading-xs"></span>
+        Saving...
+      {:else}
+        Save Changes
+      {/if}
     </button>
   </div>
   
@@ -157,9 +184,20 @@
         {/if}
       </div>
       
-      <!-- Generation Tabs -->
+      <!-- Configuration Tabs -->
       <div class="border-b border-base-200">
         <nav class="flex">
+          <button
+            onclick={() => activeTab = 'general'}
+            class="flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors {
+              activeTab === 'general'
+                ? 'border-primary text-primary'
+                : 'border-transparent text-base-content/60 hover:text-base-content hover:border-base-300'
+            }"
+          >
+            <Settings class="h-4 w-4" />
+            General
+          </button>
           <button
             onclick={() => activeTab = 'dynamic'}
             class="flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors {
@@ -187,7 +225,63 @@
       
       <!-- Tab Content -->
       <div class="p-6">
-        {#if activeTab === 'dynamic'}
+        {#if activeTab === 'general'}
+          <!-- General Settings Tab -->
+          <div class="space-y-6">
+            <div>
+              <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
+                <Settings class="h-5 w-5 text-primary" />
+                General Settings
+              </h3>
+              <p class="text-base-content/70 mb-6">Manage your site's basic information and settings.</p>
+            </div>
+            
+            <div class="space-y-4">
+              <div>
+                <label for="site-name" class="label">
+                  <span class="label-text">Site Name <span class="text-error">*</span></span>
+                </label>
+                <input 
+                  id="site-name"
+                  type="text" 
+                  class="input input-bordered w-full" 
+                  placeholder="My Awesome Site"
+                  bind:value={siteName}
+                />
+              </div>
+              
+              <div>
+                <label for="site-slug" class="label">
+                  <span class="label-text">Site Slug <span class="text-error">*</span></span>
+                </label>
+                <div class="flex items-center">
+                  <span class="text-sm text-base-content/60 bg-base-200 px-3 py-2 rounded-l-lg border border-r-0">yoursite.com/</span>
+                  <input 
+                    id="site-slug"
+                    type="text" 
+                    class="input input-bordered w-full rounded-l-none" 
+                    placeholder="my-awesome-site"
+                    bind:value={siteSlug}
+                  />
+                </div>
+              </div>
+              
+              <div>
+                <label for="site-description" class="label">
+                  <span class="label-text">Description</span>
+                </label>
+                <textarea 
+                  id="site-description"
+                  class="textarea textarea-bordered w-full" 
+                  placeholder="A brief description of your site..."
+                  rows="3"
+                  bind:value={siteDescription}
+                ></textarea>
+              </div>
+            </div>
+          </div>
+          
+        {:else if activeTab === 'dynamic'}
           <!-- Dynamic Generation Tab -->
           <div class="space-y-6">
             <div>
@@ -483,7 +577,9 @@
         <div class="mt-6 flex items-center justify-between pt-4 border-t border-base-200">
           <div class="text-sm text-base-content/60 flex items-center gap-2">
             <Clock class="h-4 w-4" />
-            {#if activeTab === 'dynamic'}
+            {#if activeTab === 'general'}
+              Site created: {formatDate(site.createdAt)}
+            {:else if activeTab === 'dynamic'}
               Last deployed: {formatDate(site.lastBuildAt)}
             {:else}
               Last static build: {formatDate(site.lastBuildAt)}
@@ -491,11 +587,16 @@
           </div>
           <div>
             <button 
-              class="btn btn-sm text-white {activeTab === 'dynamic' ? 'bg-indigo-600 hover:bg-indigo-700' : 'bg-emerald-600 hover:bg-emerald-700'}"
+              class="btn btn-sm text-white {activeTab === 'dynamic' ? 'bg-indigo-600 hover:bg-indigo-700' : activeTab === 'static' ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-primary hover:bg-primary-focus'}"
               disabled={saving}
               onclick={saveConfiguration}
             >
-              Save Changes
+              {#if saving}
+                <span class="loading loading-spinner loading-xs"></span>
+                Saving...
+              {:else}
+                Save Changes
+              {/if}
             </button>
           </div>
         </div>
