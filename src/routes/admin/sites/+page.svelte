@@ -151,9 +151,23 @@
     }
   }
 
-  // Preview site
+  // Preview site (navigate to dedicated preview page)
   function previewSite(site) {
     console.log(`👁️ Opening preview for: ${site.name}`);
+    
+    // Check if site has been generated
+    if (site.buildStatus !== 'success') {
+      alert('Please generate the site first before previewing.');
+      return;
+    }
+    
+    // Navigate to dedicated preview page
+    goto(`/admin/sites/${site.id}/preview`);
+  }
+
+  // Quick external preview (open in new tab)
+  function quickPreviewSite(site) {
+    console.log(`🔗 Opening external preview for: ${site.name}`);
     
     // Check if site has been generated
     if (site.buildStatus !== 'success') {
@@ -485,6 +499,15 @@
           >
             <Eye class="h-4 w-4" />
             Preview
+          </button>
+          
+          <button 
+            class="btn btn-outline btn-sm btn-square"
+            onclick={() => quickPreviewSite(site)}
+            disabled={loading}
+            title="Open in New Tab"
+          >
+            <ExternalLink class="h-4 w-4" />
           </button>
           
           <button 
