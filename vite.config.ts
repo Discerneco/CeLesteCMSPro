@@ -16,6 +16,10 @@ export default defineConfig({
 	server: {
 		watch: {
 			ignored: ['**/build_temp/**', '**/builds/**']
+		},
+		fs: {
+			// Allow serving files from builds directory
+			allow: ['..', './builds']
 		}
 	}
 });

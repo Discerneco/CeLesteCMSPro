@@ -70,11 +70,12 @@ export class SvelteKitBuilder {
    */
   async generateSite(siteData: SiteData): Promise<BuildResult> {
     const siteId = siteData.id;
+    const siteSlug = siteData.slug;
     const tempProjectDir = join(this.buildTempDir, `temp-${siteId}`);
-    const finalBuildDir = join(this.buildsDir, siteId);
+    const finalBuildDir = join(this.buildsDir, siteSlug);
 
     // Create debug log file
-    const debugLogPath = join(this.buildsDir, `debug-${siteId}.log`);
+    const debugLogPath = join(this.buildsDir, `debug-${siteSlug}.log`);
     const logDebug = async (message: string) => {
       const timestamp = new Date().toISOString();
       const logEntry = `${timestamp} - ${message}\n`;

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <url>
+    <loc>https://localhost:5173/</loc>
+    <lastmod>2025-09-06T04:23:05.877Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://localhost:5173/blog/</loc>
+    <lastmod>2025-09-06T04:23:05.877Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://localhost:5173/blog/event-venue-finalized-for-the-reunion/</loc>
+    <lastmod>2025-08-25T21:02:49.000Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://localhost:5173/blog/new/</loc>
+    <lastmod>2025-08-10T02:17:14.000Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://localhost:5173/about/</loc>
+    <lastmod>2025-08-25T04:17:08.000Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://localhost:5173/contact/</loc>
+    <lastmod>2025-08-25T04:17:08.000Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://localhost:5173/privacy-policy/</loc>
+    <lastmod>2025-08-25T04:17:08.000Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+</urlset>

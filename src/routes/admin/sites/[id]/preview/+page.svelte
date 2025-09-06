@@ -43,7 +43,8 @@
   function openFullScreen() {
     if (!site) return;
     
-    const previewUrl = site.slug ? `/preview/${site.slug}` : `/preview/${site.id}`;
+    // Use new static serving approach with slug
+    const previewUrl = `/preview-static/${site.slug}`;
     window.open(previewUrl, '_blank');
   }
 
@@ -126,7 +127,7 @@
         <!-- Iframe Preview -->
         <div class="w-full">
           <iframe 
-            src="/preview-frame/{site.slug || site.id}"
+            src="/preview-static/{site.slug}"
             class="w-full border-0"
             style="height: calc(100vh - 80px);"
             title="Site Preview"

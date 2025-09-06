@@ -175,8 +175,8 @@
       return;
     }
     
-    // Open preview in new window/tab using slug
-    const previewUrl = site.slug ? `/preview/${site.slug}` : `/preview/${site.id}`;
+    // Use new static serving approach with slug
+    const previewUrl = `/preview-static/${site.slug}`;
     window.open(previewUrl, '_blank');
   }
 
