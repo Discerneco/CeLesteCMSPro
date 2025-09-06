@@ -43,8 +43,8 @@
   function openFullScreen() {
     if (!site) return;
     
-    // Use new static serving approach with slug
-    const previewUrl = `/preview-static/${site.slug}`;
+    // Use direct builds serving (like Finder)
+    const previewUrl = `/builds/${site.slug}`;
     window.open(previewUrl, '_blank');
   }
 
@@ -127,7 +127,7 @@
         <!-- Iframe Preview -->
         <div class="w-full">
           <iframe 
-            src="/preview-static/{site.slug}"
+            src="/builds/{site.slug}"
             class="w-full border-0"
             style="height: calc(100vh - 80px);"
             title="Site Preview"

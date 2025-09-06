@@ -175,8 +175,8 @@
       return;
     }
     
-    // Use new static serving approach with slug
-    const previewUrl = `/preview-static/${site.slug}`;
+    // Use direct builds serving (like Finder)
+    const previewUrl = `/builds/${site.slug}`;
     window.open(previewUrl, '_blank');
   }
 
