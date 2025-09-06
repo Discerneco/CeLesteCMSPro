@@ -13,7 +13,8 @@
     Layout,
     FileText,
     UploadCloud,
-    Database
+    Database,
+    Package
   } from '@lucide/svelte';
 
   // Import reusable components
@@ -223,7 +224,7 @@
             
             <li>
               <a href="/admin/plugins" class={isActiveRoute('/admin/plugins') ? 'active bg-primary text-primary-content hover:bg-primary-focus' : ''}>
-                <Database class="h-5 w-5" />
+                <Package class="h-5 w-5" />
                 {m.sidebar_plugins()}
               </a>
             </li>

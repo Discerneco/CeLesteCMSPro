@@ -712,5 +712,18 @@
 	"sites_config_enable_gzip": "Enable Gzip compression",
 	"sites_config_site_created": "Site created:",
 	"sites_config_last_deployed": "Last deployed:",
-	"sites_config_last_static_build": "Last static build:"
+	"sites_config_last_static_build": "Last static build:",
+	"plugins_title": "Plugins",
+	"plugins_description": "Extend your CMS with powerful plugins and integrations",
+	"plugins_tab_store": "Plugin Store",
+	"plugins_tab_installed": "Installed",
+	"plugins_search_placeholder": "Search plugins...",
+	"plugins_install": "Install",
+	"plugins_installed": "Installed",
+	"plugins_active": "Active",
+	"plugins_no_results": "No plugins found",
+	"plugins_no_results_description": "Try adjusting your search terms or filters",
+	"plugins_no_installed": "No plugins installed",
+	"plugins_no_installed_description": "Browse the plugin store to find and install plugins",
+	"plugins_browse_store": "Browse Plugin Store"
 }
