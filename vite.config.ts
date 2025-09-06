@@ -35,7 +35,7 @@ function sitesServePlugin() {
 				if (fs.existsSync(htmlPath)) {
 					const content = fs.readFileSync(htmlPath);
 					res.setHeader('Content-Type', 'text/html');
-					res.setHeader('Cache-Control', 'public, max-age=300');
+					res.setHeader('Cache-Control', 'public, max-age=3600'); // 1 hour for HTML
 					res.end(content);
 					return;
 				}
@@ -59,7 +59,7 @@ function sitesServePlugin() {
 							const content = fs.readFileSync(indexPath);
 							const mimeType = 'text/html';
 							res.setHeader('Content-Type', mimeType);
-							res.setHeader('Cache-Control', 'public, max-age=300'); // 5 minutes for HTML
+							res.setHeader('Cache-Control', 'public, max-age=3600'); // 1 hour for HTML
 							res.end(content);
 							return;
 						}
@@ -69,11 +69,23 @@ function sitesServePlugin() {
 						const mimeType = lookup(path.extname(filePath)) || 'application/octet-stream';
 						
 						res.setHeader('Content-Type', mimeType);
-						// Cache static assets for 1 day, HTML for 5 minutes
+						
+						// Set cache headers based on file type
 						if (mimeType.startsWith('text/html')) {
-							res.setHeader('Cache-Control', 'public, max-age=300');
+							// HTML files: 1 hour
+							res.setHeader('Cache-Control', 'public, max-age=3600');
 						} else {
-							res.setHeader('Cache-Control', 'public, max-age=86400');
+							// Check if it's a hashed asset (contains hash-like pattern)
+							const fileName = path.basename(filePath);
+							const hasContentHash = /\.[a-zA-Z0-9]{8,}\.(js|css|woff|woff2|png|jpg|jpeg|gif|svg|ico)$/.test(fileName);
+							
+							if (hasContentHash) {
+								// Hashed assets: 1 month (immutable)
+								res.setHeader('Cache-Control', 'public, max-age=2592000, immutable');
+							} else {
+								// Other assets: 1 month
+								res.setHeader('Cache-Control', 'public, max-age=2592000');
+							}
 						}
 						res.end(content);
 						return;
