@@ -2,6 +2,8 @@ import { paraglideVitePlugin } from '@inlang/paraglide-js';
 import tailwindcss from '@tailwindcss/vite';
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
+import type { ViteDevServer } from 'vite';
+import type { IncomingMessage, ServerResponse } from 'http';
 import fs from 'fs';
 import path from 'path';
 import { lookup } from 'mrmime';
@@ -10,8 +12,8 @@ import { lookup } from 'mrmime';
 function sitesServePlugin() {
 	return {
 		name: 'sites-serve',
-		configureServer(server) {
-			server.middlewares.use('/sites', (req, res, next) => {
+		configureServer(server: ViteDevServer) {
+			server.middlewares.use('/sites', (req: IncomingMessage, res: ServerResponse, next: () => void) => {
 				const sitesDir = path.join(process.cwd(), 'sites');
 				const originalUrl = req.url || '';
 				let requestPath = originalUrl.replace('/sites', '') || '';

@@ -613,10 +613,11 @@
           <!-- Step 1: Site Details -->
           <div class="space-y-4">
             <div>
-              <label class="label">
+              <label class="label" for="site-name">
                 <span class="label-text">{m.sites_modal_form_name()} <span class="text-error">*</span></span>
               </label>
               <input 
+                id="site-name"
                 type="text" 
                 class="input input-bordered w-full" 
                 placeholder={m.sites_modal_form_name_placeholder()}
@@ -626,12 +627,13 @@
             </div>
             
             <div>
-              <label class="label">
+              <label class="label" for="site-slug">
                 <span class="label-text">{m.sites_modal_form_slug()} <span class="text-error">*</span></span>
               </label>
               <div class="flex items-center">
                 <span class="text-sm text-base-content/60 bg-base-200 px-3 py-2 rounded-l-lg border border-r-0">yoursite.com/</span>
                 <input 
+                  id="site-slug"
                   type="text" 
                   class="input input-bordered w-full rounded-l-none" 
                   placeholder={m.sites_modal_form_slug_placeholder()}
@@ -641,10 +643,11 @@
             </div>
             
             <div>
-              <label class="label">
+              <label class="label" for="site-description">
                 <span class="label-text">{m.sites_modal_form_description()}</span>
               </label>
               <textarea 
+                id="site-description"
                 class="textarea textarea-bordered w-full" 
                 placeholder={m.sites_modal_form_description_placeholder()}
                 rows="3"
@@ -659,7 +662,11 @@
             <!-- Dynamic Site Card -->
             <div 
               class="border-2 rounded-xl p-6 cursor-pointer transition-all {createForm.generationMode === 'dynamic' ? 'border-indigo-500 bg-indigo-50' : 'border-base-300 hover:border-indigo-300'}"
+              role="button"
+              tabindex="0"
               onclick={() => createForm.generationMode = 'dynamic'}
+              onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); createForm.generationMode = 'dynamic'; } }}
+              aria-label="Select Dynamic Site Generation Mode"
             >
               <div class="flex items-center justify-between mb-4">
                 <div class="flex items-center gap-3">
@@ -722,7 +729,11 @@
             <!-- Static Site Card -->
             <div 
               class="border-2 rounded-xl p-6 cursor-pointer transition-all {createForm.generationMode === 'static' ? 'border-emerald-500 bg-emerald-50' : 'border-base-300 hover:border-emerald-300'}"
+              role="button"
+              tabindex="0"
               onclick={() => createForm.generationMode = 'static'}
+              onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); createForm.generationMode = 'static'; } }}
+              aria-label="Select Static Site Generation Mode"
             >
               <div class="flex items-center justify-between mb-4">
                 <div class="flex items-center gap-3">

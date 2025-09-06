@@ -13,11 +13,12 @@
   
   import * as m from '$lib/paraglide/messages';
   import { onMount } from 'svelte';
+  import type { Template } from '$lib/server/db/schema';
 
   // Templates data loaded from API
-  let templates = $state([]);
+  let templates = $state<Template[]>([]);
   let loading = $state(false);
-  let editingTemplate = $state(null);
+  let editingTemplate = $state<Template | null>(null);
   let showEditor = $state(false);
 
   // Editor state
@@ -47,7 +48,7 @@
   }
 
   // Open template editor
-  function editTemplate(template) {
+  function editTemplate(template: Template) {
     editingTemplate = template;
     editorName = template.name;
     editorDescription = template.description || '';
@@ -126,14 +127,14 @@
   }
 
   // Preview template
-  function previewTemplate(template) {
+  function previewTemplate(template: Template) {
     console.log(`👁️ Preview template: ${template.name}`);
     // TODO: Open template preview
     window.open(`/preview/template/${template.id}`, '_blank');
   }
 
   // Duplicate template
-  async function duplicateTemplate(template) {
+  async function duplicateTemplate(template: Template) {
     const newName = `${template.name} (Copy)`;
     const templateData = {
       name: newName,
@@ -163,7 +164,7 @@
   }
 
   // Delete template
-  async function deleteTemplate(template) {
+  async function deleteTemplate(template: Template) {
     if (!confirm(`Are you sure you want to delete "${template.name}"?`)) {
       return;
     }
@@ -186,7 +187,7 @@
   }
 
   // Format date for display
-  function formatDate(date) {
+  function formatDate(date: Date | string | null) {
     if (!date) return 'Never';
     return new Intl.DateTimeFormat('en-US', {
       month: 'short',
@@ -216,7 +217,7 @@
 
 <!-- Templates Grid -->
 <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-  {#each templates as template (template.id)}
+  {#each templates as template: Template (template.id)}
     <div class="card bg-base-100 shadow-lg hover:shadow-xl transition-shadow">
       <div class="card-body">
         <!-- Template Header -->

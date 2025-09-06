@@ -4,14 +4,15 @@
   import { goto } from '$app/navigation';
   import { onMount } from 'svelte';
   import * as m from '$lib/paraglide/messages';
+  import type { Site } from '$lib/server/db/schema';
 
   // Get site ID from params
   const siteId = $page.params.id;
 
   // Site data
-  let site = $state(null);
+  let site = $state<Site | null>(null);
   let loading = $state(true);
-  let error = $state(null);
+  let error = $state<string | null>(null);
 
   // Load site data
   async function loadSite() {
@@ -28,7 +29,7 @@
       site = siteData;
     } catch (err) {
       console.error('Failed to load site:', err);
-      error = err.message;
+      error = err instanceof Error ? err.message : 'Unknown error occurred';
     } finally {
       loading = false;
     }
