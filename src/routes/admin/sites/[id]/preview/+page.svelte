@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { ArrowLeft, ExternalLink } from '@lucide/svelte';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';

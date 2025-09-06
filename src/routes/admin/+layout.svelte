@@ -73,7 +73,14 @@
 
   // Check if current route is active
   function isActiveRoute(route) {
-    return $page.url.pathname === route || $page.url.pathname.startsWith(route === '/admin' ? '/admin' : route + '/');
+    // Remove locale prefix if present (e.g., /pt-br, /en)
+    const pathname = $page.url.pathname.replace(/^\/[a-z]{2}(-[a-z]{2})?/, '');
+    
+    // Check exact match or if current path starts with the route
+    if (route === '/admin') {
+      return pathname === '/admin';
+    }
+    return pathname === route || pathname.startsWith(route + '/');
   }
 
   // Generate consistent random color for user avatar
