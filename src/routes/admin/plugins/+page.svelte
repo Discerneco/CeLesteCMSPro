@@ -164,19 +164,21 @@
   </div>
   
   <!-- Tabs -->
-  <div class="tabs tabs-boxed w-fit">
+  <div class="flex border-b border-base-200 mb-6 overflow-x-auto">
     <button 
-      class="tab {activeTab === 'store' ? 'tab-active' : ''}"
+      class="flex items-center gap-2 px-4 py-2 border-b-[3px] transition-colors duration-150 {activeTab === 'store' ? 'border-primary text-base-content' : 'border-transparent text-base-content/60 hover:text-base-content/80'} whitespace-nowrap"
       onclick={() => activeTab = 'store'}
     >
-      {m.plugins_tab_store()}
+      <Package class="h-4 w-4" />
+      <span>{m.plugins_tab_store()}</span>
     </button>
     <button 
-      class="tab {activeTab === 'installed' ? 'tab-active' : ''} gap-2"
+      class="flex items-center gap-2 px-4 py-2 border-b-[3px] transition-colors duration-150 {activeTab === 'installed' ? 'border-primary text-base-content' : 'border-transparent text-base-content/60 hover:text-base-content/80'} whitespace-nowrap"
       onclick={() => activeTab = 'installed'}
     >
+      <CheckCircle class="h-4 w-4" />
       <span>{m.plugins_tab_installed()}</span>
-      <div class="badge badge-primary badge-sm">{installedPlugins.length}</div>
+      <div class="badge badge-primary badge-sm ml-1">{installedPlugins.length}</div>
     </button>
   </div>
   
