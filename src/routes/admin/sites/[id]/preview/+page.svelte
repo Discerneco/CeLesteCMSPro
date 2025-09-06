@@ -58,7 +58,7 @@
   <div class="flex items-center justify-center min-h-screen">
     <div class="text-center">
       <span class="loading loading-spinner loading-lg"></span>
-      <p class="mt-4 text-base-content/70">Loading site preview...</p>
+      <p class="mt-4 text-base-content/70">{m.sites_preview_loading()}</p>
     </div>
   </div>
 {:else if error}
@@ -70,7 +70,7 @@
       </div>
       <button class="btn btn-primary mt-4" onclick={goBackToSites}>
         <ArrowLeft class="h-4 w-4" />
-        Back to Sites
+        {m.sites_preview_back_to_sites()}
       </button>
     </div>
   </div>
@@ -86,13 +86,13 @@
           onclick={goBackToSites}
         >
           <ArrowLeft class="h-4 w-4" />
-          Back to Sites
+          {m.sites_preview_back_to_sites()}
         </button>
 
         <!-- Site Info -->
         <div class="text-center">
           <h1 class="text-lg font-semibold">{site.name}</h1>
-          <p class="text-sm text-base-content/60">Preview Mode</p>
+          <p class="text-sm text-base-content/60">{m.sites_preview_mode()}</p>
         </div>
 
         <!-- Full-Screen Button -->
@@ -101,7 +101,7 @@
           onclick={openFullScreen}
         >
           <ExternalLink class="h-4 w-4" />
-          Open Fullscreen
+          {m.sites_preview_open_fullscreen()}
         </button>
       </div>
     </div>
@@ -113,13 +113,13 @@
         <div class="flex items-center justify-center py-16">
           <div class="text-center">
             <div class="alert alert-warning max-w-md">
-              <span>Site needs to be generated before preview</span>
+              <span>{m.sites_preview_needs_generation()}</span>
             </div>
             <button 
               class="btn btn-primary mt-4"
               onclick={() => goto(`/admin/sites/${site?.id}/config`)}
             >
-              Generate Site
+              {m.sites_preview_generate_site()}
             </button>
           </div>
         </div>

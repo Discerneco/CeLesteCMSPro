@@ -122,10 +122,10 @@
       const updatedSite = await response.json();
       site = updatedSite;
       
-      alert('Configuration saved successfully!');
+      alert(m.sites_config_save_success());
     } catch (error) {
       console.error('Failed to save configuration:', error);
-      alert('Failed to save configuration');
+      alert(m.sites_config_save_error());
     } finally {
       saving = false;
     }
@@ -198,7 +198,7 @@
       class="flex items-center gap-2 text-base-content/70 hover:text-base-content transition-colors"
     >
       <ArrowLeft class="h-4 w-4" />
-      Back to Sites
+      {m.sites_config_back_to_sites()}
     </button>
     
     <button 
@@ -208,9 +208,9 @@
     >
       {#if saving}
         <span class="loading loading-spinner loading-xs"></span>
-        Saving...
+        {m.sites_config_saving()}
       {:else}
-        Save Changes
+        {m.sites_config_save_changes()}
       {/if}
     </button>
   </div>
@@ -227,7 +227,7 @@
               <div class="badge badge-sm bg-primary/10 text-primary">Default</div>
             {/if}
             <div class="badge badge-sm {site.buildStatus === 'success' ? 'bg-success/10 text-success' : site.buildStatus === 'error' ? 'bg-error/10 text-error' : 'bg-warning/10 text-warning'}">
-              {site.buildStatus === 'success' ? 'Built' : site.buildStatus === 'error' ? 'Failed' : 'Building'}
+              {site.buildStatus === 'success' ? m.sites_config_status_built() : site.buildStatus === 'error' ? m.sites_config_status_failed() : m.sites_config_status_building()}
             </div>
           </div>
           <div class="flex items-center gap-2 text-sm text-base-content/60">
@@ -252,7 +252,7 @@
             }"
           >
             <Settings class="h-4 w-4" />
-            General
+            {m.sites_config_tab_general()}
           </button>
           <button
             onclick={() => activeTab = 'dynamic'}
@@ -263,7 +263,7 @@
             }"
           >
             <Zap class="h-4 w-4" />
-            Dynamic Generation
+            {m.sites_config_tab_dynamic()}
           </button>
           <button
             onclick={() => activeTab = 'static'}
@@ -274,7 +274,7 @@
             }"
           >
             <Rocket class="h-4 w-4" />
-            Static Generation
+            {m.sites_config_tab_static()}
           </button>
         </nav>
       </div>
@@ -287,28 +287,28 @@
             <div>
               <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
                 <Settings class="h-5 w-5 text-primary" />
-                General Settings
+                {m.sites_config_general_title()}
               </h3>
-              <p class="text-base-content/70 mb-6">Manage your site's basic information and settings.</p>
+              <p class="text-base-content/70 mb-6">{m.sites_config_general_description()}</p>
             </div>
             
             <div class="space-y-4">
               <div>
                 <label for="site-name" class="label">
-                  <span class="label-text">Site Name <span class="text-error">*</span></span>
+                  <span class="label-text">{m.sites_config_form_site_name()} <span class="text-error">*</span></span>
                 </label>
                 <input 
                   id="site-name"
                   type="text" 
                   class="input input-bordered w-full" 
-                  placeholder="My Awesome Site"
+                  placeholder={m.sites_config_form_site_name_placeholder()}
                   bind:value={siteName}
                 />
               </div>
               
               <div>
                 <label for="site-slug" class="label">
-                  <span class="label-text">Site Slug <span class="text-error">*</span></span>
+                  <span class="label-text">{m.sites_config_form_site_slug()} <span class="text-error">*</span></span>
                 </label>
                 <div class="flex items-center">
                   <span class="text-sm text-base-content/60 bg-base-200 px-3 py-2 rounded-l-lg border border-r-0">yoursite.com/</span>
@@ -324,12 +324,12 @@
               
               <div>
                 <label for="site-description" class="label">
-                  <span class="label-text">Description</span>
+                  <span class="label-text">{m.sites_config_form_description()}</span>
                 </label>
                 <textarea 
                   id="site-description"
                   class="textarea textarea-bordered w-full" 
-                  placeholder="A brief description of your site..."
+                  placeholder={m.sites_config_form_description_placeholder()}
                   rows="3"
                   bind:value={siteDescription}
                 ></textarea>
@@ -340,7 +340,7 @@
                 <label class="label">
                   <span class="label-text flex items-center gap-2">
                     <Languages class="h-4 w-4" />
-                    Site Languages
+                    {m.sites_config_languages_title()}
                   </span>
                 </label>
                 <div class="space-y-4">
@@ -354,7 +354,7 @@
                             {language}
                           </span>
                           {#if language === siteDefaultLanguage}
-                            <div class="badge badge-primary badge-sm">Default</div>
+                            <div class="badge badge-primary badge-sm">{m.sites_config_languages_default()}</div>
                           {/if}
                         </div>
                         <div class="flex items-center gap-2">
@@ -365,7 +365,7 @@
                               onclick={() => siteDefaultLanguage = language}
                               title="Set as default language"
                             >
-                              Set Default
+                              {m.sites_config_languages_set_default()}
                             </button>
                           {/if}
                           {#if siteLanguages.length > 1}
@@ -394,7 +394,7 @@
                         }
                       }}
                     >
-                      <option value="">Add a language...</option>
+                      <option value="">{m.sites_config_languages_add()}</option>
                       {#each availableLanguages as lang}
                         {#if !siteLanguages.includes(lang.code)}
                           <option value={lang.code}>{lang.name} ({lang.code})</option>
@@ -408,11 +408,11 @@
                     <div class="flex items-start gap-2">
                       <Globe class="h-4 w-4 text-info flex-shrink-0 mt-0.5" />
                       <div>
-                        <p class="font-medium text-info mb-1">Language Configuration:</p>
+                        <p class="font-medium text-info mb-1">{m.sites_config_languages_config_title()}</p>
                         {#if siteLanguages.length === 1}
-                          <p>Single-language site: Content will be generated in <strong>{getLanguageName(siteDefaultLanguage)}</strong> only.</p>
+                          <p>{@html m.sites_config_languages_single({language: getLanguageName(siteDefaultLanguage)})}</p>
                         {:else}
-                          <p>Multi-language site: Content will be generated in {siteLanguages.length} languages with <strong>{getLanguageName(siteDefaultLanguage)}</strong> as the default.</p>
+                          <p>{@html m.sites_config_languages_multi({count: siteLanguages.length, language: getLanguageName(siteDefaultLanguage)})}</p>
                         {/if}
                       </div>
                     </div>
@@ -428,46 +428,46 @@
             <div>
               <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
                 <Zap class="h-5 w-5 text-indigo-600" />
-                Dynamic Generation
+                {m.sites_config_dynamic_title()}
               </h3>
               <ul class="space-y-2 text-sm text-base-content/80 mb-4">
                 <li class="flex items-center gap-2">
                   <Check class="h-4 w-4 text-success" />
-                  Real-time content updates
+                  {m.sites_config_dynamic_feature_1()}
                 </li>
                 <li class="flex items-center gap-2">
                   <Check class="h-4 w-4 text-success" />
-                  Server-side rendering (SSR)
+                  {m.sites_config_dynamic_feature_2()}
                 </li>
                 <li class="flex items-center gap-2">
                   <Check class="h-4 w-4 text-success" />
-                  Interactive features & forms
+                  {m.sites_config_dynamic_feature_3()}
                 </li>
                 <li class="flex items-center gap-2">
                   <Check class="h-4 w-4 text-success" />
-                  Database-driven content
+                  {m.sites_config_dynamic_feature_4()}
                 </li>
                 <li class="flex items-center gap-2">
                   <Check class="h-4 w-4 text-success" />
-                  User authentication
+                  {m.sites_config_dynamic_feature_5()}
                 </li>
               </ul>
               
               <div class="alert border-2 border-indigo-200 bg-indigo-600/10">
                 <Users class="h-4 w-4 text-indigo-600" />
                 <div>
-                  <div class="font-semibold text-indigo-700">Best for:</div>
-                  <p class="text-sm text-indigo-700">Sites with frequently changing content, user interactions, or complex backend requirements</p>
+                  <div class="font-semibold text-indigo-700">{m.sites_config_dynamic_best_for()}</div>
+                  <p class="text-sm text-indigo-700">{m.sites_config_dynamic_best_for_description()}</p>
                 </div>
               </div>
             </div>
             
             <div>
-              <h3 class="text-lg font-semibold mb-4">Deployment Configuration</h3>
+              <h3 class="text-lg font-semibold mb-4">{m.sites_config_deployment_title()}</h3>
               <div class="space-y-4">
                 <div>
                   <label for="deployment-target" class="label">
-                    <span class="label-text">Deployment Target</span>
+                    <span class="label-text">{m.sites_config_deployment_target()}</span>
                   </label>
                   <select 
                     id="deployment-target"
@@ -482,16 +482,16 @@
                 
                 <div>
                   <label for="environment" class="label">
-                    <span class="label-text">Environment</span>
+                    <span class="label-text">{m.sites_config_environment()}</span>
                   </label>
                   <select 
                     id="environment"
                     class="select select-bordered w-full"
                     bind:value={environment}
                   >
-                    <option value="production">Production</option>
-                    <option value="staging">Staging</option>
-                    <option value="development">Development</option>
+                    <option value="production">{m.sites_config_environment_production()}</option>
+                    <option value="staging">{m.sites_config_environment_staging()}</option>
+                    <option value="development">{m.sites_config_environment_development()}</option>
                   </select>
                 </div>
                 
@@ -502,7 +502,7 @@
                       class="checkbox checkbox-primary checkbox-sm"
                       bind:checked={autoDeploy}
                     />
-                    <span class="label-text">Auto-deploy on content changes</span>
+                    <span class="label-text">{m.sites_config_auto_deploy()}</span>
                   </label>
                   <label class="flex items-center gap-2 cursor-pointer">
                     <input 
@@ -510,14 +510,14 @@
                       class="checkbox checkbox-primary checkbox-sm"
                       bind:checked={previewDeploys}
                     />
-                    <span class="label-text">Generate preview deployments</span>
+                    <span class="label-text">{m.sites_config_preview_deploys()}</span>
                   </label>
                 </div>
               </div>
             </div>
             
             <div>
-              <h3 class="text-lg font-semibold mb-4">Dynamic Server Options</h3>
+              <h3 class="text-lg font-semibold mb-4">{m.sites_config_dynamic_server_title()}</h3>
               <div class="space-y-4">
                 <div class="space-y-3">
                   <label class="flex items-center gap-2 cursor-pointer">
@@ -526,7 +526,7 @@
                       class="checkbox checkbox-primary checkbox-sm"
                       bind:checked={edgeFunctions}
                     />
-                    <span class="label-text">Enable edge functions</span>
+                    <span class="label-text">{m.sites_config_edge_functions()}</span>
                   </label>
                 </div>
               </div>
@@ -538,46 +538,46 @@
             <div>
               <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
                 <Rocket class="h-5 w-5 text-emerald-600" />
-                Static Generation
+                {m.sites_config_static_title()}
               </h3>
               <ul class="space-y-2 text-sm text-base-content/80 mb-4">
                 <li class="flex items-center gap-2">
                   <Check class="h-4 w-4 text-success" />
-                  Ultra-fast loading times
+                  {m.sites_config_static_feature_1()}
                 </li>
                 <li class="flex items-center gap-2">
                   <Check class="h-4 w-4 text-success" />
-                  Perfect SEO optimization
+                  {m.sites_config_static_feature_2()}
                 </li>
                 <li class="flex items-center gap-2">
                   <Check class="h-4 w-4 text-success" />
-                  Global CDN distribution
+                  {m.sites_config_static_feature_3()}
                 </li>
                 <li class="flex items-center gap-2">
                   <Check class="h-4 w-4 text-success" />
-                  High security & stability
+                  {m.sites_config_static_feature_4()}
                 </li>
                 <li class="flex items-center gap-2">
                   <Check class="h-4 w-4 text-success" />
-                  Low hosting costs
+                  {m.sites_config_static_feature_5()}
                 </li>
               </ul>
               
               <div class="alert border-2 border-emerald-200 bg-emerald-600/10">
                 <Search class="h-4 w-4 text-emerald-600" />
                 <div>
-                  <div class="font-semibold text-emerald-700">Best for:</div>
-                  <p class="text-sm text-emerald-700">Marketing sites, portfolios, blogs, and content that doesn't change frequently</p>
+                  <div class="font-semibold text-emerald-700">{m.sites_config_static_best_for()}</div>
+                  <p class="text-sm text-emerald-700">{m.sites_config_static_best_for_description()}</p>
                 </div>
               </div>
             </div>
             
             <div>
-              <h3 class="text-lg font-semibold mb-4">Deployment Configuration</h3>
+              <h3 class="text-lg font-semibold mb-4">{m.sites_config_deployment_title()}</h3>
               <div class="space-y-4">
                 <div>
                   <label for="deployment-target-static" class="label">
-                    <span class="label-text">Deployment Target</span>
+                    <span class="label-text">{m.sites_config_deployment_target()}</span>
                   </label>
                   <select 
                     id="deployment-target-static"
@@ -592,16 +592,16 @@
                 
                 <div>
                   <label for="environment-static" class="label">
-                    <span class="label-text">Environment</span>
+                    <span class="label-text">{m.sites_config_environment()}</span>
                   </label>
                   <select 
                     id="environment-static"
                     class="select select-bordered w-full"
                     bind:value={environment}
                   >
-                    <option value="production">Production</option>
-                    <option value="staging">Staging</option>
-                    <option value="development">Development</option>
+                    <option value="production">{m.sites_config_environment_production()}</option>
+                    <option value="staging">{m.sites_config_environment_staging()}</option>
+                    <option value="development">{m.sites_config_environment_development()}</option>
                   </select>
                 </div>
                 
@@ -612,7 +612,7 @@
                       class="checkbox checkbox-success checkbox-sm"
                       bind:checked={autoDeploy}
                     />
-                    <span class="label-text">Auto-deploy on content changes</span>
+                    <span class="label-text">{m.sites_config_auto_deploy()}</span>
                   </label>
                   <label class="flex items-center gap-2 cursor-pointer">
                     <input 
@@ -620,42 +620,42 @@
                       class="checkbox checkbox-success checkbox-sm"
                       bind:checked={previewDeploys}
                     />
-                    <span class="label-text">Generate preview deployments</span>
+                    <span class="label-text">{m.sites_config_preview_deploys()}</span>
                   </label>
                 </div>
               </div>
             </div>
             
             <div>
-              <h3 class="text-lg font-semibold mb-4">Static Build Options</h3>
+              <h3 class="text-lg font-semibold mb-4">{m.sites_config_static_build_title()}</h3>
               <div class="space-y-4">
                 <div>
                   <label for="build-strategy" class="label">
-                    <span class="label-text">Build Strategy</span>
+                    <span class="label-text">{m.sites_config_build_strategy()}</span>
                   </label>
                   <select 
                     id="build-strategy"
                     class="select select-bordered w-full"
                     bind:value={buildStrategy}
                   >
-                    <option value="full">Full Site Generation</option>
-                    <option value="incremental">Incremental Builds</option>
-                    <option value="ondemand">On-Demand ISR</option>
+                    <option value="full">{m.sites_config_build_strategy_full()}</option>
+                    <option value="incremental">{m.sites_config_build_strategy_incremental()}</option>
+                    <option value="ondemand">{m.sites_config_build_strategy_ondemand()}</option>
                   </select>
                 </div>
                 
                 <div>
                   <label for="output-format" class="label">
-                    <span class="label-text">Output Format</span>
+                    <span class="label-text">{m.sites_config_output_format()}</span>
                   </label>
                   <select 
                     id="output-format"
                     class="select select-bordered w-full"
                     bind:value={outputFormat}
                   >
-                    <option value="html">HTML + Assets</option>
-                    <option value="spa">SPA (Single Page App)</option>
-                    <option value="hybrid">Hybrid (SSG + SPA)</option>
+                    <option value="html">{m.sites_config_output_format_html()}</option>
+                    <option value="spa">{m.sites_config_output_format_spa()}</option>
+                    <option value="hybrid">{m.sites_config_output_format_hybrid()}</option>
                   </select>
                 </div>
                 
@@ -666,7 +666,7 @@
                       class="checkbox checkbox-success checkbox-sm"
                       bind:checked={minifyHtml}
                     />
-                    <span class="label-text">Minify HTML</span>
+                    <span class="label-text">{m.sites_config_minify_html()}</span>
                   </label>
                   <label class="flex items-center gap-2 cursor-pointer">
                     <input 
@@ -674,7 +674,7 @@
                       class="checkbox checkbox-success checkbox-sm"
                       bind:checked={minifyCSS}
                     />
-                    <span class="label-text">Minify CSS</span>
+                    <span class="label-text">{m.sites_config_minify_css()}</span>
                   </label>
                   <label class="flex items-center gap-2 cursor-pointer">
                     <input 
@@ -682,7 +682,7 @@
                       class="checkbox checkbox-success checkbox-sm"
                       bind:checked={minifyJS}
                     />
-                    <span class="label-text">Minify JavaScript</span>
+                    <span class="label-text">{m.sites_config_minify_js()}</span>
                   </label>
                   <label class="flex items-center gap-2 cursor-pointer">
                     <input 
@@ -690,7 +690,7 @@
                       class="checkbox checkbox-success checkbox-sm"
                       bind:checked={optimizeImages}
                     />
-                    <span class="label-text">Optimize images</span>
+                    <span class="label-text">{m.sites_config_optimize_images()}</span>
                   </label>
                   <label class="flex items-center gap-2 cursor-pointer">
                     <input 
@@ -698,7 +698,7 @@
                       class="checkbox checkbox-success checkbox-sm"
                       bind:checked={generateSitemap}
                     />
-                    <span class="label-text">Generate sitemap</span>
+                    <span class="label-text">{m.sites_config_generate_sitemap()}</span>
                   </label>
                   <label class="flex items-center gap-2 cursor-pointer">
                     <input 
@@ -706,7 +706,7 @@
                       class="checkbox checkbox-success checkbox-sm"
                       bind:checked={enableGzip}
                     />
-                    <span class="label-text">Enable Gzip compression</span>
+                    <span class="label-text">{m.sites_config_enable_gzip()}</span>
                   </label>
                 </div>
               </div>
@@ -719,11 +719,11 @@
           <div class="text-sm text-base-content/60 flex items-center gap-2">
             <Clock class="h-4 w-4" />
             {#if activeTab === 'general'}
-              Site created: {formatDate(site.createdAt)}
+              {m.sites_config_site_created()} {formatDate(site.createdAt)}
             {:else if activeTab === 'dynamic'}
-              Last deployed: {formatDate(site.lastBuildAt)}
+              {m.sites_config_last_deployed()} {formatDate(site.lastBuildAt)}
             {:else}
-              Last static build: {formatDate(site.lastBuildAt)}
+              {m.sites_config_last_static_build()} {formatDate(site.lastBuildAt)}
             {/if}
           </div>
           <div>
@@ -734,9 +734,9 @@
             >
               {#if saving}
                 <span class="loading loading-spinner loading-xs"></span>
-                Saving...
+                {m.sites_config_saving()}
               {:else}
-                Save Changes
+                {m.sites_config_save_changes()}
               {/if}
             </button>
           </div>

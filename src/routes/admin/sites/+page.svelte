@@ -199,10 +199,10 @@
   // Get build status text
   function getBuildStatusText(status) {
     switch (status) {
-      case 'building': return 'Building';
-      case 'success': return 'Built';
-      case 'error': return 'Failed';
-      default: return 'Idle';
+      case 'building': return m.sites_status_building();
+      case 'success': return m.sites_status_success();
+      case 'error': return m.sites_status_failed();
+      default: return m.sites_status_ready();
     }
   }
 
@@ -415,18 +415,18 @@
           <div class="flex items-center gap-2 text-sm text-base-content/70">
             {#if !site.deploymentSettings?.target || site.deploymentSettings?.target === 'cloudflare'}
               <span class="text-orange-500">☁️</span>
-              <span>Deployed on Cloudflare Pages</span>
+              <span>{m.sites_deployment_cloudflare()}</span>
             {:else if site.deploymentSettings?.target === 'vercel'}
               <span class="text-black dark:text-white text-base">▲</span>
-              <span>Deployed on Vercel</span>
+              <span>{m.sites_deployment_vercel()}</span>
             {:else if site.deploymentSettings?.target === 'netlify'}
               <span class="text-teal-500">◆</span>
-              <span>Deployed on Netlify</span>
+              <span>{m.sites_deployment_netlify()}</span>
             {:else if site.deploymentSettings?.target === 'github'}
               <svg class="w-4 h-4 inline" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
               </svg>
-              <span>Deployed on GitHub Pages</span>
+              <span>{m.sites_deployment_github()}</span>
             {/if}
           </div>
           
@@ -441,12 +441,12 @@
         <div class="bg-base-200 rounded-lg p-4 mb-4">
           <div class="flex items-center justify-between">
             <div>
-              <h4 class="text-sm font-medium mb-1">Generation Mode</h4>
-              <p class="text-xs text-base-content/60">Choose how your site will be generated</p>
+              <h4 class="text-sm font-medium mb-1">{m.sites_generation_mode_title()}</h4>
+              <p class="text-xs text-base-content/60">{m.sites_generation_mode_description()}</p>
             </div>
             <div class="flex items-center gap-3">
               <span class="text-sm font-medium">
-                {site.generationMode === 'dynamic' ? 'Dynamic' : 'Static'}
+                {site.generationMode === 'dynamic' ? m.sites_generation_mode_dynamic() : m.sites_generation_mode_static()}
               </span>
               <input 
                 type="checkbox"
@@ -460,9 +460,9 @@
           
           <div class="mt-3 text-xs text-base-content/70">
             {#if site.generationMode === 'dynamic'}
-              <strong class="{modeStyle.textClass}">Dynamic Generation:</strong> Real-time content updates, server-side rendering, interactive features
+              <strong class="{modeStyle.textClass}">{m.sites_generation_dynamic_description()}</strong> {m.sites_generation_dynamic_features()}
             {:else}
-              <strong class="{modeStyle.textClass}">Static Generation:</strong> Pre-built HTML files, ultra-fast loading, CDN-optimized, perfect for SEO
+              <strong class="{modeStyle.textClass}">{m.sites_generation_static_description()}</strong> {m.sites_generation_static_features()}
             {/if}
           </div>
         </div>
@@ -471,12 +471,12 @@
         <div class="text-xs text-base-content/60 mb-4 space-y-1">
           <div class="flex items-center gap-2">
             <Calendar class="h-3 w-3" />
-            Template: {site.templateName || 'None'}
+            {m.sites_metadata_template()} {site.templateName || m.sites_metadata_template_none()}
           </div>
           {#if site.lastBuildAt}
             <div class="flex items-center gap-2">
               <Clock class="h-3 w-3" />
-              Last built: {formatDate(site.lastBuildAt)}
+              {m.sites_metadata_last_built()} {formatDate(site.lastBuildAt)}
             </div>
           {/if}
         </div>
@@ -489,7 +489,7 @@
             disabled={loading}
           >
             <Settings class="h-4 w-4" />
-            Config
+            {m.sites_button_configure()}
           </button>
           
           <button 
@@ -498,7 +498,7 @@
             disabled={loading}
           >
             <Eye class="h-4 w-4" />
-            Preview
+            {m.sites_button_preview()}
           </button>
           
           <button 
@@ -517,13 +517,13 @@
           >
             {#if generatingId === site.id}
               <span class="loading loading-spinner loading-xs"></span>
-              Building
+              {m.sites_build_in_progress()}
             {:else if site.generationMode === 'static'}
               <Rocket class="h-4 w-4" />
-              Build Static
+              {m.sites_button_generate()}
             {:else}
               <Zap class="h-4 w-4" />
-              Generate
+              {m.sites_button_generate()}
             {/if}
           </button>
         </div>
@@ -566,9 +566,9 @@
       <div class="p-6 border-b border-base-200">
         <div class="flex items-center justify-between">
           <div>
-            <h2 class="text-xl font-bold">Create New Site</h2>
+            <h2 class="text-xl font-bold">{m.sites_modal_create_title()}</h2>
             <p class="text-sm text-base-content/60 mt-1">
-              {currentStep === 1 ? 'Tell us about your site' : currentStep === 2 ? 'Choose your deployment method' : 'Review your site configuration'}
+              {m.sites_modal_create_subtitle()}
             </p>
           </div>
           <button 
@@ -602,7 +602,7 @@
         <!-- Current Step Name -->
         <div class="text-center">
           <p class="text-sm font-medium text-base-content/60">
-            {currentStep === 1 ? 'Site Details' : currentStep === 2 ? 'Generation Mode' : 'Review & Create'}
+            {currentStep === 1 ? m.sites_wizard_step_details() : currentStep === 2 ? m.sites_wizard_step_generation() : m.sites_wizard_step_review()}
           </p>
         </div>
       </div>
@@ -614,12 +614,12 @@
           <div class="space-y-4">
             <div>
               <label class="label">
-                <span class="label-text">Site Name <span class="text-error">*</span></span>
+                <span class="label-text">{m.sites_modal_form_name()} <span class="text-error">*</span></span>
               </label>
               <input 
                 type="text" 
                 class="input input-bordered w-full" 
-                placeholder="My Awesome Site"
+                placeholder={m.sites_modal_form_name_placeholder()}
                 value={createForm.name}
                 oninput={handleNameChange}
               />
@@ -627,14 +627,14 @@
             
             <div>
               <label class="label">
-                <span class="label-text">Site Slug <span class="text-error">*</span></span>
+                <span class="label-text">{m.sites_modal_form_slug()} <span class="text-error">*</span></span>
               </label>
               <div class="flex items-center">
                 <span class="text-sm text-base-content/60 bg-base-200 px-3 py-2 rounded-l-lg border border-r-0">yoursite.com/</span>
                 <input 
                   type="text" 
                   class="input input-bordered w-full rounded-l-none" 
-                  placeholder="my-awesome-site"
+                  placeholder={m.sites_modal_form_slug_placeholder()}
                   bind:value={createForm.slug}
                 />
               </div>
@@ -642,11 +642,11 @@
             
             <div>
               <label class="label">
-                <span class="label-text">Description</span>
+                <span class="label-text">{m.sites_modal_form_description()}</span>
               </label>
               <textarea 
                 class="textarea textarea-bordered w-full" 
-                placeholder="A brief description of your site..."
+                placeholder={m.sites_modal_form_description_placeholder()}
                 rows="3"
                 bind:value={createForm.description}
               ></textarea>
@@ -667,8 +667,8 @@
                     <Zap class="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 class="text-lg font-semibold">Dynamic Site</h3>
-                    <p class="text-sm text-base-content/60">Server-side rendering & real-time updates</p>
+                    <h3 class="text-lg font-semibold">{m.sites_generation_card_dynamic_title()}</h3>
+                    <p class="text-sm text-base-content/60">{m.sites_generation_card_dynamic_subtitle()}</p>
                   </div>
                 </div>
                 <input 
@@ -683,25 +683,25 @@
               <ul class="space-y-2 text-sm text-base-content/80 mb-4">
                 <li class="flex items-center gap-2">
                   <Check class="w-4 h-4 text-success" />
-                  Real-time content updates
+                  {m.sites_generation_card_dynamic_feature_1()}
                 </li>
                 <li class="flex items-center gap-2">
                   <Check class="w-4 h-4 text-success" />
-                  Interactive features & forms
+                  {m.sites_generation_card_dynamic_feature_2()}
                 </li>
                 <li class="flex items-center gap-2">
                   <Check class="w-4 h-4 text-success" />
-                  User authentication
+                  {m.sites_generation_card_dynamic_feature_3()}
                 </li>
                 <li class="flex items-center gap-2">
                   <Check class="w-4 h-4 text-success" />
-                  Database connectivity
+                  {m.sites_generation_card_dynamic_feature_4()}
                 </li>
               </ul>
               
               <div class="bg-indigo-600/10 border border-indigo-200 rounded-lg p-3 mb-4">
                 <p class="text-xs text-indigo-700">
-                  <strong>Perfect for:</strong> Web apps, user portals, e-commerce sites
+                  <strong>{m.sites_generation_card_dynamic_perfect_for()}</strong>
                 </p>
               </div>
               
@@ -709,11 +709,11 @@
                 <div class="text-xs text-base-content/60 space-y-1">
                   <div class="flex items-center gap-2">
                     <Clock class="w-3 h-3" />
-                    <span><strong>Setup time:</strong> ~5-10 minutes</span>
+                    <span><strong>{m.sites_generation_card_dynamic_setup_time()}</strong></span>
                   </div>
                   <div class="flex items-center gap-2">
                     <Globe class="w-3 h-3" />
-                    <span><strong>Hosting:</strong> Cloudflare Pages</span>
+                    <span><strong>{m.sites_generation_card_dynamic_hosting()}</strong></span>
                   </div>
                 </div>
               </div>
@@ -730,8 +730,8 @@
                     <Rocket class="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 class="text-lg font-semibold">Static Site</h3>
-                    <p class="text-sm text-base-content/60">Pre-built HTML for maximum performance</p>
+                    <h3 class="text-lg font-semibold">{m.sites_generation_card_static_title()}</h3>
+                    <p class="text-sm text-base-content/60">{m.sites_generation_card_static_subtitle()}</p>
                   </div>
                 </div>
                 <input 
@@ -746,25 +746,25 @@
               <ul class="space-y-2 text-sm text-base-content/80 mb-4">
                 <li class="flex items-center gap-2">
                   <Check class="w-4 h-4 text-success" />
-                  Ultra-fast loading
+                  {m.sites_generation_card_static_feature_1()}
                 </li>
                 <li class="flex items-center gap-2">
                   <Check class="w-4 h-4 text-success" />
-                  Perfect SEO scores
+                  {m.sites_generation_card_static_feature_2()}
                 </li>
                 <li class="flex items-center gap-2">
                   <Check class="w-4 h-4 text-success" />
-                  Global CDN distribution
+                  {m.sites_generation_card_static_feature_3()}
                 </li>
                 <li class="flex items-center gap-2">
                   <Check class="w-4 h-4 text-success" />
-                  Maximum security
+                  {m.sites_generation_card_static_feature_4()}
                 </li>
               </ul>
               
               <div class="bg-emerald-600/10 border border-emerald-200 rounded-lg p-3 mb-4">
                 <p class="text-xs text-emerald-700">
-                  <strong>Perfect for:</strong> Marketing sites, portfolios, blogs, documentation
+                  <strong>{m.sites_generation_card_static_perfect_for()}</strong>
                 </p>
               </div>
               
@@ -772,11 +772,11 @@
                 <div class="text-xs text-base-content/60 space-y-1">
                   <div class="flex items-center gap-2">
                     <Clock class="w-3 h-3" />
-                    <span><strong>Setup time:</strong> ~2-5 minutes</span>
+                    <span><strong>{m.sites_generation_card_static_setup_time()}</strong></span>
                   </div>
                   <div class="flex items-center gap-2">
                     <Globe class="w-3 h-3" />
-                    <span><strong>Hosting:</strong> CDN + Static hosting</span>
+                    <span><strong>{m.sites_generation_card_static_hosting()}</strong></span>
                   </div>
                 </div>
               </div>
@@ -836,7 +836,7 @@
               onclick={prevStep}
               disabled={creating}
             >
-              Back
+              {m.sites_wizard_back()}
             </button>
           {/if}
         </div>
@@ -856,7 +856,7 @@
             }}
             disabled={creating}
           >
-            Cancel
+            {m.sites_modal_form_cancel()}
           </button>
           
           {#if currentStep < totalSteps}
@@ -865,7 +865,7 @@
               onclick={nextStep}
               disabled={!canProceed(currentStep)}
             >
-              Next
+              {m.sites_wizard_next()}
             </button>
           {:else}
             <button 
@@ -875,9 +875,9 @@
             >
               {#if creating}
                 <span class="loading loading-spinner loading-sm"></span>
-                Creating...
+                {m.sites_modal_form_creating()}
               {:else}
-                Create Site
+                {m.sites_modal_form_create()}
               {/if}
             </button>
           {/if}
