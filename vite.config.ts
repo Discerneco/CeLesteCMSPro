@@ -6,38 +6,49 @@ import fs from 'fs';
 import path from 'path';
 import { lookup } from 'mrmime';
 
-// Plugin to serve builds directory statically
-function buildsServePlugin() {
+// Plugin to serve sites directory statically via symlinks
+function sitesServePlugin() {
 	return {
-		name: 'builds-serve',
+		name: 'sites-serve',
 		configureServer(server) {
-			server.middlewares.use('/builds', (req, res, next) => {
-				const buildsDir = path.join(process.cwd(), 'builds');
-				let requestPath = req.url?.replace('/builds', '') || '';
+			server.middlewares.use('/sites', (req, res, next) => {
+				const sitesDir = path.join(process.cwd(), 'sites');
+				const originalUrl = req.url || '';
+				let requestPath = originalUrl.replace('/sites', '') || '';
 				
 				// Ensure we have a leading slash
 				if (!requestPath.startsWith('/')) {
 					requestPath = '/' + requestPath;
 				}
 				
-				// If the path doesn't have a trailing slash and is a directory, redirect with trailing slash
-				const filePath = path.join(buildsDir, requestPath);
+				const filePath = path.join(sitesDir, requestPath);
 				
 				// Security check
 				const normalizedPath = path.resolve(filePath);
-				const normalizedBuildsDir = path.resolve(buildsDir);
-				if (!normalizedPath.startsWith(normalizedBuildsDir)) {
+				const normalizedSitesDir = path.resolve(sitesDir);
+				if (!normalizedPath.startsWith(normalizedSitesDir)) {
 					return next();
 				}
 				
-				// Check if file exists
+				// Priority 1: Try with .html extension for clean URLs (e.g., /blog -> blog.html)
+				const htmlPath = filePath + '.html';
+				if (fs.existsSync(htmlPath)) {
+					const content = fs.readFileSync(htmlPath);
+					res.setHeader('Content-Type', 'text/html');
+					res.setHeader('Cache-Control', 'public, max-age=300');
+					res.end(content);
+					return;
+				}
+				
+				// Priority 2: Check if exact file exists (following symlinks)
 				if (fs.existsSync(filePath)) {
 					const stats = fs.statSync(filePath);
 					
 					if (stats.isDirectory()) {
 						// If accessing directory without trailing slash, redirect to add trailing slash
-						if (!req.url?.endsWith('/')) {
-							res.writeHead(301, { Location: req.url + '/' });
+						if (!originalUrl.endsWith('/')) {
+							const redirectUrl = '/sites' + requestPath + '/';
+							res.writeHead(301, { Location: redirectUrl });
 							res.end();
 							return;
 						}
@@ -84,7 +95,7 @@ export default defineConfig({
 			outdir: './src/lib/paraglide',
 			strategy: ['localStorage', 'cookie', 'url', 'baseLocale']
 		}),
-		buildsServePlugin()
+		sitesServePlugin()
 	],
 	server: {
 		watch: {

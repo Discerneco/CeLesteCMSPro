@@ -43,8 +43,8 @@
   function openFullScreen() {
     if (!site) return;
     
-    // Use direct builds serving (like Finder)
-    const previewUrl = `/builds/${site.slug}`;
+    // Use sites symlink serving (like Finder)
+    const previewUrl = `/sites/${site.slug}`;
     window.open(previewUrl, '_blank');
   }
 
@@ -127,7 +127,7 @@
         <!-- Iframe Preview -->
         <div class="w-full">
           <iframe 
-            src="/builds/{site.slug}"
+            src="/sites/{site.slug}"
             class="w-full border-0"
             style="height: calc(100vh - 80px);"
             title="Site Preview"

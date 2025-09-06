@@ -6,6 +6,7 @@ import { validateSession, deleteSession } from '$lib/server/auth-oslo';
 const handleParaglide: Handle = ({ event, resolve }) => {
 	// Skip i18n for routes that should not be localized
 	const skipI18nRoutes = [
+		'/sites/',       // Static site preview routes
 		'/preview/',     // Preview routes for generated sites
 		'/blog',         // Content routes that only exist in generated sites
 		'/about',        

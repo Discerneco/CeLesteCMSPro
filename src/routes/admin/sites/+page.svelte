@@ -175,8 +175,8 @@
       return;
     }
     
-    // Use direct builds serving (like Finder)
-    const previewUrl = `/builds/${site.slug}`;
+    // Use sites symlink serving (like Finder)
+    const previewUrl = `/sites/${site.slug}`;
     window.open(previewUrl, '_blank');
   }
 

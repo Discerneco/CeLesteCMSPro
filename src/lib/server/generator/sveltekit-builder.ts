@@ -5,7 +5,8 @@
  * Following microfolio's approach for proper Tailwind CSS processing
  */
 
-import { join, dirname } from 'path';
+import { join, dirname, relative } from 'path';
+import path from 'path';
 import { mkdir, writeFile, copyFile, readFile, rm, readdir, stat } from 'fs/promises';
 import { existsSync } from 'fs';
 import { exec } from 'child_process';
@@ -167,7 +168,13 @@ export class SvelteKitBuilder {
       await this.generateSitemap(finalBuildDir, siteData);
       await this.generateRobotsTxt(finalBuildDir, siteData);
 
-      // Step 9: Cleanup temp project
+      // Step 9: Clean up SvelteKit build artifacts for static serving
+      await this.cleanupBuildArtifacts(finalBuildDir);
+
+      // Step 10: Create symlink in sites directory for easy serving
+      await this.createSiteSymlink(siteData.slug, finalBuildDir);
+
+      // Step 11: Cleanup temp project
       await rm(tempProjectDir, { recursive: true });
 
       console.log(`✅ Site generation completed successfully`);
@@ -213,6 +220,14 @@ export class SvelteKitBuilder {
     
     // Copy template files
     await this.copyDir(this.templateDir, tempDir);
+    
+    // Create +layout.js to disable CSR for pure static output
+    const routesDir = join(tempDir, 'src', 'routes');
+    const layoutJsContent = `// Disable client-side rendering for pure static sites
+export const csr = false;
+export const prerender = true;
+`;
+    await writeFile(join(routesDir, '+layout.js'), layoutJsContent);
     
     console.log(`Created temp project at: ${tempDir}`);
   }
@@ -458,7 +473,7 @@ export const handle: Handle = paraglideMiddleware;`;
    * Generate SvelteKit configuration with proper base path
    */
   private async generateSvelteKitConfig(projectDir: string, siteData: SiteData): Promise<void> {
-    // Generate clean static site with no base path - works anywhere when uploaded
+    // Generate clean static site with relative paths for proper navigation
     const svelteConfig = `import adapter from '@sveltejs/adapter-static';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
@@ -474,7 +489,7 @@ const config = {
       precompress: false,
       strict: true
     })
-    // No paths.base - generates clean URLs like Jekyll/Hugo/Gatsby
+    // No base path - generates clean relative URLs that work with symlinks
   }
 };
 
@@ -779,6 +794,90 @@ Sitemap: ${baseUrl}/sitemap.xml`;
     }
     
     return htmlFiles;
+  }
+
+  /**
+   * Clean up SvelteKit build artifacts for pure static serving
+   */
+  private async cleanupBuildArtifacts(buildDir: string): Promise<void> {
+    console.log('🧹 Cleaning up SvelteKit build artifacts...');
+    let removedFiles = 0;
+    let removedDirs = 0;
+
+    try {
+      // Recursively walk directory and remove __data.json files
+      const walkAndClean = async (dir: string): Promise<void> => {
+        const entries = await readdir(dir, { withFileTypes: true });
+        
+        for (const entry of entries) {
+          const fullPath = join(dir, entry.name);
+          
+          if (entry.isDirectory()) {
+            // Skip _app directory (contains CSS/JS assets)
+            if (entry.name === '_app') {
+              continue;
+            }
+            
+            // Recursively process subdirectories
+            await walkAndClean(fullPath);
+            
+            // After processing subdirectory, check if it's now empty
+            try {
+              const remainingEntries = await readdir(fullPath);
+              if (remainingEntries.length === 0) {
+                await rm(fullPath, { recursive: true, force: true });
+                removedDirs++;
+              }
+            } catch (error) {
+              // Directory might have been removed already
+            }
+          } else if (entry.isFile() && entry.name === '__data.json') {
+            // Remove __data.json files
+            await rm(fullPath, { force: true });
+            removedFiles++;
+          }
+        }
+      };
+
+      await walkAndClean(buildDir);
+      console.log(`✅ Cleaned up ${removedFiles} __data.json files and ${removedDirs} empty directories`);
+    } catch (error) {
+      console.warn('⚠️ Failed to clean some build artifacts:', error);
+      // Don't fail the build if cleanup fails
+    }
+  }
+
+  /**
+   * Create symlink in sites directory for easy serving
+   */
+  private async createSiteSymlink(siteSlug: string, buildDir: string): Promise<void> {
+    const sitesDir = join(process.cwd(), 'sites');
+    const symlinkPath = join(sitesDir, siteSlug);
+    
+    // Ensure sites directory exists
+    await mkdir(sitesDir, { recursive: true });
+    
+    // Remove existing symlink if it exists
+    if (existsSync(symlinkPath)) {
+      try {
+        await rm(symlinkPath, { recursive: true, force: true });
+      } catch (error) {
+        console.warn(`Failed to remove existing symlink: ${error}`);
+      }
+    }
+    
+    // Create relative path from sites directory to build directory
+    const relativePath = path.relative(sitesDir, buildDir);
+    
+    try {
+      // Create the symlink (using fs.symlink for cross-platform compatibility)
+      const { symlink } = await import('fs/promises');
+      await symlink(relativePath, symlinkPath, 'dir');
+      console.log(`✅ Created symlink: sites/${siteSlug} -> ${relativePath}`);
+    } catch (error) {
+      console.error(`❌ Failed to create symlink for ${siteSlug}:`, error);
+      // Don't throw error - symlink creation is not critical for site generation
+    }
   }
 
 }
