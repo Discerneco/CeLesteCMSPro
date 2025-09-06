@@ -4,7 +4,7 @@ import { join, extname } from 'path';
 import { existsSync } from 'fs';
 import { getDbFromEvent } from '$lib/server/db/utils';
 import { sites } from '$lib/server/db/schema';
-import { eq } from 'drizzle-orm';
+import { eq, or } from 'drizzle-orm';
 
 // MIME type mapping for common static files
 const MIME_TYPES: Record<string, string> = {
@@ -30,11 +30,14 @@ export const GET: RequestHandler = async ({ params, locals, setHeaders, request 
   try {
     const db = getDbFromEvent({ locals });
     
-    // Find site by slug
+    // Find site by slug or ID
     const [site] = await db
       .select({ id: sites.id, name: sites.name, slug: sites.slug })
       .from(sites)
-      .where(eq(sites.slug, slug));
+      .where(or(
+        eq(sites.slug, slug),
+        eq(sites.id, slug)
+      ));
     
     if (!site) {
       return new Response('Site not found', { status: 404 });

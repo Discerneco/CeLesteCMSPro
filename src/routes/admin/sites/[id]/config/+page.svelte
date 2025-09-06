@@ -11,7 +11,10 @@
     Shield,
     Database,
     Smartphone,
-    Settings
+    Settings,
+    Languages,
+    Plus,
+    X
   } from '@lucide/svelte';
   import { goto } from '$app/navigation';
   import * as m from '$lib/paraglide/messages';
@@ -26,6 +29,8 @@
   let siteName = $state();
   let siteDescription = $state();
   let siteSlug = $state();
+  let siteLanguages = $state([]);
+  let siteDefaultLanguage = $state('en');
   
   // Form states - Use derived for initial values, separate state for user input
   let deploymentTarget = $state();
@@ -52,6 +57,10 @@
       siteName = site.name || '';
       siteDescription = site.description || '';
       siteSlug = site.slug || '';
+      siteLanguages = typeof site.languages === 'string' 
+        ? JSON.parse(site.languages) 
+        : site.languages || ['en'];
+      siteDefaultLanguage = site.defaultLanguage || 'en';
       
       deploymentTarget = site.deploymentSettings?.target || 'cloudflare';
       environment = site.deploymentSettings?.environment || 'production';
@@ -83,6 +92,8 @@
           name: siteName?.trim(),
           description: siteDescription?.trim() || null,
           slug: siteSlug?.trim(),
+          languages: siteLanguages,
+          defaultLanguage: siteDefaultLanguage,
           generationMode: activeTab === 'general' ? site.generationMode : activeTab,
           deploymentSettings: {
             target: deploymentTarget,
@@ -119,6 +130,51 @@
       saving = false;
     }
   }
+
+  // Available languages with their display names
+  const availableLanguages = [
+    { code: 'en', name: 'English' },
+    { code: 'es', name: 'Español' },
+    { code: 'fr', name: 'Français' },
+    { code: 'de', name: 'Deutsch' },
+    { code: 'it', name: 'Italiano' },
+    { code: 'pt', name: 'Português' },
+    { code: 'pt-br', name: 'Português (Brasil)' },
+    { code: 'ru', name: 'Русский' },
+    { code: 'ja', name: '日本語' },
+    { code: 'ko', name: '한국어' },
+    { code: 'zh', name: '中文' },
+    { code: 'ar', name: 'العربية' },
+    { code: 'hi', name: 'हिन्दी' }
+  ];
+
+  // Language management functions
+  const addLanguage = (languageCode) => {
+    if (!siteLanguages.includes(languageCode)) {
+      siteLanguages = [...siteLanguages, languageCode];
+      
+      // Set as default if it's the first language
+      if (siteLanguages.length === 1) {
+        siteDefaultLanguage = languageCode;
+      }
+    }
+  };
+
+  const removeLanguage = (languageCode) => {
+    if (siteLanguages.length > 1) { // Don't allow removing the last language
+      siteLanguages = siteLanguages.filter(lang => lang !== languageCode);
+      
+      // Update default language if removed
+      if (siteDefaultLanguage === languageCode) {
+        siteDefaultLanguage = siteLanguages[0];
+      }
+    }
+  };
+
+  const getLanguageName = (code) => {
+    const lang = availableLanguages.find(l => l.code === code);
+    return lang ? lang.name : code.toUpperCase();
+  };
   
   
   // Format date
@@ -277,6 +333,91 @@
                   rows="3"
                   bind:value={siteDescription}
                 ></textarea>
+              </div>
+              
+              <!-- Language Configuration Section -->
+              <div>
+                <label class="label">
+                  <span class="label-text flex items-center gap-2">
+                    <Languages class="h-4 w-4" />
+                    Site Languages
+                  </span>
+                </label>
+                <div class="space-y-4">
+                  <!-- Current Languages -->
+                  <div class="space-y-2">
+                    {#each siteLanguages as language}
+                      <div class="flex items-center justify-between p-3 bg-base-200 rounded-lg">
+                        <div class="flex items-center gap-3">
+                          <span class="text-sm font-medium">{getLanguageName(language)}</span>
+                          <span class="text-xs text-base-content/60 font-mono bg-base-300 px-2 py-1 rounded">
+                            {language}
+                          </span>
+                          {#if language === siteDefaultLanguage}
+                            <div class="badge badge-primary badge-sm">Default</div>
+                          {/if}
+                        </div>
+                        <div class="flex items-center gap-2">
+                          {#if language !== siteDefaultLanguage && siteLanguages.length > 1}
+                            <button
+                              type="button"
+                              class="btn btn-xs btn-outline"
+                              onclick={() => siteDefaultLanguage = language}
+                              title="Set as default language"
+                            >
+                              Set Default
+                            </button>
+                          {/if}
+                          {#if siteLanguages.length > 1}
+                            <button
+                              type="button"
+                              class="btn btn-xs btn-ghost text-error hover:bg-error/10"
+                              onclick={() => removeLanguage(language)}
+                              title="Remove language"
+                            >
+                              <X class="h-3 w-3" />
+                            </button>
+                          {/if}
+                        </div>
+                      </div>
+                    {/each}
+                  </div>
+                  
+                  <!-- Add Language -->
+                  <div class="flex gap-2">
+                    <select 
+                      class="select select-bordered select-sm flex-1"
+                      onchange={(e) => {
+                        if (e.target.value) {
+                          addLanguage(e.target.value);
+                          e.target.value = '';
+                        }
+                      }}
+                    >
+                      <option value="">Add a language...</option>
+                      {#each availableLanguages as lang}
+                        {#if !siteLanguages.includes(lang.code)}
+                          <option value={lang.code}>{lang.name} ({lang.code})</option>
+                        {/if}
+                      {/each}
+                    </select>
+                  </div>
+                  
+                  <!-- Language Configuration Info -->
+                  <div class="text-xs text-base-content/70 bg-info/10 border border-info/20 rounded-lg p-3">
+                    <div class="flex items-start gap-2">
+                      <Globe class="h-4 w-4 text-info flex-shrink-0 mt-0.5" />
+                      <div>
+                        <p class="font-medium text-info mb-1">Language Configuration:</p>
+                        {#if siteLanguages.length === 1}
+                          <p>Single-language site: Content will be generated in <strong>{getLanguageName(siteDefaultLanguage)}</strong> only.</p>
+                        {:else}
+                          <p>Multi-language site: Content will be generated in {siteLanguages.length} languages with <strong>{getLanguageName(siteDefaultLanguage)}</strong> as the default.</p>
+                        {/if}
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

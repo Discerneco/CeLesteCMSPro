@@ -16,9 +16,12 @@ const execAsync = promisify(exec);
 export interface SiteData {
   id: string;
   name: string;
+  slug: string;
   domain?: string;
   description?: string;
   settings?: Record<string, any>;
+  languages: string[];
+  defaultLanguage: string;
   posts: Array<{
     id: string;
     title: string;
@@ -116,6 +119,16 @@ export class SvelteKitBuilder {
       await logDebug('⚙️ Generating site configuration...');
       await this.generateSiteConfig(tempProjectDir, siteData);
       await logDebug('✅ Site configuration generated successfully');
+
+      // Step 4.5: Generate i18n configuration (language-specific)
+      await logDebug('🌍 Generating i18n configuration...');
+      await this.generateI18nConfig(tempProjectDir, siteData);
+      await logDebug(`✅ i18n configuration generated (${siteData.languages.length === 1 ? 'single' : 'multi'}-language)`);
+
+      // Step 4.6: Generate SvelteKit configuration with base path
+      await logDebug('⚙️ Generating SvelteKit configuration...');
+      await this.generateSvelteKitConfig(tempProjectDir, siteData);
+      await logDebug('✅ SvelteKit configuration generated successfully');
 
       // Step 5: Build with SvelteKit
       await logDebug('🔨 Building with SvelteKit...');
@@ -272,6 +285,7 @@ export async function load() {
 
         const postContent = `
 <script>
+  import { base } from '$app/paths';
   export let data;
 </script>
 
@@ -307,7 +321,7 @@ export async function load() {
     
     <div class="mt-12 pt-8 border-t border-gray-200">
       <a 
-        href="/blog" 
+        href="{base}/blog" 
         class="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium"
       >
         ← Back to Blog
@@ -365,6 +379,107 @@ export async function load() {
 
       await writeFile(join(pageDir, '+page.server.ts'), pageServer);
     }
+  }
+
+  /**
+   * Determine if site needs i18n based on language configuration
+   */
+  private needsI18n(siteData: SiteData): boolean {
+    return siteData.languages.length > 1;
+  }
+
+  /**
+   * Generate site-specific i18n configuration
+   */
+  private async generateI18nConfig(projectDir: string, siteData: SiteData): Promise<void> {
+    if (!this.needsI18n(siteData)) {
+      // Single language site - create minimal hooks.server.ts without i18n
+      const hooksContent = `import type { Handle } from '@sveltejs/kit';
+
+// Single language site - no i18n needed
+export const handle: Handle = ({ event, resolve }) => {
+  return resolve(event);
+};`;
+      
+      await writeFile(join(projectDir, 'src', 'hooks.server.ts'), hooksContent);
+      return;
+    }
+
+    // Multilingual site - generate Paraglide configuration
+    const projectInlang = {
+      "$schema": "https://inlang.com/schema/project-settings",
+      "modules": [
+        "https://cdn.jsdelivr.net/npm/@inlang/plugin-message-format@4/dist/index.js",
+        "https://cdn.jsdelivr.net/npm/@inlang/plugin-m-function-matcher@2/dist/index.js"
+      ],
+      "plugin.inlang.messageFormat": {
+        "pathPattern": "./messages/{locale}.json"
+      },
+      "baseLocale": siteData.defaultLanguage,
+      "locales": siteData.languages
+    };
+
+    // Create project.inlang directory
+    const projectInlangDir = join(projectDir, 'project.inlang');
+    await mkdir(projectInlangDir, { recursive: true });
+    
+    await writeFile(
+      join(projectInlangDir, 'settings.json'), 
+      JSON.stringify(projectInlang, null, 2)
+    );
+
+    // Generate hooks with Paraglide middleware
+    const hooksContent = `import type { Handle } from '@sveltejs/kit';
+import { paraglideMiddleware } from '$lib/paraglide/server';
+
+export const handle: Handle = paraglideMiddleware;`;
+    
+    await writeFile(join(projectDir, 'src', 'hooks.server.ts'), hooksContent);
+
+    // Generate basic message files for each language
+    for (const lang of siteData.languages) {
+      const messagesDir = join(projectDir, 'messages');
+      await mkdir(messagesDir, { recursive: true });
+      
+      const basicMessages = {
+        "site_name": siteData.name,
+        "site_description": siteData.description || `${siteData.name} website`
+      };
+      
+      await writeFile(
+        join(messagesDir, `${lang}.json`),
+        JSON.stringify(basicMessages, null, 2)
+      );
+    }
+  }
+
+  /**
+   * Generate SvelteKit configuration with proper base path
+   */
+  private async generateSvelteKitConfig(projectDir: string, siteData: SiteData): Promise<void> {
+    // Generate clean static site with no base path - works anywhere when uploaded
+    const svelteConfig = `import adapter from '@sveltejs/adapter-static';
+import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
+
+/** @type {import('@sveltejs/kit').Config} */
+const config = {
+  preprocess: vitePreprocess(),
+
+  kit: {
+    adapter: adapter({
+      pages: 'build',
+      assets: 'build',
+      fallback: undefined,
+      precompress: false,
+      strict: true
+    })
+    // No paths.base - generates clean URLs like Jekyll/Hugo/Gatsby
+  }
+};
+
+export default config;`;
+
+    await writeFile(join(projectDir, 'svelte.config.js'), svelteConfig);
   }
 
   /**
@@ -614,40 +729,11 @@ Sitemap: ${baseUrl}/sitemap.xml`;
   }
 
   /**
-   * Process HTML files to fix links for preview URLs during generation
+   * HTML files are now generated clean - no processing needed for static deployment
    */
   private async processHtmlFilesForPreview(buildDir: string, siteData: SiteData): Promise<void> {
-    console.log('🔄 Processing HTML files for preview URLs...');
-    
-    // Get site slug - try to derive from siteData or use ID as fallback  
-    const siteSlug = this.getSiteSlugFromData(siteData);
-    
-    if (!siteSlug) {
-      console.log('⚠️  No site slug found, skipping HTML processing');
-      return;
-    }
-    
-    // Find all HTML files recursively
-    const htmlFiles = await this.findHtmlFiles(buildDir);
-    console.log(`📝 Found ${htmlFiles.length} HTML files to process`);
-    
-    let processedCount = 0;
-    for (const htmlFile of htmlFiles) {
-      try {
-        const html = await readFile(htmlFile, 'utf-8');
-        const processedHtml = this.processHtmlForPreview(html, siteSlug);
-        
-        // Only write if content changed
-        if (processedHtml !== html) {
-          await writeFile(htmlFile, processedHtml);
-          processedCount++;
-        }
-      } catch (error) {
-        console.error(`❌ Failed to process ${htmlFile}:`, error);
-      }
-    }
-    
-    console.log(`✅ Processed ${processedCount} HTML files for preview URLs`);
+    console.log('✅ HTML files generated clean for static deployment - no processing needed');
+    // Static sites should work as-is when uploaded to any server
   }
 
   /**
@@ -694,24 +780,4 @@ Sitemap: ${baseUrl}/sitemap.xml`;
     return htmlFiles;
   }
 
-  /**
-   * Process HTML to fix relative links for preview under /preview/slug/ path
-   */
-  private processHtmlForPreview(html: string, siteSlug: string): string {
-    return html
-      // Fix relative links: href="./" -> href="/preview/site-slug/"
-      .replace(/href="\.\/"/g, `href="/preview/${siteSlug}/"`)
-      // Fix relative links: href="./page" -> href="/preview/site-slug/page"
-      .replace(/href="\.\/([^"]+)"/g, `href="/preview/${siteSlug}/$1"`)
-      // Fix parent directory links: href="../page" -> href="/preview/site-slug/page"
-      .replace(/href="\.\.\/([^"]+)"/g, `href="/preview/${siteSlug}/$1"`)
-      // Fix absolute links: href="/page" -> href="/preview/site-slug/page" (but skip already processed and external URLs)
-      .replace(/href="\/(?!preview\/)([^"/][^"]*)"(?![^>]*(?:http|mailto|tel))/g, `href="/preview/${siteSlug}/$1"`)
-      // Fix relative assets: src="./_app/" -> src="/preview/site-slug/_app/"
-      .replace(/src="\.\/(_app\/[^"]+)"/g, `src="/preview/${siteSlug}/$1"`)
-      // Fix absolute assets: src="/assets/" -> src="/preview/site-slug/assets/" (but skip already processed)
-      .replace(/src="\/(?!preview\/)([^"/][^"]*)"(?![^>]*http)/g, `src="/preview/${siteSlug}/$1"`)
-      // Fix relative preload: href="./_app/" -> href="/preview/site-slug/_app/"
-      .replace(/href="\.\/(_app\/[^"]+)"/g, `href="/preview/${siteSlug}/$1"`);
-  }
 }

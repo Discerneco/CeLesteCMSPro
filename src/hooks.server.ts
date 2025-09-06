@@ -4,8 +4,21 @@ import { paraglideMiddleware } from '$lib/paraglide/server';
 import { validateSession, deleteSession } from '$lib/server/auth-oslo';
 
 const handleParaglide: Handle = ({ event, resolve }) => {
-	// Skip i18n for preview routes - serve them without locale prefix
-	if (event.url.pathname.startsWith('/preview/')) {
+	// Skip i18n for routes that should not be localized
+	const skipI18nRoutes = [
+		'/preview/',     // Preview routes for generated sites
+		'/blog',         // Content routes that only exist in generated sites
+		'/about',        
+		'/contact',
+		'/api/'          // API routes should remain unlocalized
+	];
+	
+	// Check if current path should skip i18n
+	const shouldSkipI18n = skipI18nRoutes.some(route => 
+		event.url.pathname.startsWith(route)
+	);
+	
+	if (shouldSkipI18n) {
 		return resolve(event);
 	}
 	

@@ -25,6 +25,8 @@ export const GET: RequestHandler = async ({ url, locals }) => {
         generationMode: sites.generationMode,
         optimizationSettings: sites.optimizationSettings,
         deploymentSettings: sites.deploymentSettings,
+        languages: sites.languages,
+        defaultLanguage: sites.defaultLanguage,
         createdAt: sites.createdAt,
         updatedAt: sites.updatedAt,
       })
@@ -91,6 +93,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
         generationMode: sites.generationMode,
         optimizationSettings: sites.optimizationSettings,
         deploymentSettings: sites.deploymentSettings,
+        languages: sites.languages,
+        defaultLanguage: sites.defaultLanguage,
         createdAt: sites.createdAt,
         updatedAt: sites.updatedAt,
       })

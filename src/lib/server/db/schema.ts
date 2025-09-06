@@ -314,6 +314,9 @@ export const sites = sqliteTable('sites', {
     previewDeploys?: boolean,
     edgeFunctions?: boolean
   }>(),
+  // Language configuration for multilingual site support
+  languages: text('languages', { mode: 'json' }).$type<string[]>().notNull().default('["en"]'),
+  defaultLanguage: text('default_language').notNull().default('en'),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
   updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
 });

@@ -30,6 +30,8 @@ export const GET: RequestHandler = async ({ params, locals }) => {
         optimizationSettings: sites.optimizationSettings,
         deploymentSettings: sites.deploymentSettings,
         settings: sites.settings,
+        languages: sites.languages,
+        defaultLanguage: sites.defaultLanguage,
         createdAt: sites.createdAt,
         updatedAt: sites.updatedAt,
       })
@@ -80,6 +82,8 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
         generationMode: data.generationMode,
         optimizationSettings: data.optimizationSettings || null,
         deploymentSettings: data.deploymentSettings || null,
+        languages: data.languages || null,
+        defaultLanguage: data.defaultLanguage || null,
         updatedAt: new Date(),
       })
       .where(eq(sites.id, siteId))
@@ -101,6 +105,8 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
         generationMode: sites.generationMode,
         optimizationSettings: sites.optimizationSettings,
         deploymentSettings: sites.deploymentSettings,
+        languages: sites.languages,
+        defaultLanguage: sites.defaultLanguage,
         createdAt: sites.createdAt,
         updatedAt: sites.updatedAt,
       })

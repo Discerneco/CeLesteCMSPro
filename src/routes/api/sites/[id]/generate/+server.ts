@@ -21,6 +21,8 @@ export const POST: RequestHandler = async ({ params, locals }) => {
         domain: sites.domain,
         description: sites.description,
         settings: sites.settings,
+        languages: sites.languages,
+        defaultLanguage: sites.defaultLanguage,
       })
       .from(sites)
       .where(or(eq(sites.id, siteIdOrSlug), eq(sites.slug, siteIdOrSlug)));
@@ -61,9 +63,12 @@ export const POST: RequestHandler = async ({ params, locals }) => {
     const siteData: SiteData = {
       id: site.id,
       name: site.name,
+      slug: site.slug,
       domain: site.domain,
       description: site.description,
       settings: site.settings || {},
+      languages: typeof site.languages === 'string' ? JSON.parse(site.languages) : site.languages || ['en'],
+      defaultLanguage: site.defaultLanguage || 'en',
       posts: sitePosts.map(post => ({
         id: post.id,
         title: post.title,
