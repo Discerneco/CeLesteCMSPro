@@ -16,7 +16,7 @@ export async function GET({ params, url }) {
     throw error(404, 'Site not found');
   }
   
-  // Handle root path
+  // Handle root path - filePath can be undefined or a path string
   let requestedPath = filePath || '';
   if (!requestedPath || requestedPath === '') {
     requestedPath = 'index.html';
