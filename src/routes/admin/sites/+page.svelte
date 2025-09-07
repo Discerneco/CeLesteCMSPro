@@ -748,25 +748,6 @@
             </div>
           {/if}
           
-          <!-- Sync Status Information -->
-          {#if site.syncStatus === 'out-of-sync' && site.contentChanges}
-            <div class="flex items-center gap-2 text-warning">
-              <RefreshCw class="h-3 w-3" />
-              <span class="text-xs">
-                {site.contentChanges.changesSummary}
-              </span>
-            </div>
-            <div class="text-xs text-warning-content/80 italic">
-              {m.sites_sync_rebuild_prompt()}
-            </div>
-          {:else if site.syncStatus === 'up-to-date'}
-            <div class="flex items-center gap-2 text-success">
-              <CheckCircle2 class="h-3 w-3" />
-              <span class="text-xs">
-                {m.sites_sync_tooltip_up_to_date()}
-              </span>
-            </div>
-          {/if}
         </div>
 
         <!-- Action Buttons -->
@@ -791,10 +772,9 @@
           </button>
           
           <button 
-            class="btn {modeStyle.buttonClass} btn-sm text-white {site.syncStatus === 'out-of-sync' ? 'ring-2 ring-warning/50 animate-pulse' : ''}"
+            class="btn {modeStyle.buttonClass} btn-sm text-white"
             onclick={() => generateSite(site)}
             disabled={showBuildModal && buildingSite?.id === site.id}
-            title="{site.syncStatus === 'out-of-sync' ? m.sites_sync_rebuild_needed() : ''}"
           >
             {#if site.generationMode === 'static'}
               {#if site.syncStatus === 'out-of-sync'}
