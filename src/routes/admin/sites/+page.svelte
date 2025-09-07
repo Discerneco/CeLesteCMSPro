@@ -24,6 +24,7 @@
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
   import { onMount } from 'svelte';
+  import BuildProgressModal from '$lib/components/BuildProgressModal.svelte';
 
   // Sites data loaded from API
   let sites = $state([]);
@@ -35,6 +36,10 @@
   // Create site modal state
   let showCreateModal = $state(false);
   let creating = $state(false);
+  
+  // Build progress modal state
+  let showBuildModal = $state(false);
+  let buildingSite = $state(null);
   
   // Create site form state
   let createForm = $state({
@@ -101,21 +106,22 @@
 
   // Generate site static files
   async function generateSite(site) {
-    generatingId = site.id;
-    loading = true;
+    console.log(`🏗️ Starting site generation for: ${site.name}`);
+    
+    // Show build modal
+    buildingSite = site;
+    showBuildModal = true;
+    
+    // Update site status to building immediately
+    const updatedSites = sites.map(s => 
+      s.id === site.id 
+        ? { ...s, buildStatus: 'building' }
+        : s
+    );
+    sites = updatedSites;
     
     try {
-      console.log(`🏗️ Starting site generation for: ${site.name}`);
-      
-      // Update site status to building immediately
-      const updatedSites = sites.map(s => 
-        s.id === site.id 
-          ? { ...s, buildStatus: 'building' }
-          : s
-      );
-      sites = updatedSites;
-      
-      // Call actual site generation API
+      // Call actual site generation API in background
       const response = await fetch(`/api/sites/${site.id}/generate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
@@ -143,11 +149,9 @@
       );
       sites = updatedSites;
       
-      // Show error to user
+      // Close modal and show error
+      showBuildModal = false;
       alert(`Site generation failed: ${error.message}`);
-    } finally {
-      loading = false;
-      generatingId = null;
     }
   }
 
@@ -513,12 +517,9 @@
           <button 
             class="btn {modeStyle.buttonClass} btn-sm text-white"
             onclick={() => generateSite(site)}
-            disabled={loading}
+            disabled={showBuildModal && buildingSite?.id === site.id}
           >
-            {#if generatingId === site.id}
-              <span class="loading loading-spinner loading-xs"></span>
-              {m.sites_build_in_progress()}
-            {:else if site.generationMode === 'static'}
+            {#if site.generationMode === 'static'}
               <Rocket class="h-4 w-4" />
               {m.sites_button_generate()}
             {:else}
@@ -897,6 +898,17 @@
     </div>
   </div>
 {/if}
+
+<!-- Build Progress Modal -->
+<BuildProgressModal
+  isOpen={showBuildModal}
+  siteName={buildingSite?.name || ''}
+  buildId={`build_${buildingSite?.id}_${Date.now()}`}
+  onClose={() => {
+    showBuildModal = false;
+    buildingSite = null;
+  }}
+/>
 
 <style>
   /* Custom text colors for generation modes */
