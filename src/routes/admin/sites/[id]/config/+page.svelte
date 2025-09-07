@@ -14,7 +14,11 @@
     Settings,
     Languages,
     Plus,
-    X
+    X,
+    Archive,
+    AlertTriangle,
+    Trash2,
+    RotateCcw
   } from '@lucide/svelte';
   import { goto } from '$app/navigation';
   import * as m from '$lib/paraglide/messages';
@@ -24,6 +28,12 @@
   let site = $state(data.site);
   let activeTab = $state();
   let saving = $state(false);
+  
+  // Archive functionality state
+  let showArchiveModal = $state(false);
+  let showPermanentDeleteModal = $state(false);
+  let archiving = $state(false);
+  let archivedSites = $state([]); // Mock data - in real implementation this would come from API
   
   // General tab form states
   let siteName = $state();
@@ -78,6 +88,53 @@
       enableGzip = site.optimizationSettings?.enableGzip !== false;
     }
   });
+  
+  // Archive site functionality (UI only)
+  async function archiveSite() {
+    archiving = true;
+    
+    try {
+      // TODO: Implement actual archive API call
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Mock delay
+      
+      // Mock response - in real implementation this would update the database
+      console.log('Site would be archived:', site.id);
+      alert('Site archive functionality - UI implementation complete. Backend logic needed.');
+      
+      showArchiveModal = false;
+    } catch (error) {
+      console.error('Archive failed:', error);
+      alert(`Archive failed: ${error.message}`);
+    } finally {
+      archiving = false;
+    }
+  }
+  
+  // Restore site functionality (UI only)
+  async function restoreSite(archivedSite) {
+    try {
+      // TODO: Implement actual restore API call
+      console.log('Site would be restored:', archivedSite.id);
+      alert('Site restore functionality - UI implementation complete. Backend logic needed.');
+    } catch (error) {
+      console.error('Restore failed:', error);
+      alert(`Restore failed: ${error.message}`);
+    }
+  }
+  
+  // Permanent delete functionality (UI only)
+  async function permanentDeleteSite(archivedSite) {
+    try {
+      // TODO: Implement actual permanent delete API call
+      console.log('Site would be permanently deleted:', archivedSite.id);
+      alert('Permanent delete functionality - UI implementation complete. Backend logic needed.');
+      
+      showPermanentDeleteModal = false;
+    } catch (error) {
+      console.error('Permanent delete failed:', error);
+      alert(`Permanent delete failed: ${error.message}`);
+    }
+  }
   
   // Save configuration
   async function saveConfiguration() {
@@ -275,6 +332,17 @@
           >
             <Rocket class="h-4 w-4" />
             {m.sites_config_tab_static()}
+          </button>
+          <button
+            onclick={() => activeTab = 'archive'}
+            class="flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors {
+              activeTab === 'archive'
+                ? 'border-red-500 text-red-600'
+                : 'border-transparent text-base-content/60 hover:text-base-content hover:border-base-300'
+            }"
+          >
+            <Archive class="h-4 w-4" />
+            {m.sites_config_tab_archive()}
           </button>
         </nav>
       </div>
@@ -712,6 +780,97 @@
               </div>
             </div>
           </div>
+        {:else if activeTab === 'archive'}
+          <!-- Archive Tab -->
+          <div class="space-y-6">
+            <!-- Archive Current Site Section -->
+            <div>
+              <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
+                <Archive class="h-5 w-5 text-red-600" />
+                {m.sites_archive_title()}
+              </h3>
+              <p class="text-base-content/70 mb-6">{m.sites_archive_description()}</p>
+              
+              <!-- Warning Alert -->
+              <div class="alert border-2 border-orange-200 bg-orange-600/10 mb-6">
+                <AlertTriangle class="h-4 w-4 text-orange-600" />
+                <div>
+                  <div class="font-semibold text-orange-700">{m.sites_archive_warning_title()}</div>
+                  <p class="text-sm text-orange-700">{m.sites_archive_warning_message()}</p>
+                </div>
+              </div>
+              
+              <!-- Archive Button -->
+              <button 
+                class="btn btn-outline border-red-500 text-red-600 hover:bg-red-50 hover:border-red-600"
+                onclick={() => showArchiveModal = true}
+                disabled={archiving}
+              >
+                <Archive class="h-4 w-4" />
+                {m.sites_archive_button()}
+              </button>
+            </div>
+            
+            <!-- Archived Sites List -->
+            <div class="border-t border-base-200 pt-6">
+              <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
+                <Trash2 class="h-5 w-5 text-base-content/60" />
+                {m.sites_archive_list_title()}
+              </h3>
+              
+              {#if archivedSites.length === 0}
+                <!-- Empty State -->
+                <div class="text-center py-12">
+                  <Archive class="h-12 w-12 mx-auto text-base-content/30 mb-4" />
+                  <h4 class="text-lg font-medium text-base-content/70 mb-2">{m.sites_archive_list_empty()}</h4>
+                  <p class="text-base-content/50 text-sm">{m.sites_archive_list_empty_description()}</p>
+                </div>
+              {:else}
+                <!-- Archived Sites Cards -->
+                <div class="space-y-4">
+                  {#each archivedSites as archivedSite}
+                    <div class="border border-base-200 rounded-lg p-4 bg-base-50">
+                      <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                          <h4 class="font-medium text-base-content/80 mb-1">{archivedSite.name}</h4>
+                          <p class="text-sm text-base-content/60 mb-2">{archivedSite.description || 'No description'}</p>
+                          <div class="flex items-center gap-4 text-xs text-base-content/50">
+                            <div class="flex items-center gap-1">
+                              <Clock class="h-3 w-3" />
+                              {m.sites_archive_archived_on()} {formatDate(archivedSite.archivedAt)}
+                            </div>
+                            <div class="flex items-center gap-1">
+                              <Globe class="h-3 w-3" />
+                              {archivedSite.domain || archivedSite.slug}
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div class="flex items-center gap-2 ml-4">
+                          <button 
+                            class="btn btn-sm btn-outline border-success text-success hover:bg-success hover:text-white"
+                            onclick={() => restoreSite(archivedSite)}
+                            title="Restore site"
+                          >
+                            <RotateCcw class="h-3 w-3" />
+                            {m.sites_archive_restore_button()}
+                          </button>
+                          <button 
+                            class="btn btn-sm btn-outline border-error text-error hover:bg-error hover:text-white"
+                            onclick={() => showPermanentDeleteModal = true}
+                            title="Delete permanently"
+                          >
+                            <Trash2 class="h-3 w-3" />
+                            {m.sites_archive_permanent_delete_button()}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  {/each}
+                </div>
+              {/if}
+            </div>
+          </div>
         {/if}
         
         <!-- Footer Actions -->
@@ -722,29 +881,148 @@
               {m.sites_config_site_created()} {formatDate(site.createdAt)}
             {:else if activeTab === 'dynamic'}
               {m.sites_config_last_deployed()} {formatDate(site.lastBuildAt)}
-            {:else}
+            {:else if activeTab === 'static'}
               {m.sites_config_last_static_build()} {formatDate(site.lastBuildAt)}
+            {:else if activeTab === 'archive'}
+              {m.sites_config_site_created()} {formatDate(site.createdAt)}
             {/if}
           </div>
           <div>
-            <button 
-              class="btn btn-sm text-white {activeTab === 'dynamic' ? 'bg-indigo-600 hover:bg-indigo-700' : activeTab === 'static' ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-primary hover:bg-primary-focus'}"
-              disabled={saving}
-              onclick={saveConfiguration}
-            >
+            {#if activeTab !== 'archive'}
+              <button 
+                class="btn btn-sm text-white {activeTab === 'dynamic' ? 'bg-indigo-600 hover:bg-indigo-700' : activeTab === 'static' ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-primary hover:bg-primary-focus'}"
+                disabled={saving}
+                onclick={saveConfiguration}
+              >
               {#if saving}
                 <span class="loading loading-spinner loading-xs"></span>
                 {m.sites_config_saving()}
-              {:else}
-                {m.sites_config_save_changes()}
-              {/if}
-            </button>
+                {:else}
+                  {m.sites_config_save_changes()}
+                {/if}
+              </button>
+            {/if}
           </div>
         </div>
       </div>
     </div>
   </div>
 </div>
+
+<!-- Archive Confirmation Modal -->
+{#if showArchiveModal}
+  <div class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-base-100 rounded-lg shadow-xl w-full max-w-md">
+      <!-- Modal Header -->
+      <div class="p-6 border-b border-base-200">
+        <div class="flex items-center justify-between">
+          <h2 class="text-xl font-bold flex items-center gap-2">
+            <Archive class="h-5 w-5 text-orange-600" />
+            {m.sites_archive_confirm_title()}
+          </h2>
+          <button 
+            class="btn btn-ghost btn-sm btn-circle"
+            onclick={() => showArchiveModal = false}
+            disabled={archiving}
+          >
+            ✕
+          </button>
+        </div>
+      </div>
+      
+      <!-- Modal Content -->
+      <div class="p-6">
+        <div class="alert border-2 border-orange-200 bg-orange-600/10 mb-4">
+          <AlertTriangle class="h-4 w-4 text-orange-600" />
+          <p class="text-sm text-orange-700">{m.sites_archive_confirm_message()}</p>
+        </div>
+        
+        <div class="text-sm text-base-content/70 space-y-2">
+          <p><strong>Site:</strong> {site.name}</p>
+          {#if site.domain || site.slug}
+            <p><strong>URL:</strong> {site.domain || site.slug}</p>
+          {/if}
+        </div>
+      </div>
+      
+      <!-- Modal Footer -->
+      <div class="flex items-center justify-end gap-3 p-6 border-t border-base-200 bg-base-50">
+        <button 
+          class="btn btn-outline"
+          onclick={() => showArchiveModal = false}
+          disabled={archiving}
+        >
+          Cancel
+        </button>
+        <button 
+          class="btn bg-orange-600 hover:bg-orange-700 text-white"
+          onclick={archiveSite}
+          disabled={archiving}
+        >
+          {#if archiving}
+            <span class="loading loading-spinner loading-sm"></span>
+            Archiving...
+          {:else}
+            <Archive class="h-4 w-4" />
+            {m.sites_archive_button()}
+          {/if}
+        </button>
+      </div>
+    </div>
+  </div>
+{/if}
+
+<!-- Permanent Delete Confirmation Modal -->
+{#if showPermanentDeleteModal}
+  <div class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-base-100 rounded-lg shadow-xl w-full max-w-md">
+      <!-- Modal Header -->
+      <div class="p-6 border-b border-base-200">
+        <div class="flex items-center justify-between">
+          <h2 class="text-xl font-bold flex items-center gap-2">
+            <Trash2 class="h-5 w-5 text-red-600" />
+            {m.sites_archive_permanent_delete_confirm_title()}
+          </h2>
+          <button 
+            class="btn btn-ghost btn-sm btn-circle"
+            onclick={() => showPermanentDeleteModal = false}
+          >
+            ✕
+          </button>
+        </div>
+      </div>
+      
+      <!-- Modal Content -->
+      <div class="p-6">
+        <div class="alert border-2 border-red-200 bg-red-600/10 mb-4">
+          <AlertTriangle class="h-4 w-4 text-red-600" />
+          <p class="text-sm text-red-700">{m.sites_archive_permanent_delete_confirm_message()}</p>
+        </div>
+        
+        <div class="text-sm text-base-content/70">
+          <p>This action <strong>cannot be undone</strong> and will permanently remove all associated data.</p>
+        </div>
+      </div>
+      
+      <!-- Modal Footer -->
+      <div class="flex items-center justify-end gap-3 p-6 border-t border-base-200 bg-base-50">
+        <button 
+          class="btn btn-outline"
+          onclick={() => showPermanentDeleteModal = false}
+        >
+          Cancel
+        </button>
+        <button 
+          class="btn btn-error text-white"
+          onclick={() => permanentDeleteSite(null)} 
+        >
+          <Trash2 class="h-4 w-4" />
+          Delete Permanently
+        </button>
+      </div>
+    </div>
+  </div>
+{/if}
 
 <style>
   /* Custom text colors for generation modes */
@@ -778,5 +1056,21 @@
   
   .border-emerald-500 {
     border-color: rgb(16 185 129);
+  }
+  
+  .text-red-600 {
+    color: rgb(220 38 38);
+  }
+  
+  .border-red-500 {
+    border-color: rgb(239 68 68);
+  }
+  
+  .bg-orange-600 {
+    background-color: rgb(234 88 12);
+  }
+  
+  .hover\:bg-orange-700:hover {
+    background-color: rgb(194 65 12);
   }
 </style>
