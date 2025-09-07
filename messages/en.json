@@ -161,6 +161,7 @@
 	"sites_button_preview": "Preview",
 	"sites_button_configure": "Configure",
 	"sites_button_quick_preview": "Quick Preview",
+	"sites_button_go_to_site": "Go to site",
 	"sites_status_building": "Building",
 	"sites_status_success": "Success",
 	"sites_status_failed": "Failed",

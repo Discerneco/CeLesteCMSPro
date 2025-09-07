@@ -763,12 +763,13 @@
           </button>
           
           <button 
-            class="btn btn-outline btn-sm btn-square"
+            class="btn btn-outline btn-sm"
             onclick={() => quickPreviewSite(site)}
             disabled={loading}
-            title="Open in New Tab"
+            title="{m.sites_button_go_to_site()}"
           >
             <ExternalLink class="h-4 w-4" />
+            {m.sites_button_go_to_site()}
           </button>
           
           <button 

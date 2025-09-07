@@ -584,6 +584,7 @@
 	"sites_button_preview": "Visualizar",
 	"sites_button_configure": "Configurar",
 	"sites_button_edit": "Editar",
+	"sites_button_go_to_site": "Ir para o site",
 	"sites_button_delete": "Excluir",
 	"sites_status_building": "Construindo",
 	"sites_status_success": "Sucesso",
