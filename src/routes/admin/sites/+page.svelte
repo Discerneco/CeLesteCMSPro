@@ -536,7 +536,9 @@
                             <svelte:component this={getContentTypeIcon('posts')} class="h-4 w-4 text-blue-500" />
                             <span class="text-sm">{m.sites_sync_details_new_posts()}</span>
                           </div>
-                          <span class="badge badge-primary badge-sm">{site.contentChanges.counts.newPosts}</span>
+                          <div class="w-5 h-5 bg-primary/10 text-primary rounded-full flex items-center justify-center text-xs font-medium">
+                            {site.contentChanges.counts.newPosts}
+                          </div>
                         </div>
                       {/if}
 
@@ -546,7 +548,9 @@
                             <svelte:component this={getContentTypeIcon('posts')} class="h-4 w-4 text-blue-500" />
                             <span class="text-sm">{m.sites_sync_details_updated_posts()}</span>
                           </div>
-                          <span class="badge badge-info badge-sm">{site.contentChanges.counts.updatedPosts}</span>
+                          <div class="w-5 h-5 bg-primary/10 text-primary rounded-full flex items-center justify-center text-xs font-medium">
+                            {site.contentChanges.counts.updatedPosts}
+                          </div>
                         </div>
                       {/if}
 
@@ -556,7 +560,9 @@
                             <svelte:component this={getContentTypeIcon('pages')} class="h-4 w-4 text-green-500" />
                             <span class="text-sm">{m.sites_sync_details_new_pages()}</span>
                           </div>
-                          <span class="badge badge-primary badge-sm">{site.contentChanges.counts.newPages}</span>
+                          <div class="w-5 h-5 bg-primary/10 text-primary rounded-full flex items-center justify-center text-xs font-medium">
+                            {site.contentChanges.counts.newPages}
+                          </div>
                         </div>
                       {/if}
 
@@ -566,7 +572,9 @@
                             <svelte:component this={getContentTypeIcon('pages')} class="h-4 w-4 text-green-500" />
                             <span class="text-sm">{m.sites_sync_details_updated_pages()}</span>
                           </div>
-                          <span class="badge badge-info badge-sm">{site.contentChanges.counts.updatedPages}</span>
+                          <div class="w-5 h-5 bg-primary/10 text-primary rounded-full flex items-center justify-center text-xs font-medium">
+                            {site.contentChanges.counts.updatedPages}
+                          </div>
                         </div>
                       {/if}
 
@@ -576,7 +584,9 @@
                             <svelte:component this={getContentTypeIcon('media')} class="h-4 w-4 text-purple-500" />
                             <span class="text-sm">{m.sites_sync_details_new_media()}</span>
                           </div>
-                          <span class="badge badge-primary badge-sm">{site.contentChanges.counts.newMedia}</span>
+                          <div class="w-5 h-5 bg-primary/10 text-primary rounded-full flex items-center justify-center text-xs font-medium">
+                            {site.contentChanges.counts.newMedia}
+                          </div>
                         </div>
                       {/if}
 
@@ -586,7 +596,9 @@
                             <svelte:component this={getContentTypeIcon('settings')} class="h-4 w-4 text-orange-500" />
                             <span class="text-sm">{m.sites_sync_details_settings_changes()}</span>
                           </div>
-                          <span class="badge badge-warning badge-sm">{site.contentChanges.counts.settingsChanges}</span>
+                          <div class="w-5 h-5 bg-primary/10 text-primary rounded-full flex items-center justify-center text-xs font-medium">
+                            {site.contentChanges.counts.settingsChanges}
+                          </div>
                         </div>
                       {/if}
 
@@ -596,7 +608,9 @@
                             <svelte:component this={getContentTypeIcon('template')} class="h-4 w-4 text-pink-500" />
                             <span class="text-sm">{m.sites_sync_details_template_changes()}</span>
                           </div>
-                          <span class="badge badge-secondary badge-sm">{site.contentChanges.counts.templateChanges}</span>
+                          <div class="w-5 h-5 bg-primary/10 text-primary rounded-full flex items-center justify-center text-xs font-medium">
+                            {site.contentChanges.counts.templateChanges}
+                          </div>
                         </div>
                       {/if}
 
