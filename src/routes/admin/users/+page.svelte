@@ -280,14 +280,20 @@
       onclick={() => activeTab = 'users'}
     >
       <Users class="h-4 w-4" />
-      {m.users_title()} ({data.users?.length || 0})
+      <span>{m.users_title()}</span>
+      <div class="w-5 h-5 {activeTab === 'users' ? 'bg-primary/10 text-primary' : 'bg-base-content/10 text-base-content/60'} rounded-full flex items-center justify-center text-xs font-medium ml-1">
+        {data.users?.length || 0}
+      </div>
     </button>
     <button 
       class="flex items-center gap-2 px-4 py-2 border-b-[3px] transition-colors duration-150 {activeTab === 'deleted' ? 'border-primary text-base-content' : 'border-transparent text-base-content/60 hover:text-base-content/80'}"
       onclick={() => activeTab = 'deleted'}
     >
       <Trash2 class="h-4 w-4" />
-      {m.users_deleted_tab()} ({deletedUsers.length})
+      <span>{m.users_deleted_tab()}</span>
+      <div class="w-5 h-5 {activeTab === 'deleted' ? 'bg-primary/10 text-primary' : 'bg-base-content/10 text-base-content/60'} rounded-full flex items-center justify-center text-xs font-medium ml-1">
+        {deletedUsers.length}
+      </div>
     </button>
     <button 
       class="flex items-center gap-2 px-4 py-2 border-b-[3px] transition-colors duration-150 {activeTab === 'roles' ? 'border-primary text-base-content' : 'border-transparent text-base-content/60 hover:text-base-content/80'}"

@@ -214,16 +214,22 @@
 <!-- Tabs -->
 <div class="flex gap-1 mb-4 border-b border-base-300">
   <button 
-    class="px-4 py-2 font-medium transition-colors {activeTab === 'all' ? 'border-b-2 border-primary text-primary' : 'text-base-content/70 hover:text-base-content'}"
+    class="flex items-center gap-2 px-4 py-2 font-medium transition-colors {activeTab === 'all' ? 'border-b-2 border-primary text-primary' : 'text-base-content/70 hover:text-base-content'}"
     onclick={() => switchTab('all')}
   >
-    {m.posts_all_posts_tab()} ({data.posts?.length || 0})
+    <span>{m.posts_all_posts_tab()}</span>
+    <div class="w-5 h-5 {activeTab === 'all' ? 'bg-primary/10 text-primary' : 'bg-base-content/10 text-base-content/70'} rounded-full flex items-center justify-center text-xs font-medium">
+      {data.posts?.length || 0}
+    </div>
   </button>
   <button 
-    class="px-4 py-2 font-medium transition-colors {activeTab === 'trash' ? 'border-b-2 border-primary text-primary' : 'text-base-content/70 hover:text-base-content'}"
+    class="flex items-center gap-2 px-4 py-2 font-medium transition-colors {activeTab === 'trash' ? 'border-b-2 border-primary text-primary' : 'text-base-content/70 hover:text-base-content'}"
     onclick={() => switchTab('trash')}
   >
-    {m.posts_trash_tab()} ({trashedPosts.length})
+    <span>{m.posts_trash_tab()}</span>
+    <div class="w-5 h-5 {activeTab === 'trash' ? 'bg-primary/10 text-primary' : 'bg-base-content/10 text-base-content/70'} rounded-full flex items-center justify-center text-xs font-medium">
+      {trashedPosts.length}
+    </div>
   </button>
 </div>
 
