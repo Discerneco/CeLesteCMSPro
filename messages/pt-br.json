@@ -857,5 +857,6 @@
 	"sites_menu_settings": "Configurações",
 	"sites_menu_duplicate": "Duplicar site",
 	"sites_menu_export": "Exportar",
-	"sites_menu_delete": "Excluir"
+	"sites_menu_delete": "Excluir",
+	"common_never": "Nunca"
 }

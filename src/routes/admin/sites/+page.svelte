@@ -32,6 +32,7 @@
   } from '@lucide/svelte';
   
   import * as m from '$lib/paraglide/messages';
+  import { getLocale } from '$lib/paraglide/runtime.js';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
   import { onMount } from 'svelte';
@@ -335,14 +336,20 @@
     }
   }
 
-  // Format date for display
+  // Format date for display with locale-aware formatting
   function formatDate(date) {
-    if (!date) return 'Never';
-    return new Intl.DateTimeFormat('en-US', {
+    if (!date) return m.common_never();
+    const currentLocale = getLocale();
+    
+    // Use different time formats based on locale
+    const timeFormat = currentLocale === 'pt-br' ? 
+      { hour: '2-digit', minute: '2-digit', hour12: false } :  // 24-hour for Portuguese
+      { hour: '2-digit', minute: '2-digit', hour12: true };    // 12-hour for English
+      
+    return new Intl.DateTimeFormat(currentLocale, {
       month: 'short',
       day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+      ...timeFormat
     }).format(new Date(date));
   }
 

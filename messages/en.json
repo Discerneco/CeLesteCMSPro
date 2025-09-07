@@ -816,5 +816,6 @@
 	"sites_menu_settings": "Settings",
 	"sites_menu_duplicate": "Duplicate site",
 	"sites_menu_export": "Export",
-	"sites_menu_delete": "Delete"
+	"sites_menu_delete": "Delete",
+	"common_never": "Never"
 }
