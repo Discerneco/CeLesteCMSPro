@@ -11,6 +11,10 @@
   let searchQuery = $state('');
   let selectedCategory = $state('all');
   
+  // Installed tab state
+  let installedSearchQuery = $state('');
+  let installedSelectedCategory = $state('all');
+  
   // Mock data for plugins (will be replaced with API data)
   const availablePlugins = [
     {
@@ -121,6 +125,17 @@
                            plugin.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
                            plugin.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
       const matchesCategory = selectedCategory === 'all' || plugin.category === selectedCategory;
+      return matchesSearch && matchesCategory;
+    });
+  });
+  
+  let filteredInstalledPlugins = $derived(() => {
+    return installedPlugins.filter(plugin => {
+      const matchesSearch = installedSearchQuery === '' || 
+                           plugin.name.toLowerCase().includes(installedSearchQuery.toLowerCase()) ||
+                           plugin.description.toLowerCase().includes(installedSearchQuery.toLowerCase()) ||
+                           plugin.tags.some(tag => tag.toLowerCase().includes(installedSearchQuery.toLowerCase()));
+      const matchesCategory = installedSelectedCategory === 'all' || plugin.category === installedSelectedCategory;
       return matchesSearch && matchesCategory;
     });
   });
@@ -311,10 +326,41 @@
   {/if}
   
   {#if activeTab === 'installed'}
+    <!-- Search and Filters -->
+    <div class="cms-table-container">
+      <!-- Search Bar -->
+      <div class="px-6 py-4 border-b border-base-200">
+        <div class="cms-search-container">
+          <Search class="cms-search-icon" />
+          <input 
+            type="text"
+            placeholder={m.plugins_search_placeholder()}
+            bind:value={installedSearchQuery}
+            class="cms-search-input"
+          />
+        </div>
+      </div>
+      
+      <!-- Category Filters -->
+      <div class="px-6 py-4">
+        <div class="flex flex-wrap gap-2">
+          {#each categories as category}
+            <button
+              onclick={() => installedSelectedCategory = category.id}
+              class="btn btn-sm gap-2 transition-all duration-150 {installedSelectedCategory === category.id ? 'btn-outline border-primary bg-primary/10 text-primary hover:bg-primary/20' : 'btn-ghost border-base-content/10 text-base-content/70 hover:border-base-content/20 hover:bg-base-content/5'}"
+            >
+              <svelte:component this={category.icon} class="w-4 h-4" />
+              {category.name}
+            </button>
+          {/each}
+        </div>
+      </div>
+    </div>
+    
     <!-- Installed Plugins List -->
     <div class="space-y-3">
-      {#if installedPlugins.length > 0}
-        {#each installedPlugins as plugin (plugin.id)}
+      {#if filteredInstalledPlugins().length > 0}
+        {#each filteredInstalledPlugins() as plugin (plugin.id)}
           <div class="card bg-base-100 shadow-sm">
             <div class="card-body">
               <div class="flex items-center justify-between">
@@ -358,8 +404,8 @@
             </div>
           </div>
         {/each}
-      {:else}
-        <!-- Empty State -->
+      {:else if installedPlugins.length === 0}
+        <!-- No Installed Plugins -->
         <div class="card bg-base-100 shadow-sm">
           <div class="card-body text-center py-12">
             <Package class="w-16 h-16 text-base-content/20 mx-auto mb-4" />
@@ -372,6 +418,13 @@
               {m.plugins_browse_store()}
             </button>
           </div>
+        </div>
+      {:else}
+        <!-- No Results from Search/Filter -->
+        <div class="text-center py-12">
+          <Package class="w-16 h-16 text-base-content/20 mx-auto mb-4" />
+          <h3 class="text-lg font-semibold mb-2">{m.plugins_no_results()}</h3>
+          <p class="text-base-content/60">{m.plugins_no_results_description()}</p>
         </div>
       {/if}
     </div>
