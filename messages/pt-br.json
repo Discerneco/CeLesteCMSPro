@@ -645,6 +645,7 @@
 	"sites_archive_archived_on": "Arquivado em:",
 	"sites_archive_warning_title": "Importante",
 	"sites_archive_warning_message": "Arquivar irá imediatamente parar de servir este site. Todo o conteúdo será preservado e pode ser restaurado a qualquer momento.",
+	"sites_config_never": "Nunca",
 	"sites_success_created": "Site criado com sucesso",
 	"sites_success_updated": "Site atualizado com sucesso",
 	"sites_success_deleted": "Site excluído com sucesso",

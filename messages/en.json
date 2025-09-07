@@ -713,6 +713,7 @@
 	"sites_config_site_created": "Site created:",
 	"sites_config_last_deployed": "Last deployed:",
 	"sites_config_last_static_build": "Last static build:",
+	"sites_config_never": "Never",
 	"sites_config_tab_archive": "Archive",
 	"sites_archive_title": "Archive Site",
 	"sites_archive_description": "Archiving a site will make it inactive but preserve all data for potential restoration",

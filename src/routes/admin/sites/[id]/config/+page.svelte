@@ -236,7 +236,7 @@
   
   // Format date
   function formatDate(date) {
-    if (!date) return 'Never';
+    if (!date) return m.sites_config_never();
     return new Intl.DateTimeFormat('en-US', {
       month: 'short',
       day: 'numeric',
