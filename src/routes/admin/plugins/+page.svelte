@@ -188,34 +188,32 @@
   
   {#if activeTab === 'store'}
     <!-- Search and Filters -->
-    <div class="card bg-base-100 shadow-sm">
-      <div class="card-body">
-        <div class="flex flex-col lg:flex-row gap-4">
-          <!-- Search Input -->
-          <div class="flex-1">
-            <div class="relative">
-              <Search class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-base-content/50" />
-              <input 
-                type="text"
-                placeholder={m.plugins_search_placeholder()}
-                bind:value={searchQuery}
-                class="input input-bordered w-full pl-10"
-              />
-            </div>
-          </div>
-          
-          <!-- Category Filters -->
-          <div class="flex flex-wrap gap-2">
-            {#each categories as category}
-              <button
-                onclick={() => selectedCategory = category.id}
-                class="btn btn-sm {selectedCategory === category.id ? 'btn-primary' : 'btn-ghost'}"
-              >
-                <svelte:component this={category.icon} class="w-4 h-4" />
-                {category.name}
-              </button>
-            {/each}
-          </div>
+    <div class="cms-table-container">
+      <!-- Search Bar -->
+      <div class="px-6 py-4 border-b border-base-200">
+        <div class="cms-search-container">
+          <Search class="cms-search-icon" />
+          <input 
+            type="text"
+            placeholder={m.plugins_search_placeholder()}
+            bind:value={searchQuery}
+            class="cms-search-input"
+          />
+        </div>
+      </div>
+      
+      <!-- Category Filters -->
+      <div class="px-6 py-4">
+        <div class="flex flex-wrap gap-2">
+          {#each categories as category}
+            <button
+              onclick={() => selectedCategory = category.id}
+              class="btn btn-sm gap-2 transition-all duration-150 {selectedCategory === category.id ? 'btn-outline border-primary bg-primary/10 text-primary hover:bg-primary/20' : 'btn-ghost border-base-content/10 text-base-content/70 hover:border-base-content/20 hover:bg-base-content/5'}"
+            >
+              <svelte:component this={category.icon} class="w-4 h-4" />
+              {category.name}
+            </button>
+          {/each}
         </div>
       </div>
     </div>
