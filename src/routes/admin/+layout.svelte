@@ -73,8 +73,8 @@
 
   // Check if current route is active
   function isActiveRoute(route) {
-    // Remove locale prefix if present (e.g., /pt-br, /en)
-    const pathname = $page.url.pathname.replace(/^\/[a-z]{2}(-[a-z]{2})?/, '');
+    // Remove locale prefix if present (e.g., /pt-br, /en) - only if followed by / or end of string
+    const pathname = $page.url.pathname.replace(/^\/[a-z]{2}(-[a-z]{2})?(?=\/|$)/, '');
     
     // Check exact match or if current path starts with the route
     if (route === '/admin') {
