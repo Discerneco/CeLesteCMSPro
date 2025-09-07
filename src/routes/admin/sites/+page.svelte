@@ -55,6 +55,7 @@
   // Sync details popover state
   let showSyncDetails = $state(null); // Track which site's sync details are shown
   
+  
   // Create site form state
   let createForm = $state({
     name: '',
@@ -204,6 +205,29 @@
     goto(`/admin/sites/${site.id}/config`);
   }
 
+  // Duplicate site
+  function duplicateSite(site) {
+    console.log(`📋 Duplicating site: ${site.name}`);
+    // TODO: Implement site duplication functionality
+    alert('Site duplication feature coming soon!');
+  }
+
+  // Export site
+  function exportSite(site) {
+    console.log(`📤 Exporting site: ${site.name}`);
+    // TODO: Implement site export functionality
+    alert('Site export feature coming soon!');
+  }
+
+  // Delete site
+  function deleteSite(site) {
+    console.log(`🗑️ Deleting site: ${site.name}`);
+    // TODO: Implement site deletion functionality
+    if (confirm(`Are you sure you want to delete "${site.name}"? This action cannot be undone.`)) {
+      alert('Site deletion feature coming soon!');
+    }
+  }
+
   // Get build status badge class
   function getBuildStatusClass(status) {
     switch (status) {
@@ -272,7 +296,7 @@
     showSyncDetails = showSyncDetails === siteId ? null : siteId;
   }
 
-  // Close sync details when clicking outside
+  // Close dropdowns when clicking outside
   function handleClickOutside(event) {
     if (showSyncDetails && !event.target.closest('.sync-details-container')) {
       showSyncDetails = null;
@@ -498,14 +522,6 @@
                       <span class="text-white text-xs font-semibold">i</span>
                     </button>
                     
-                    <!-- Option 4: MoreVertical -->
-                    <button 
-                      class="w-5 h-5 flex items-center justify-center cursor-pointer hover:opacity-70 transition-opacity"
-                      onclick={() => toggleSyncDetails(site.id)}
-                      title="{m.sites_sync_details_click_to_see()} - Option 4: MoreVertical"
-                    >
-                      <MoreVertical class="h-5 w-5 text-black dark:text-white" />
-                    </button>
                   </div>
 
                 <!-- Sync Details Popover -->
@@ -619,6 +635,37 @@
                 {/if}
                 </div>
               {/if}
+              
+              <!-- Site Menu Dropdown (Three dots) -->
+              <div class="dropdown dropdown-end">
+                <div tabindex="0" role="button" class="btn btn-ghost btn-xs btn-circle" title="Site options">
+                  <MoreVertical class="h-5 w-5 text-black dark:text-white" />
+                </div>
+                
+                <!-- Dropdown Menu -->
+                <ul tabindex="-1" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
+                    <li>
+                      <button onclick={() => configureSite(site)}>
+                        {m.sites_menu_settings()}
+                      </button>
+                    </li>
+                    <li>
+                      <button onclick={() => duplicateSite(site)} class="text-gray-500">
+                        {m.sites_menu_duplicate()}
+                      </button>
+                    </li>
+                    <li>
+                      <button onclick={() => exportSite(site)} class="text-gray-500">
+                        {m.sites_menu_export()}
+                      </button>
+                    </li>
+                    <li>
+                      <button onclick={() => deleteSite(site)} class="text-gray-500">
+                        {m.sites_menu_delete()}
+                      </button>
+                    </li>
+                  </ul>
+              </div>
             </div>
           </div>
         </div>
@@ -724,14 +771,6 @@
 
         <!-- Action Buttons -->
         <div class="card-actions justify-end gap-2">
-          <button 
-            class="btn btn-outline btn-sm"
-            onclick={() => configureSite(site)}
-            disabled={loading}
-          >
-            <Settings class="h-4 w-4" />
-            {m.sites_button_configure()}
-          </button>
           
           <button 
             class="btn btn-outline btn-sm"

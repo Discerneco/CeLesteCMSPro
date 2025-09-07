@@ -812,5 +812,9 @@
 	"build_step_build_sveltekit": "Building with SvelteKit",
 	"build_step_copy_build": "Copying build files",
 	"build_step_process_html": "Processing HTML files for preview URLs",
-	"build_step_complete": "Site generation completed"
+	"build_step_complete": "Site generation completed",
+	"sites_menu_settings": "Settings",
+	"sites_menu_duplicate": "Duplicate site",
+	"sites_menu_export": "Export",
+	"sites_menu_delete": "Delete"
 }
