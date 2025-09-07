@@ -158,22 +158,24 @@
 
 <div class="space-y-6">
   <!-- Header -->
-  <div>
-    <h1 class="text-3xl font-bold">{m.plugins_title()}</h1>
-    <p class="text-base-content/70 mt-2">{m.plugins_description()}</p>
+  <div class="cms-page-header">
+    <div>
+      <h1 class="cms-page-title">{m.plugins_title()}</h1>
+      <p class="cms-page-subtitle">{m.plugins_description()}</p>
+    </div>
   </div>
   
   <!-- Tabs -->
-  <div class="flex border-b border-base-200 mb-6 overflow-x-auto">
+  <div class="flex gap-1 mb-4 border-b border-base-300">
     <button 
-      class="flex items-center gap-2 px-4 py-2 border-b-[3px] transition-colors duration-150 {activeTab === 'store' ? 'border-primary text-base-content' : 'border-transparent text-base-content/60 hover:text-base-content/80'} whitespace-nowrap"
+      class="flex items-center gap-2 px-4 py-2 font-medium transition-colors {activeTab === 'store' ? 'border-b-2 border-primary text-primary' : 'text-base-content/70 hover:text-base-content'}"
       onclick={() => activeTab = 'store'}
     >
       <Package class="h-4 w-4" />
       <span>{m.plugins_tab_store()}</span>
     </button>
     <button 
-      class="flex items-center gap-2 px-4 py-2 border-b-[3px] transition-colors duration-150 {activeTab === 'installed' ? 'border-primary text-base-content' : 'border-transparent text-base-content/60 hover:text-base-content/80'} whitespace-nowrap"
+      class="flex items-center gap-2 px-4 py-2 font-medium transition-colors {activeTab === 'installed' ? 'border-b-2 border-primary text-primary' : 'text-base-content/70 hover:text-base-content'}"
       onclick={() => activeTab = 'installed'}
     >
       <CheckCircle class="h-4 w-4" />

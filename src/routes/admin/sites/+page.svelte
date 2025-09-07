@@ -354,10 +354,10 @@
 </script>
 
 <!-- Page Header -->
-<div class="flex justify-between items-start mb-8">
+<div class="cms-page-header">
   <div>
-    <h1 class="text-3xl font-bold mb-2">{m.sites_title()}</h1>
-    <p class="text-base-content/70">{m.sites_subtitle()}</p>
+    <h1 class="cms-page-title">{m.sites_title()}</h1>
+    <p class="cms-page-subtitle">{m.sites_subtitle()}</p>
   </div>
   
   <div class="flex gap-3">

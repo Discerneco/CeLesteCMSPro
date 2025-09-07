@@ -203,10 +203,10 @@
 </script>
 
 <!-- Page Header -->
-<div class="flex justify-between items-start mb-8">
+<div class="cms-page-header">
   <div>
-    <h1 class="text-3xl font-bold mb-2">{m.templates_title()}</h1>
-    <p class="text-base-content/70">{m.templates_subtitle()}</p>
+    <h1 class="cms-page-title">{m.templates_title()}</h1>
+    <p class="cms-page-subtitle">{m.templates_subtitle()}</p>
   </div>
   
   <button class="btn btn-primary" onclick={createNewTemplate}>
