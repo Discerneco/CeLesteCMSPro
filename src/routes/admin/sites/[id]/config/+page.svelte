@@ -600,7 +600,7 @@
               </div>
             </div>
           </div>
-        {:else}
+        {:else if activeTab === 'static'}
           <!-- Static Generation Tab -->
           <div class="space-y-6">
             <div>
