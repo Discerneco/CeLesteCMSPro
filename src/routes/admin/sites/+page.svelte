@@ -27,7 +27,8 @@
     FileImage,
     Settings2,
     Layout,
-    X
+    X,
+    Info
   } from '@lucide/svelte';
   
   import * as m from '$lib/paraglide/messages';
@@ -484,19 +485,28 @@
                 {getBuildStatusText(site.buildStatus)}
               </div>
               
-              <!-- Interactive Sync Status Badge -->
-              <div class="relative sync-details-container">
-                <button 
-                  class="badge badge-sm {syncInfo.className} flex items-center gap-1 cursor-pointer hover:opacity-80 transition-opacity"
-                  onclick={() => toggleSyncDetails(site.id)}
-                  title="{syncInfo.tooltip} - {m.sites_sync_details_click_to_see()}"
-                >
-                  <svelte:component this={syncInfo.icon} class="h-3 w-3" />
-                  <span class="text-xs">{syncInfo.text}</span>
-                  {#if site.syncStatus === 'out-of-sync' && site.contentChanges?.counts && Object.values(site.contentChanges.counts).some(count => count > 0)}
-                    <svelte:component this={showSyncDetails === site.id ? ChevronUp : ChevronDown} class="h-2 w-2" />
-                  {/if}
-                </button>
+              <!-- Interactive Sync Status Info Dot -->
+              {#if site.syncStatus === 'out-of-sync' && site.contentChanges?.counts && Object.values(site.contentChanges.counts).some(count => count > 0)}
+                <div class="relative sync-details-container">
+                  <div class="flex items-center gap-1">
+                    <!-- Option 1: Plain text "i" -->
+                    <button 
+                      class="w-5 h-5 bg-black dark:bg-gray-700 rounded-full flex items-center justify-center cursor-pointer hover:bg-gray-800 dark:hover:bg-gray-600 transition-colors"
+                      onclick={() => toggleSyncDetails(site.id)}
+                      title="{m.sites_sync_details_click_to_see()} - Option 1: Text i"
+                    >
+                      <span class="text-white text-xs font-semibold">i</span>
+                    </button>
+                    
+                    <!-- Option 4: MoreVertical -->
+                    <button 
+                      class="w-5 h-5 flex items-center justify-center cursor-pointer hover:opacity-70 transition-opacity"
+                      onclick={() => toggleSyncDetails(site.id)}
+                      title="{m.sites_sync_details_click_to_see()} - Option 4: MoreVertical"
+                    >
+                      <MoreVertical class="h-5 w-5 text-black dark:text-white" />
+                    </button>
+                  </div>
 
                 <!-- Sync Details Popover -->
                 {#if showSyncDetails === site.id && site.contentChanges?.counts}
@@ -607,7 +617,8 @@
                     {/if}
                   </div>
                 {/if}
-              </div>
+                </div>
+              {/if}
             </div>
           </div>
         </div>
