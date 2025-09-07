@@ -17,7 +17,17 @@
     FileDown,
     MoreVertical,
     Edit3,
-    Trash2
+    Trash2,
+    RefreshCw,
+    AlertTriangle,
+    CheckCircle2,
+    ChevronDown,
+    ChevronUp,
+    FileText,
+    FileImage,
+    Settings2,
+    Layout,
+    X
   } from '@lucide/svelte';
   
   import * as m from '$lib/paraglide/messages';
@@ -40,6 +50,9 @@
   // Build progress modal state
   let showBuildModal = $state(false);
   let buildingSite = $state(null);
+  
+  // Sync details popover state
+  let showSyncDetails = $state(null); // Track which site's sync details are shown
   
   // Create site form state
   let createForm = $state({
@@ -207,6 +220,73 @@
       case 'success': return m.sites_status_success();
       case 'error': return m.sites_status_failed();
       default: return m.sites_status_ready();
+    }
+  }
+
+  // Get sync status text and styling
+  function getSyncStatusInfo(syncStatus) {
+    switch (syncStatus) {
+      case 'up-to-date':
+        return {
+          text: m.sites_sync_status_up_to_date(),
+          className: 'bg-success/10 text-success',
+          icon: CheckCircle2,
+          tooltip: m.sites_sync_tooltip_up_to_date()
+        };
+      case 'out-of-sync':
+        return {
+          text: m.sites_sync_status_out_of_sync(),
+          className: 'bg-warning/10 text-warning',
+          icon: RefreshCw,
+          tooltip: m.sites_sync_tooltip_out_of_sync()
+        };
+      default:
+        return {
+          text: m.sites_sync_status_unknown(),
+          className: 'bg-base-content/10 text-base-content/70',
+          icon: AlertTriangle,
+          tooltip: 'Unable to determine sync status'
+        };
+    }
+  }
+
+  // Format sync changes for tooltip
+  function formatSyncChanges(contentChanges) {
+    if (!contentChanges) return '';
+    
+    const changes = [];
+    if (contentChanges.hasNewPosts) changes.push(m.sites_sync_changes_new_posts());
+    if (contentChanges.hasUpdatedPosts) changes.push(m.sites_sync_changes_updated_posts());
+    if (contentChanges.hasNewPages) changes.push(m.sites_sync_changes_new_pages());
+    if (contentChanges.hasUpdatedPages) changes.push(m.sites_sync_changes_updated_pages());
+    if (contentChanges.hasNewMedia) changes.push(m.sites_sync_changes_new_media());
+    if (contentChanges.hasSettingsChanges) changes.push(m.sites_sync_changes_settings());
+    if (contentChanges.hasTemplateChanges) changes.push(m.sites_sync_changes_template());
+    
+    return changes.join(', ');
+  }
+
+  // Toggle sync details popover
+  function toggleSyncDetails(siteId) {
+    showSyncDetails = showSyncDetails === siteId ? null : siteId;
+  }
+
+  // Close sync details when clicking outside
+  function handleClickOutside(event) {
+    if (showSyncDetails && !event.target.closest('.sync-details-container')) {
+      showSyncDetails = null;
+    }
+  }
+
+  // Get icon for content type
+  function getContentTypeIcon(type) {
+    switch (type) {
+      case 'posts': return FileText;
+      case 'pages': return FileText;
+      case 'media': return FileImage;
+      case 'settings': return Settings2;
+      case 'template': return Layout;
+      default: return FileText;
     }
   }
 
@@ -381,9 +461,10 @@
 </div>
 
 <!-- Sites List -->
-<div class="grid gap-6" style="grid-template-columns: repeat(auto-fit, minmax(380px, 540px));">
+<div class="grid gap-6" style="grid-template-columns: repeat(auto-fit, minmax(380px, 540px));" onclick={handleClickOutside}>
   {#each sites as site (site.id)}
     {@const modeStyle = getGenerationModeStyle(site.generationMode)}
+    {@const syncInfo = getSyncStatusInfo(site.syncStatus)}
     <div class="card bg-base-100 shadow-sm border border-base-200">
       <div class="card-body">
         <!-- Content Area (Header + Deployment + Description) -->
@@ -401,6 +482,131 @@
               {/if}
               <div class="badge badge-sm {site.buildStatus === 'success' ? 'bg-success/10 text-success' : site.buildStatus === 'error' ? 'bg-error/10 text-error' : 'bg-warning/10 text-warning'}">
                 {getBuildStatusText(site.buildStatus)}
+              </div>
+              
+              <!-- Interactive Sync Status Badge -->
+              <div class="relative sync-details-container">
+                <button 
+                  class="badge badge-sm {syncInfo.className} flex items-center gap-1 cursor-pointer hover:opacity-80 transition-opacity"
+                  onclick={() => toggleSyncDetails(site.id)}
+                  title="{syncInfo.tooltip} - {m.sites_sync_details_click_to_see()}"
+                >
+                  <svelte:component this={syncInfo.icon} class="h-3 w-3" />
+                  <span class="text-xs">{syncInfo.text}</span>
+                  {#if site.syncStatus === 'out-of-sync' && site.contentChanges?.counts && Object.values(site.contentChanges.counts).some(count => count > 0)}
+                    <svelte:component this={showSyncDetails === site.id ? ChevronUp : ChevronDown} class="h-2 w-2" />
+                  {/if}
+                </button>
+
+                <!-- Sync Details Popover -->
+                {#if showSyncDetails === site.id && site.contentChanges?.counts}
+                  <div class="absolute top-full mt-2 right-0 bg-base-100 border border-base-200 rounded-lg shadow-lg p-4 min-w-80 z-50">
+                    <!-- Header -->
+                    <div class="flex items-center justify-between mb-3">
+                      <div>
+                        <h4 class="font-semibold text-sm">{m.sites_sync_details_title()}</h4>
+                        <p class="text-xs text-base-content/70">{m.sites_sync_details_subtitle()}</p>
+                      </div>
+                      <button 
+                        class="btn btn-ghost btn-xs btn-circle" 
+                        onclick={() => showSyncDetails = null}
+                      >
+                        <X class="h-3 w-3" />
+                      </button>
+                    </div>
+
+                    <!-- Content Changes List -->
+                    <div class="space-y-2">
+                      {#if site.contentChanges.counts.newPosts > 0}
+                        <div class="flex items-center justify-between py-1">
+                          <div class="flex items-center gap-2">
+                            <svelte:component this={getContentTypeIcon('posts')} class="h-4 w-4 text-blue-500" />
+                            <span class="text-sm">{m.sites_sync_details_new_posts()}</span>
+                          </div>
+                          <span class="badge badge-primary badge-sm">{site.contentChanges.counts.newPosts}</span>
+                        </div>
+                      {/if}
+
+                      {#if site.contentChanges.counts.updatedPosts > 0}
+                        <div class="flex items-center justify-between py-1">
+                          <div class="flex items-center gap-2">
+                            <svelte:component this={getContentTypeIcon('posts')} class="h-4 w-4 text-blue-500" />
+                            <span class="text-sm">{m.sites_sync_details_updated_posts()}</span>
+                          </div>
+                          <span class="badge badge-info badge-sm">{site.contentChanges.counts.updatedPosts}</span>
+                        </div>
+                      {/if}
+
+                      {#if site.contentChanges.counts.newPages > 0}
+                        <div class="flex items-center justify-between py-1">
+                          <div class="flex items-center gap-2">
+                            <svelte:component this={getContentTypeIcon('pages')} class="h-4 w-4 text-green-500" />
+                            <span class="text-sm">{m.sites_sync_details_new_pages()}</span>
+                          </div>
+                          <span class="badge badge-primary badge-sm">{site.contentChanges.counts.newPages}</span>
+                        </div>
+                      {/if}
+
+                      {#if site.contentChanges.counts.updatedPages > 0}
+                        <div class="flex items-center justify-between py-1">
+                          <div class="flex items-center gap-2">
+                            <svelte:component this={getContentTypeIcon('pages')} class="h-4 w-4 text-green-500" />
+                            <span class="text-sm">{m.sites_sync_details_updated_pages()}</span>
+                          </div>
+                          <span class="badge badge-info badge-sm">{site.contentChanges.counts.updatedPages}</span>
+                        </div>
+                      {/if}
+
+                      {#if site.contentChanges.counts.newMedia > 0}
+                        <div class="flex items-center justify-between py-1">
+                          <div class="flex items-center gap-2">
+                            <svelte:component this={getContentTypeIcon('media')} class="h-4 w-4 text-purple-500" />
+                            <span class="text-sm">{m.sites_sync_details_new_media()}</span>
+                          </div>
+                          <span class="badge badge-primary badge-sm">{site.contentChanges.counts.newMedia}</span>
+                        </div>
+                      {/if}
+
+                      {#if site.contentChanges.counts.settingsChanges > 0}
+                        <div class="flex items-center justify-between py-1">
+                          <div class="flex items-center gap-2">
+                            <svelte:component this={getContentTypeIcon('settings')} class="h-4 w-4 text-orange-500" />
+                            <span class="text-sm">{m.sites_sync_details_settings_changes()}</span>
+                          </div>
+                          <span class="badge badge-warning badge-sm">{site.contentChanges.counts.settingsChanges}</span>
+                        </div>
+                      {/if}
+
+                      {#if site.contentChanges.counts.templateChanges > 0}
+                        <div class="flex items-center justify-between py-1">
+                          <div class="flex items-center gap-2">
+                            <svelte:component this={getContentTypeIcon('template')} class="h-4 w-4 text-pink-500" />
+                            <span class="text-sm">{m.sites_sync_details_template_changes()}</span>
+                          </div>
+                          <span class="badge badge-secondary badge-sm">{site.contentChanges.counts.templateChanges}</span>
+                        </div>
+                      {/if}
+
+                      <!-- Show message if no changes -->
+                      {#if !Object.values(site.contentChanges.counts).some(count => count > 0)}
+                        <div class="text-center py-3 text-base-content/70">
+                          <CheckCircle2 class="h-8 w-8 mx-auto text-success mb-2" />
+                          <p class="text-sm">{m.sites_sync_details_no_changes()}</p>
+                        </div>
+                      {/if}
+                    </div>
+
+                    <!-- Footer with last build info -->
+                    {#if site.lastBuildAt}
+                      <div class="mt-3 pt-3 border-t border-base-200">
+                        <div class="flex items-center gap-2 text-xs text-base-content/60">
+                          <Clock class="h-3 w-3" />
+                          <span>{m.sites_sync_details_last_build()}: {formatDate(site.lastBuildAt)}</span>
+                        </div>
+                      </div>
+                    {/if}
+                  </div>
+                {/if}
               </div>
             </div>
           </div>
@@ -483,6 +689,26 @@
               {m.sites_metadata_last_built()} {formatDate(site.lastBuildAt)}
             </div>
           {/if}
+          
+          <!-- Sync Status Information -->
+          {#if site.syncStatus === 'out-of-sync' && site.contentChanges}
+            <div class="flex items-center gap-2 text-warning">
+              <RefreshCw class="h-3 w-3" />
+              <span class="text-xs">
+                {site.contentChanges.changesSummary}
+              </span>
+            </div>
+            <div class="text-xs text-warning-content/80 italic">
+              {m.sites_sync_rebuild_prompt()}
+            </div>
+          {:else if site.syncStatus === 'up-to-date'}
+            <div class="flex items-center gap-2 text-success">
+              <CheckCircle2 class="h-3 w-3" />
+              <span class="text-xs">
+                {m.sites_sync_tooltip_up_to_date()}
+              </span>
+            </div>
+          {/if}
         </div>
 
         <!-- Action Buttons -->
@@ -515,15 +741,24 @@
           </button>
           
           <button 
-            class="btn {modeStyle.buttonClass} btn-sm text-white"
+            class="btn {modeStyle.buttonClass} btn-sm text-white {site.syncStatus === 'out-of-sync' ? 'ring-2 ring-warning/50 animate-pulse' : ''}"
             onclick={() => generateSite(site)}
             disabled={showBuildModal && buildingSite?.id === site.id}
+            title="{site.syncStatus === 'out-of-sync' ? m.sites_sync_rebuild_needed() : ''}"
           >
             {#if site.generationMode === 'static'}
-              <Rocket class="h-4 w-4" />
+              {#if site.syncStatus === 'out-of-sync'}
+                <RefreshCw class="h-4 w-4" />
+              {:else}
+                <Rocket class="h-4 w-4" />
+              {/if}
               {m.sites_button_generate()}
             {:else}
-              <Zap class="h-4 w-4" />
+              {#if site.syncStatus === 'out-of-sync'}
+                <RefreshCw class="h-4 w-4" />
+              {:else}
+                <Zap class="h-4 w-4" />
+              {/if}
               {m.sites_button_generate()}
             {/if}
           </button>
