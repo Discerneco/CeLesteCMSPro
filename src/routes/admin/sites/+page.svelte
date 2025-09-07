@@ -52,8 +52,6 @@
   let showBuildModal = $state(false);
   let buildingSite = $state(null);
   
-  // Sync details popover state
-  let showSyncDetails = $state(null); // Track which site's sync details are shown
   
   
   // Create site form state
@@ -291,17 +289,6 @@
     return changes.join(', ');
   }
 
-  // Toggle sync details popover
-  function toggleSyncDetails(siteId) {
-    showSyncDetails = showSyncDetails === siteId ? null : siteId;
-  }
-
-  // Close dropdowns when clicking outside
-  function handleClickOutside(event) {
-    if (showSyncDetails && !event.target.closest('.sync-details-container')) {
-      showSyncDetails = null;
-    }
-  }
 
   // Get icon for content type
   function getContentTypeIcon(type) {
@@ -486,7 +473,7 @@
 </div>
 
 <!-- Sites List -->
-<div class="grid gap-6" style="grid-template-columns: repeat(auto-fit, minmax(380px, 540px));" onclick={handleClickOutside}>
+<div class="grid gap-6" style="grid-template-columns: repeat(auto-fit, minmax(380px, 540px));">
   {#each sites as site (site.id)}
     {@const modeStyle = getGenerationModeStyle(site.generationMode)}
     {@const syncInfo = getSyncStatusInfo(site.syncStatus)}
@@ -511,32 +498,25 @@
               
               <!-- Interactive Sync Status Info Dot -->
               {#if site.syncStatus === 'out-of-sync' && site.contentChanges?.counts && Object.values(site.contentChanges.counts).some(count => count > 0)}
-                <div class="relative sync-details-container">
-                  <div class="flex items-center gap-1">
-                    <!-- Option 1: Plain text "i" -->
-                    <button 
-                      class="w-5 h-5 bg-black dark:bg-gray-700 rounded-full flex items-center justify-center cursor-pointer hover:bg-gray-800 dark:hover:bg-gray-600 transition-colors"
-                      onclick={() => toggleSyncDetails(site.id)}
-                      title="{m.sites_sync_details_click_to_see()} - Option 1: Text i"
-                    >
-                      <span class="text-white text-xs font-semibold">i</span>
-                    </button>
-                    
+                <div class="dropdown dropdown-end">
+                  <div 
+                    tabindex="0" 
+                    role="button"
+                    class="w-5 h-5 bg-black dark:bg-gray-700 rounded-full flex items-center justify-center cursor-pointer hover:bg-gray-800 dark:hover:bg-gray-600 transition-colors"
+                    title="{m.sites_sync_details_click_to_see()}"
+                  >
+                    <span class="text-white text-xs font-semibold">i</span>
                   </div>
 
                 <!-- Sync Details Popover -->
-                {#if showSyncDetails === site.id && site.contentChanges?.counts}
-                  <div class="absolute top-full mt-2 right-0 bg-base-100 border border-base-200 rounded-lg shadow-lg p-4 min-w-80 z-50">
+                <div tabindex="-1" class="dropdown-content z-[1] bg-base-100 border border-base-200 rounded-lg shadow-lg p-4 min-w-80">
                     <!-- Header -->
                     <div class="flex items-center justify-between mb-3">
                       <div>
                         <h4 class="font-semibold text-sm">{m.sites_sync_details_title()}</h4>
                         <p class="text-xs text-base-content/70">{m.sites_sync_details_subtitle()}</p>
                       </div>
-                      <button 
-                        class="btn btn-ghost btn-xs btn-circle" 
-                        onclick={() => showSyncDetails = null}
-                      >
+                      <button class="btn btn-ghost btn-xs btn-circle">
                         <X class="h-3 w-3" />
                       </button>
                     </div>
@@ -632,7 +612,6 @@
                       </div>
                     {/if}
                   </div>
-                {/if}
                 </div>
               {/if}
               
