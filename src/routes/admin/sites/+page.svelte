@@ -499,8 +499,25 @@
               {#if site.isDefault}
                 <div class="badge badge-sm bg-primary/10 text-primary">Default</div>
               {/if}
-              <div class="badge badge-sm {site.buildStatus === 'success' ? 'bg-success/10 text-success' : site.buildStatus === 'error' ? 'bg-error/10 text-error' : 'bg-warning/10 text-warning'}">
-                {getBuildStatusText(site.buildStatus)}
+              <!-- Three Status Dots -->
+              <div class="flex items-center gap-1">
+                <!-- Publication Status Dot -->
+                <div 
+                  class="w-2 h-2 rounded-full {site.statusDots?.publication?.status === 'green' ? 'bg-green-500' : site.statusDots?.publication?.status === 'yellow' ? 'bg-yellow-500' : site.statusDots?.publication?.status === 'red' ? 'bg-red-500' : site.statusDots?.publication?.status === 'blue' ? 'bg-blue-500' : 'bg-gray-400'}"
+                  title="{m.sites_status_publication_title()}"
+                ></div>
+                
+                <!-- Health Status Dot -->
+                <div 
+                  class="w-2 h-2 rounded-full {site.statusDots?.health?.status === 'green' ? 'bg-green-500' : site.statusDots?.health?.status === 'yellow' ? 'bg-yellow-500' : site.statusDots?.health?.status === 'red' ? 'bg-red-500' : site.statusDots?.health?.status === 'blue' ? 'bg-blue-500' : 'bg-gray-400'}"
+                  title="{m.sites_status_health_title()}"
+                ></div>
+                
+                <!-- Sync/Data Layer Status Dot -->
+                <div 
+                  class="w-2 h-2 rounded-full {site.statusDots?.syncData?.status === 'green' ? 'bg-green-500' : site.statusDots?.syncData?.status === 'yellow' ? 'bg-yellow-500' : site.statusDots?.syncData?.status === 'red' ? 'bg-red-500' : site.statusDots?.syncData?.status === 'blue' ? 'bg-blue-500' : 'bg-gray-400'}"
+                  title="{site.statusDots?.syncData?.type === 'data-layer' ? m.sites_status_data_layer_title() : m.sites_status_sync_title()}"
+                ></div>
               </div>
               
               <!-- Interactive Sync Status Info Dot -->
@@ -531,9 +548,10 @@
                     <!-- Content Changes List -->
                     <div class="space-y-2">
                       {#if site.contentChanges.counts.newPosts > 0}
+                        {@const PostIcon = getContentTypeIcon('posts')}
                         <div class="flex items-center justify-between py-1">
                           <div class="flex items-center gap-2">
-                            <svelte:component this={getContentTypeIcon('posts')} class="h-4 w-4 text-blue-500" />
+                            <PostIcon class="h-4 w-4 text-blue-500" />
                             <span class="text-sm">{m.sites_sync_details_new_posts()}</span>
                           </div>
                           <div class="w-5 h-5 bg-primary/10 text-primary rounded-full flex items-center justify-center text-xs font-medium">
@@ -543,9 +561,10 @@
                       {/if}
 
                       {#if site.contentChanges.counts.updatedPosts > 0}
+                        {@const PostIcon = getContentTypeIcon('posts')}
                         <div class="flex items-center justify-between py-1">
                           <div class="flex items-center gap-2">
-                            <svelte:component this={getContentTypeIcon('posts')} class="h-4 w-4 text-blue-500" />
+                            <PostIcon class="h-4 w-4 text-blue-500" />
                             <span class="text-sm">{m.sites_sync_details_updated_posts()}</span>
                           </div>
                           <div class="w-5 h-5 bg-primary/10 text-primary rounded-full flex items-center justify-center text-xs font-medium">
@@ -555,9 +574,10 @@
                       {/if}
 
                       {#if site.contentChanges.counts.newPages > 0}
+                        {@const PageIcon = getContentTypeIcon('pages')}
                         <div class="flex items-center justify-between py-1">
                           <div class="flex items-center gap-2">
-                            <svelte:component this={getContentTypeIcon('pages')} class="h-4 w-4 text-green-500" />
+                            <PageIcon class="h-4 w-4 text-green-500" />
                             <span class="text-sm">{m.sites_sync_details_new_pages()}</span>
                           </div>
                           <div class="w-5 h-5 bg-primary/10 text-primary rounded-full flex items-center justify-center text-xs font-medium">
@@ -567,9 +587,10 @@
                       {/if}
 
                       {#if site.contentChanges.counts.updatedPages > 0}
+                        {@const PageIcon = getContentTypeIcon('pages')}
                         <div class="flex items-center justify-between py-1">
                           <div class="flex items-center gap-2">
-                            <svelte:component this={getContentTypeIcon('pages')} class="h-4 w-4 text-green-500" />
+                            <PageIcon class="h-4 w-4 text-green-500" />
                             <span class="text-sm">{m.sites_sync_details_updated_pages()}</span>
                           </div>
                           <div class="w-5 h-5 bg-primary/10 text-primary rounded-full flex items-center justify-center text-xs font-medium">
@@ -579,9 +600,10 @@
                       {/if}
 
                       {#if site.contentChanges.counts.newMedia > 0}
+                        {@const MediaIcon = getContentTypeIcon('media')}
                         <div class="flex items-center justify-between py-1">
                           <div class="flex items-center gap-2">
-                            <svelte:component this={getContentTypeIcon('media')} class="h-4 w-4 text-purple-500" />
+                            <MediaIcon class="h-4 w-4 text-purple-500" />
                             <span class="text-sm">{m.sites_sync_details_new_media()}</span>
                           </div>
                           <div class="w-5 h-5 bg-primary/10 text-primary rounded-full flex items-center justify-center text-xs font-medium">
@@ -591,9 +613,10 @@
                       {/if}
 
                       {#if site.contentChanges.counts.settingsChanges > 0}
+                        {@const SettingsIcon = getContentTypeIcon('settings')}
                         <div class="flex items-center justify-between py-1">
                           <div class="flex items-center gap-2">
-                            <svelte:component this={getContentTypeIcon('settings')} class="h-4 w-4 text-orange-500" />
+                            <SettingsIcon class="h-4 w-4 text-orange-500" />
                             <span class="text-sm">{m.sites_sync_details_settings_changes()}</span>
                           </div>
                           <div class="w-5 h-5 bg-primary/10 text-primary rounded-full flex items-center justify-center text-xs font-medium">
@@ -603,9 +626,10 @@
                       {/if}
 
                       {#if site.contentChanges.counts.templateChanges > 0}
+                        {@const TemplateIcon = getContentTypeIcon('template')}
                         <div class="flex items-center justify-between py-1">
                           <div class="flex items-center gap-2">
-                            <svelte:component this={getContentTypeIcon('template')} class="h-4 w-4 text-pink-500" />
+                            <TemplateIcon class="h-4 w-4 text-pink-500" />
                             <span class="text-sm">{m.sites_sync_details_template_changes()}</span>
                           </div>
                           <div class="w-5 h-5 bg-primary/10 text-primary rounded-full flex items-center justify-center text-xs font-medium">

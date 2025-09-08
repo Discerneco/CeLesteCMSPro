@@ -255,6 +255,133 @@ async function calculateContentSync(db: any, site: any) {
   }
 }
 
+// Helper function to calculate publication status
+async function calculatePublicationStatus(db: any, site: any) {
+  try {
+    // Get published content counts
+    const [publishedPosts] = await db.select({ count: count() }).from(posts).where(eq(posts.status, 'published'));
+    const [publishedPages] = await db.select({ count: count() }).from(pages).where(eq(pages.status, 'published'));
+    const [draftPosts] = await db.select({ count: count() }).from(posts).where(eq(posts.status, 'draft'));
+    const [draftPages] = await db.select({ count: count() }).from(pages).where(eq(pages.status, 'draft'));
+    
+    const publishedCount = (publishedPosts?.count || 0) + (publishedPages?.count || 0);
+    const draftCount = (draftPosts?.count || 0) + (draftPages?.count || 0);
+    
+    let status = 'gray';
+    if (publishedCount > 0) {
+      status = 'green'; // Has published content
+    } else if (draftCount > 0) {
+      status = 'yellow'; // Only drafts available
+    } else {
+      status = 'red'; // No content at all
+    }
+    
+    return {
+      status,
+      publishedPosts: publishedPosts?.count || 0,
+      publishedPages: publishedPages?.count || 0,
+      draftPosts: draftPosts?.count || 0,
+      draftPages: draftPages?.count || 0,
+      totalPublished: publishedCount,
+      totalDrafts: draftCount
+    };
+  } catch (error) {
+    console.error('Error calculating publication status:', error);
+    return {
+      status: 'gray',
+      publishedPosts: 0,
+      publishedPages: 0,
+      draftPosts: 0,
+      draftPages: 0,
+      totalPublished: 0,
+      totalDrafts: 0
+    };
+  }
+}
+
+// Helper function to calculate health status
+async function calculateHealthStatus(db: any, site: any) {
+  try {
+    const healthChecks = {
+      database: true,
+      files: true,
+      lastBuild: true
+    };
+    
+    // Check database responsiveness (basic query)
+    const startTime = Date.now();
+    await db.select({ count: count() }).from(sites).where(eq(sites.id, site.id));
+    const dbResponseTime = Date.now() - startTime;
+    
+    // Database health
+    if (dbResponseTime > 1000) {
+      healthChecks.database = false; // Slow database
+    }
+    
+    // Build status health
+    if (site.buildStatus === 'error') {
+      healthChecks.lastBuild = false;
+    }
+    
+    // Determine overall health status
+    let status = 'green';
+    if (!healthChecks.lastBuild) {
+      status = 'red'; // Critical issues
+    } else if (!healthChecks.database) {
+      status = 'yellow'; // Minor issues
+    }
+    
+    return {
+      status,
+      dbResponseTime,
+      checks: healthChecks,
+      lastBuildStatus: site.buildStatus
+    };
+  } catch (error) {
+    console.error('Error calculating health status:', error);
+    return {
+      status: 'red',
+      dbResponseTime: -1,
+      checks: { database: false, files: false, lastBuild: false },
+      lastBuildStatus: 'unknown'
+    };
+  }
+}
+
+// Helper function to calculate sync/data layer status based on generation mode
+async function calculateSyncDataStatus(db: any, site: any, contentSync: any) {
+  try {
+    if (site.generationMode === 'static') {
+      // For static sites, use sync status logic
+      const syncStatus = contentSync.syncStatus;
+      
+      if (syncStatus === 'up-to-date') {
+        return { status: 'green', type: 'sync' };
+      } else if (syncStatus === 'out-of-sync') {
+        // Check severity of changes
+        const counts = contentSync.contentChanges?.counts;
+        const hasStructuralChanges = (counts?.newPosts || 0) + (counts?.updatedPosts || 0) + (counts?.newPages || 0) + (counts?.updatedPages || 0) > 0;
+        
+        if (hasStructuralChanges) {
+          return { status: 'red', type: 'sync' }; // Major changes - rebuild needed
+        } else {
+          return { status: 'yellow', type: 'sync' }; // Minor changes
+        }
+      } else {
+        return { status: 'gray', type: 'sync' }; // Never built or unknown
+      }
+    } else {
+      // For dynamic sites, use data layer status logic
+      // In future: check API health, cache status, etc.
+      // For now, return healthy status for dynamic sites
+      return { status: 'green', type: 'data-layer' };
+    }
+  } catch (error) {
+    console.error('Error calculating sync/data status:', error);
+    return { status: 'gray', type: site.generationMode === 'static' ? 'sync' : 'data-layer' };
+  }
+}
+
 export const GET: RequestHandler = async ({ url, locals }) => {
   try {
     const db = getDbFromEvent({ locals });
@@ -284,14 +411,23 @@ export const GET: RequestHandler = async ({ url, locals }) => {
       .leftJoin(templates, eq(sites.defaultTemplateId, templates.id))
       .orderBy(sites.createdAt);
 
-    // Enhance each site with content synchronization status
+    // Enhance each site with status information
     const sitesWithSyncStatus = await Promise.all(
       sitesWithTemplates.map(async (site) => {
         const syncInfo = await calculateContentSync(db, site);
+        const publicationStatus = await calculatePublicationStatus(db, site);
+        const healthStatus = await calculateHealthStatus(db, site);
+        const syncDataStatus = await calculateSyncDataStatus(db, site, syncInfo);
+        
         return {
           ...site,
           syncStatus: syncInfo.syncStatus,
-          contentChanges: syncInfo.contentChanges
+          contentChanges: syncInfo.contentChanges,
+          statusDots: {
+            publication: publicationStatus,
+            health: healthStatus,
+            syncData: syncDataStatus
+          }
         };
       })
     );
@@ -364,12 +500,21 @@ export const POST: RequestHandler = async ({ request, locals }) => {
       .leftJoin(templates, eq(sites.defaultTemplateId, templates.id))
       .where(eq(sites.id, newSite.id));
 
-    // Add sync status to newly created site
+    // Add status information to newly created site
     const syncInfo = await calculateContentSync(db, siteWithTemplate);
+    const publicationStatus = await calculatePublicationStatus(db, siteWithTemplate);
+    const healthStatus = await calculateHealthStatus(db, siteWithTemplate);
+    const syncDataStatus = await calculateSyncDataStatus(db, siteWithTemplate, syncInfo);
+    
     const siteWithSyncStatus = {
       ...siteWithTemplate,
       syncStatus: syncInfo.syncStatus,
-      contentChanges: syncInfo.contentChanges
+      contentChanges: syncInfo.contentChanges,
+      statusDots: {
+        publication: publicationStatus,
+        health: healthStatus,
+        syncData: syncDataStatus
+      }
     };
 
     return json(siteWithSyncStatus, { status: 201 });
