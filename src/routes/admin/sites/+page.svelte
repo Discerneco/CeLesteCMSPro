@@ -28,7 +28,8 @@
     Settings2,
     Layout,
     X,
-    Info
+    Info,
+    Star
   } from '@lucide/svelte';
   
   import * as m from '$lib/paraglide/messages';
@@ -504,13 +505,13 @@
         <div class="site-header">
           <!-- Line 1: Site Name + Badges -->
           <div class="flex items-center gap-2 mb-2">
-            <h3 class="site-title text-lg font-semibold flex-grow">
+            <h3 class="site-title text-lg font-semibold flex-grow flex items-center">
+              {#if site.isDefault}
+                <Star class="h-4 w-4 text-primary mr-2" title="Default Site" />
+              {/if}
               {site.name}
             </h3>
             <div class="flex items-center gap-2 flex-shrink-0">
-              {#if site.isDefault}
-                <div class="badge badge-sm bg-primary/10 text-primary">Default</div>
-              {/if}
               <!-- Three Status Dots -->
               <div class="flex items-center gap-1">
                 <!-- Publication Status Dot -->
