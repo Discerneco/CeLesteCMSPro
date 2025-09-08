@@ -63,7 +63,7 @@
   });
 
   // State management with Svelte 5 runes
-  let phases = $state(buildPhases);
+  let phases = $derived(buildPhases);
   let buildState = $state('building'); // 'building' | 'completed'
   let currentPhase = $state('setup');
   let startTime = $state(null);
