@@ -360,6 +360,18 @@
       : { color: 'emerald', buttonClass: 'bg-emerald-600 hover:bg-emerald-700', textClass: 'text-emerald-600' };
   }
 
+  // Get DaisyUI status class based on status
+  function getStatusClass(status) {
+    switch (status) {
+      case 'green': return 'status status-success';
+      case 'yellow': return 'status status-warning';
+      case 'red': return 'status status-error';
+      case 'blue': return 'status status-info';
+      case 'gray': return 'status status-neutral';
+      default: return 'status status-neutral';
+    }
+  }
+
   // Load sites from API
   async function loadSites() {
     loading = true;
@@ -503,19 +515,19 @@
               <div class="flex items-center gap-1">
                 <!-- Publication Status Dot -->
                 <div 
-                  class="w-2 h-2 rounded-full {site.statusDots?.publication?.status === 'green' ? 'bg-green-500' : site.statusDots?.publication?.status === 'yellow' ? 'bg-yellow-500' : site.statusDots?.publication?.status === 'red' ? 'bg-red-500' : site.statusDots?.publication?.status === 'blue' ? 'bg-blue-500' : 'bg-gray-400'}"
+                  class="{getStatusClass(site.statusDots?.publication?.status)}"
                   title="{m.sites_status_publication_title()}"
                 ></div>
                 
                 <!-- Health Status Dot -->
                 <div 
-                  class="w-2 h-2 rounded-full {site.statusDots?.health?.status === 'green' ? 'bg-green-500' : site.statusDots?.health?.status === 'yellow' ? 'bg-yellow-500' : site.statusDots?.health?.status === 'red' ? 'bg-red-500' : site.statusDots?.health?.status === 'blue' ? 'bg-blue-500' : 'bg-gray-400'}"
+                  class="{getStatusClass(site.statusDots?.health?.status)}"
                   title="{m.sites_status_health_title()}"
                 ></div>
                 
                 <!-- Sync/Data Layer Status Dot -->
                 <div 
-                  class="w-2 h-2 rounded-full {site.statusDots?.syncData?.status === 'green' ? 'bg-green-500' : site.statusDots?.syncData?.status === 'yellow' ? 'bg-yellow-500' : site.statusDots?.syncData?.status === 'red' ? 'bg-red-500' : site.statusDots?.syncData?.status === 'blue' ? 'bg-blue-500' : 'bg-gray-400'}"
+                  class="{getStatusClass(site.statusDots?.syncData?.status)}"
                   title="{site.statusDots?.syncData?.type === 'data-layer' ? m.sites_status_data_layer_title() : m.sites_status_sync_title()}"
                 ></div>
               </div>
