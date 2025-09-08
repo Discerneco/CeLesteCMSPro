@@ -725,7 +725,9 @@
               </svg>
               <span>{m.sites_deployment_cloudflare()}</span>
             {:else if site.deploymentSettings?.target === 'vercel'}
-              <span class="text-black dark:text-white text-base">▲</span>
+              <svg class="w-3 h-3 inline" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 1L24 22H0L12 1Z"/>
+              </svg>
               <span>{m.sites_deployment_vercel()}</span>
             {:else if site.deploymentSettings?.target === 'netlify'}
               <span class="text-teal-500">◆</span>

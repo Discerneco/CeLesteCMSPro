@@ -231,6 +231,7 @@ Built with amazing open source technologies:
 ### Assets & Resources
 
 - **Cloudflare Logo** - SVG from [SVGRepo](https://www.svgrepo.com/svg/349320/cloudflare) - Used in site deployment indicators (free for commercial use)
+- **Vercel Logo** - SVG from [SVGRepo](https://www.svgrepo.com/svg/378475/vercel-fill) - Used in site deployment indicators (free for commercial use)
 
 ## 📞 Support
 
