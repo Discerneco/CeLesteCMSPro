@@ -507,7 +507,7 @@
           <div class="flex items-center gap-2 mb-2">
             <h3 class="site-title text-lg font-semibold flex-grow flex items-center">
               {#if site.isDefault}
-                <Star class="h-4 w-4 text-primary mr-2" title="Default Site" />
+                <Star class="h-4 w-4 text-warning fill-warning mr-2" title="Default Site" />
               {/if}
               {site.name}
             </h3>
