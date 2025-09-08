@@ -719,7 +719,10 @@
         <div class="deployment-info flex items-center justify-between gap-2">
           <div class="flex items-center gap-2 text-sm text-base-content/70">
             {#if !site.deploymentSettings?.target || site.deploymentSettings?.target === 'cloudflare'}
-              <span class="text-orange-500">☁️</span>
+              <svg class="w-6 h-6 inline" viewBox="0 0 512 512" fill="none">
+                <path fill="#f38020" d="M331 326c11-26-4-38-19-38l-148-2c-4 0-4-6 1-7l150-2c17-1 37-15 43-33 0 0 10-21 9-24a97 97 0 0 0-187-11c-38-25-78 9-69 46-48 3-65 46-60 72 0 1 1 2 3 2h274c1 0 3-1 3-3z"/>
+                <path fill="#faae40" d="M381 224c-4 0-6-1-7 1l-5 21c-5 16 3 30 20 31l32 2c4 0 4 6-1 7l-33 1c-36 4-46 39-46 39 0 2 0 3 2 3h113l3-2a81 81 0 0 0-78-103"/>
+              </svg>
               <span>{m.sites_deployment_cloudflare()}</span>
             {:else if site.deploymentSettings?.target === 'vercel'}
               <span class="text-black dark:text-white text-base">▲</span>

@@ -228,6 +228,10 @@ Built with amazing open source technologies:
 
 - **[Microfolio](https://github.com/aker-dev/microfolio)** by [aker-dev](https://github.com/aker-dev) - Clean architecture patterns, performance-first approach, and elegant static site generation strategies inspired our hybrid admin/public architecture and plugin system design
 
+### Assets & Resources
+
+- **Cloudflare Logo** - SVG from [SVGRepo](https://www.svgrepo.com/svg/349320/cloudflare) - Used in site deployment indicators (free for commercial use)
+
 ## 📞 Support
 
 - 📧 Email: [support@celestecms.com](mailto:support@celestecms.com)
