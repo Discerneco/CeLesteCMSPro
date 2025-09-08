@@ -3,6 +3,7 @@
     Eye, 
     Globe2, 
     Globe,
+    Computer,
     Play, 
     Settings, 
     Upload, 
@@ -539,7 +540,7 @@
                   <div 
                     tabindex="0" 
                     role="button"
-                    class="w-5 h-5 bg-black dark:bg-gray-700 rounded-full flex items-center justify-center cursor-pointer hover:bg-gray-800 dark:hover:bg-gray-600 transition-colors"
+                    class="w-5 h-5 bg-black dark:bg-gray-700 border border-gray-300 dark:border-gray-500 rounded-full flex items-center justify-center cursor-pointer hover:bg-gray-800 dark:hover:bg-gray-600 transition-colors"
                     title="{m.sites_sync_details_click_to_see()}"
                   >
                     <span class="text-white text-xs font-semibold">i</span>
@@ -676,7 +677,7 @@
               <!-- Site Menu Dropdown (Three dots) -->
               <div class="dropdown dropdown-end">
                 <div tabindex="0" role="button" class="btn btn-ghost btn-xs btn-circle" title="Site options">
-                  <MoreVertical class="h-5 w-5 text-black dark:text-white" />
+                  <MoreVertical class="h-5 w-5 text-base-content/70 hover:text-base-content transition-colors" />
                 </div>
                 
                 <!-- Dropdown Menu -->
@@ -760,7 +761,11 @@
           </div>
           
           <div class="flex items-center gap-2 text-sm text-base-content/60">
-            <Globe class="h-4 w-4" />
+            {#if !site.domain && (!site.deploymentSettings?.target || site.deploymentSettings.target === 'development')}
+              <Computer class="h-4 w-4" />
+            {:else}
+              <Globe class="h-4 w-4" />
+            {/if}
             <span>{site.domain || site.slug || 'localhost:5173'}</span>
           </div>
         </div>
