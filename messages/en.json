@@ -615,6 +615,7 @@
 	"sites_metadata_template": "Template:",
 	"sites_metadata_template_none": "None",
 	"sites_metadata_last_built": "Last built:",
+	"sites_metadata_last_updated": "Last updated:",
 	"sites_wizard_step_details": "Site Details",
 	"sites_wizard_step_generation": "Generation Mode",
 	"sites_wizard_step_review": "Review & Create",

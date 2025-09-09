@@ -708,6 +708,7 @@
 	"sites_metadata_template": "Template:",
 	"sites_metadata_template_none": "Nenhum",
 	"sites_metadata_last_built": "Última construção:",
+	"sites_metadata_last_updated": "Última atualização:",
 	"sites_wizard_step_details": "Detalhes do Site",
 	"sites_wizard_step_generation": "Modo de Geração",
 	"sites_wizard_step_review": "Revisar e Criar",

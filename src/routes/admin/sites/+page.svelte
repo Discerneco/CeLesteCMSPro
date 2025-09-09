@@ -835,12 +835,14 @@
             <Calendar class="h-3 w-3" />
             {m.sites_metadata_template()} {site.templateName || m.sites_metadata_template_none()}
           </div>
-          {#if site.lastBuildAt}
-            <div class="flex items-center gap-2">
-              <Clock class="h-3 w-3" />
+          <div class="flex items-center gap-2">
+            <Clock class="h-3 w-3" />
+            {#if site.generationMode === 'dynamic'}
+              {m.sites_metadata_last_updated()} {formatDate(site.lastBuildAt)}
+            {:else}
               {m.sites_metadata_last_built()} {formatDate(site.lastBuildAt)}
-            </div>
-          {/if}
+            {/if}
+          </div>
           
         </div>
 
