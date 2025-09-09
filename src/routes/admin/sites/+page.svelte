@@ -530,8 +530,12 @@
                 
                 <!-- Sync/Data Layer Status Dot -->
                 <div 
-                  class="{getStatusClass(site.statusDots?.syncData?.status)}"
-                  title="{site.statusDots?.syncData?.type === 'data-layer' ? m.sites_status_data_layer_title() : m.sites_status_sync_title()}"
+                  class="{getStatusClass(
+                    site.syncStatus === 'out-of-sync' ? 'red' : 
+                    site.syncStatus === 'up-to-date' ? 'green' : 
+                    'gray'
+                  )}"
+                  title="{site.generationMode === 'dynamic' ? m.sites_status_data_layer_title() : m.sites_status_sync_title()}"
                 ></div>
               </div>
               
