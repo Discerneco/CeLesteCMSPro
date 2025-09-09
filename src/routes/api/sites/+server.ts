@@ -255,46 +255,82 @@ async function calculateContentSync(db: any, site: any) {
   }
 }
 
-// Helper function to calculate publication status
+// Helper function to calculate publication status (deployment/live status, NOT content)
 async function calculatePublicationStatus(db: any, site: any) {
   try {
-    // Get published content counts
-    const [publishedPosts] = await db.select({ count: count() }).from(posts).where(eq(posts.status, 'published'));
-    const [publishedPages] = await db.select({ count: count() }).from(pages).where(eq(pages.status, 'published'));
-    const [draftPosts] = await db.select({ count: count() }).from(posts).where(eq(posts.status, 'draft'));
-    const [draftPages] = await db.select({ count: count() }).from(pages).where(eq(pages.status, 'draft'));
+    const isLocalhost = !site.domain && (!site.deploymentSettings?.target || site.deploymentSettings.target === 'development');
     
-    const publishedCount = (publishedPosts?.count || 0) + (publishedPages?.count || 0);
-    const draftCount = (draftPosts?.count || 0) + (draftPages?.count || 0);
-    
-    let status = 'gray';
-    if (publishedCount > 0) {
-      status = 'green'; // Has published content
-    } else if (draftCount > 0) {
-      status = 'yellow'; // Only drafts available
+    if (site.generationMode === 'static') {
+      // STATIC SITE LOGIC
+      if (site.buildStatus === 'building') {
+        return { 
+          status: 'blue', 
+          message: 'Building static site',
+          type: 'static'
+        };
+      }
+      
+      if (isLocalhost) {
+        if (site.buildStatus === 'success' && site.lastBuildAt) {
+          return { 
+            status: 'purple', 
+            message: 'Built locally',
+            type: 'static'
+          };
+        }
+        return { 
+          status: 'gray', 
+          message: 'Not built',
+          type: 'static'
+        };
+      }
+      
+      if (site.domain && site.buildStatus === 'success') {
+        return { 
+          status: 'green', 
+          message: 'Deployed',
+          type: 'static'
+        };
+      }
+      
+      return { 
+        status: 'gray', 
+        message: 'Not deployed',
+        type: 'static'
+      };
+      
     } else {
-      status = 'red'; // No content at all
+      // DYNAMIC SITE LOGIC
+      if (isLocalhost) {
+        // For dynamic localhost sites, purple indicates local development
+        return { 
+          status: 'purple', 
+          message: 'Local development',
+          type: 'dynamic'
+        };
+      }
+      
+      if (site.domain) {
+        return { 
+          status: 'green', 
+          message: 'Live',
+          type: 'dynamic'
+        };
+      }
+      
+      return { 
+        status: 'gray', 
+        message: 'Inactive',
+        type: 'dynamic'
+      };
     }
     
-    return {
-      status,
-      publishedPosts: publishedPosts?.count || 0,
-      publishedPages: publishedPages?.count || 0,
-      draftPosts: draftPosts?.count || 0,
-      draftPages: draftPages?.count || 0,
-      totalPublished: publishedCount,
-      totalDrafts: draftCount
-    };
   } catch (error) {
     console.error('Error calculating publication status:', error);
     return {
       status: 'gray',
-      publishedPosts: 0,
-      publishedPages: 0,
-      draftPosts: 0,
-      draftPages: 0,
-      totalPublished: 0,
-      totalDrafts: 0
+      message: 'Unknown status',
+      type: site.generationMode || 'unknown'
     };
   }
 }
@@ -305,7 +341,8 @@ async function calculateHealthStatus(db: any, site: any) {
     const healthChecks = {
       database: true,
       files: true,
-      lastBuild: true
+      lastBuild: true,
+      server: true
     };
     
     // Check database responsiveness (basic query)
@@ -323,12 +360,25 @@ async function calculateHealthStatus(db: any, site: any) {
       healthChecks.lastBuild = false;
     }
     
+    // Server connectivity check (localhost sites only)
+    if (!site.domain && (!site.deploymentSettings?.target || site.deploymentSettings.target === 'development')) {
+      try {
+        const response = await fetch(`http://localhost:5173/sites/${site.slug}`, {
+          method: 'HEAD',
+          signal: AbortSignal.timeout(2000) // 2 second timeout
+        });
+        healthChecks.server = response.ok;
+      } catch (error) {
+        healthChecks.server = false; // Server down or unreachable
+      }
+    }
+    
     // Determine overall health status
     let status = 'green';
-    if (!healthChecks.lastBuild) {
-      status = 'red'; // Critical issues
+    if (!healthChecks.lastBuild || !healthChecks.server) {
+      status = 'red'; // Critical issues (build failed or server down)
     } else if (!healthChecks.database) {
-      status = 'yellow'; // Minor issues
+      status = 'yellow'; // Minor issues (slow database)
     }
     
     return {

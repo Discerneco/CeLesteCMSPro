@@ -32,6 +32,72 @@ CeLesteCMS Pro features a revolutionary multi-site management system that allows
 - **Build Settings**: Generation preferences and deployment options
 - **Performance Settings**: Caching rules and optimization preferences
 
+## Status Indicator System
+
+### Three-Dot Status Overview
+Each site displays three colored status dots providing at-a-glance health monitoring.
+The dots behave differently for **Static** vs **Dynamic** generation modes.
+
+#### Dot 1: Publication/Deployment Status 🌐
+
+**For STATIC Sites:**
+- 🟢 **Green**: Deployed to external domain (built and published)
+- 🟣 **Purple**: Built locally (localhost development, successful build)
+- 🔵 **Blue**: Currently building/generating
+- 🔘 **Gray**: Not built yet
+
+**For DYNAMIC Sites:**
+- 🟢 **Green**: Live with domain (API active)
+- 🟣 **Purple**: Running locally (development server at localhost:5173)
+- 🔘 **Gray**: Inactive/disabled
+
+#### Dot 2: Error Status ❌
+**Purpose**: System health and error monitoring (same for both modes)
+- 🟢 **Green**: All systems operational (database OK, build OK, server UP for localhost)
+- 🟡 **Yellow**: Performance warnings (slow database response >1000ms)
+- 🔴 **Red**: Critical errors (server down, build failed, database errors)
+- 🔘 **Gray**: Unable to determine status
+
+**Monitored Systems**:
+- Database connectivity and response time
+- Build/generation status
+- Server availability (localhost sites only via `http://localhost:5173/sites/{slug}`)
+- Network and hardware issues
+
+#### Dot 3: Content Status 📄
+
+**For STATIC Sites:**
+- 🟢 **Green**: Content synced with last build
+- 🟡 **Yellow**: Minor changes pending (media, settings)
+- 🔴 **Red**: Major changes need rebuild (posts, pages)
+- 🔘 **Gray**: Never built or unknown
+
+**For DYNAMIC Sites:**
+- 🟢 **Green**: Data layer healthy (API/cache working)
+- 🟡 **Yellow**: Cache stale or minor issues
+- 🔴 **Red**: Data layer errors
+- 🔘 **Gray**: Unknown status
+
+### Visual Indicators
+- **Computer Icon** 💻: Localhost development sites (no external domain)
+- **Globe Icon** 🌐: Externally deployed sites (has domain)
+- **URL Display**: Shows "localhost:5173" for local sites, domain or slug for others
+- **Generation Mode Badge**: "Static" or "Dynamic" indicator on each site card
+
+### Implementation Details
+
+#### Server Status Checking (Localhost)
+For localhost development sites, the system performs health checks:
+- Pings `http://localhost:5173/sites/{slug}` with 2-second timeout
+- Updates Dot 2 (Error Status) based on server availability
+- Only applies to sites without external domains
+
+#### Status Priority
+The error status (Dot 2) follows this priority:
+1. 🔴 **Red**: Any critical failure (server down, build error, database failure)
+2. 🟡 **Yellow**: Performance issues but operational
+3. 🟢 **Green**: All systems functioning normally
+
 ## Site Generation Process
 
 ### Build System

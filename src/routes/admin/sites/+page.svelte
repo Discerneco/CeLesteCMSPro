@@ -369,6 +369,7 @@
       case 'yellow': return 'status status-warning';
       case 'red': return 'status status-error';
       case 'blue': return 'status status-info';
+      case 'purple': return 'status status-accent';
       case 'gray': return 'status status-neutral';
       default: return 'status status-neutral';
     }
@@ -766,7 +767,13 @@
             {:else}
               <Globe class="h-4 w-4" />
             {/if}
-            <span>{site.domain || site.slug || 'localhost:5173'}</span>
+            <span>
+              {#if !site.domain && (!site.deploymentSettings?.target || site.deploymentSettings.target === 'development')}
+                localhost:5173
+              {:else}
+                {site.domain || site.slug}
+              {/if}
+            </span>
           </div>
         </div>
         </div>
