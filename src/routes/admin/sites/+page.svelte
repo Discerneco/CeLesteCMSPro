@@ -375,6 +375,24 @@
     }
   }
 
+  // Get clean display URL (short version for cards)
+  function getDisplayUrl(site) {
+    if (!site.domain && (!site.deploymentSettings?.target || site.deploymentSettings.target === 'development')) {
+      const serverUrl = site.statusDots?.health?.serverUrl || 'localhost:5173';
+      // Extract just the base part: localhost:5173 (without /sites/slug)
+      return serverUrl.split('/sites/')[0] || serverUrl;
+    }
+    return site.domain || site.slug;
+  }
+
+  // Get full URL for tooltips and actions
+  function getFullUrl(site) {
+    if (!site.domain && (!site.deploymentSettings?.target || site.deploymentSettings.target === 'development')) {
+      return site.statusDots?.health?.serverUrl || 'localhost:5173';
+    }
+    return site.domain || site.slug;
+  }
+
   // Load sites from API
   async function loadSites() {
     loading = true;
@@ -771,12 +789,11 @@
             {:else}
               <Globe class="h-4 w-4" />
             {/if}
-            <span>
-              {#if !site.domain && (!site.deploymentSettings?.target || site.deploymentSettings.target === 'development')}
-                localhost:5173
-              {:else}
-                {site.domain || site.slug}
-              {/if}
+            <span 
+              title="Full URL: {getFullUrl(site)}{site.statusDots?.health?.serverStatus ? ` - Status: ${site.statusDots.health.serverStatus}` : ''}"
+              class="{site.statusDots?.health?.serverStatus === 'offline' ? 'text-base-content/50' : ''}"
+            >
+              {getDisplayUrl(site)}
             </span>
           </div>
         </div>

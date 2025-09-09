@@ -368,9 +368,23 @@ async function calculateHealthStatus(db: any, site: any) {
           signal: AbortSignal.timeout(2000) // 2 second timeout
         });
         healthChecks.server = response.ok;
+        
+        // Add dynamic server URL based on status
+        if (response.ok) {
+          healthChecks.serverUrl = `localhost:5173/sites/${site.slug}`;
+          healthChecks.serverStatus = 'online';
+        } else {
+          healthChecks.serverUrl = 'localhost:5173 (offline)';
+          healthChecks.serverStatus = 'offline';
+        }
       } catch (error) {
         healthChecks.server = false; // Server down or unreachable
+        healthChecks.serverUrl = 'localhost:5173 (unreachable)';
+        healthChecks.serverStatus = 'offline';
       }
+    } else {
+      healthChecks.serverUrl = null; // Not applicable for external sites
+      healthChecks.serverStatus = null;
     }
     
     // Determine overall health status
@@ -385,6 +399,8 @@ async function calculateHealthStatus(db: any, site: any) {
       status,
       dbResponseTime,
       checks: healthChecks,
+      serverUrl: healthChecks.serverUrl,
+      serverStatus: healthChecks.serverStatus,
       lastBuildStatus: site.buildStatus
     };
   } catch (error) {
@@ -393,6 +409,8 @@ async function calculateHealthStatus(db: any, site: any) {
       status: 'red',
       dbResponseTime: -1,
       checks: { database: false, files: false, lastBuild: false },
+      serverUrl: null,
+      serverStatus: 'error',
       lastBuildStatus: 'unknown'
     };
   }
@@ -408,15 +426,8 @@ async function calculateSyncDataStatus(db: any, site: any, contentSync: any) {
       if (syncStatus === 'up-to-date') {
         return { status: 'green', type: 'sync' };
       } else if (syncStatus === 'out-of-sync') {
-        // Check severity of changes
-        const counts = contentSync.contentChanges?.counts;
-        const hasStructuralChanges = (counts?.newPosts || 0) + (counts?.updatedPosts || 0) + (counts?.newPages || 0) + (counts?.updatedPages || 0) > 0;
-        
-        if (hasStructuralChanges) {
-          return { status: 'red', type: 'sync' }; // Major changes - rebuild needed
-        } else {
-          return { status: 'yellow', type: 'sync' }; // Minor changes
-        }
+        // Simple logic matching generate button - if out-of-sync, show red
+        return { status: 'red', type: 'sync' }; // Out-of-sync = rebuild needed
       } else {
         return { status: 'gray', type: 'sync' }; // Never built or unknown
       }
