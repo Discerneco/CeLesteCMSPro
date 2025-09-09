@@ -369,7 +369,7 @@
       case 'yellow': return 'status status-warning';
       case 'red': return 'status status-error';
       case 'blue': return 'status status-info';
-      case 'purple': return 'status status-accent';
+      case 'purple': return 'status status-primary';
       case 'gray': return 'status status-neutral';
       default: return 'status status-neutral';
     }
