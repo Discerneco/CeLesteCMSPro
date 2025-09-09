@@ -515,16 +515,16 @@
             </h3>
             <div class="flex items-center gap-2 flex-shrink-0">
               <!-- Three Status Dots -->
-              <div class="flex items-center gap-1">
+              <div class="flex items-center gap-2">
                 <!-- Publication Status Dot -->
                 <div 
-                  class="{getStatusClass(site.statusDots?.publication?.status)}"
+                  class="{getStatusClass(site.statusDots?.publication?.status)} w-3 h-3"
                   title="{m.sites_status_publication_title()}"
                 ></div>
                 
                 <!-- Health Status Dot -->
                 <div 
-                  class="{getStatusClass(site.statusDots?.health?.status)}"
+                  class="{getStatusClass(site.statusDots?.health?.status)} w-3 h-3"
                   title="{m.sites_status_health_title()}"
                 ></div>
                 
@@ -534,14 +534,14 @@
                     site.syncStatus === 'out-of-sync' ? 'red' : 
                     site.syncStatus === 'up-to-date' ? 'green' : 
                     'gray'
-                  )}"
+                  )} w-3 h-3"
                   title="{site.generationMode === 'dynamic' ? m.sites_status_data_layer_title() : m.sites_status_sync_title()}"
                 ></div>
               </div>
               
               <!-- Interactive Sync Status Info Dot -->
               {#if site.syncStatus === 'out-of-sync' && site.contentChanges?.counts && Object.values(site.contentChanges.counts).some(count => count > 0)}
-                <div class="dropdown dropdown-end">
+                <div class="dropdown dropdown-end ml-2">
                   <div 
                     tabindex="0" 
                     role="button"
