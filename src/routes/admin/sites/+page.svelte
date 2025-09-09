@@ -365,24 +365,37 @@
   // Get DaisyUI status class based on status
   function getStatusClass(status) {
     switch (status) {
-      case 'green': return 'status status-success';
-      case 'yellow': return 'status status-warning';
-      case 'red': return 'status status-error';
-      case 'blue': return 'status status-info';
-      case 'purple': return 'status status-primary';
-      case 'gray': return 'status status-neutral';
-      default: return 'status status-neutral';
+      case 'green': return 'status status-success status-lg';
+      case 'yellow': return 'status status-warning status-lg';
+      case 'red': return 'status status-error status-lg';
+      case 'blue': return 'status status-info status-lg';
+      case 'purple': return 'status status-primary status-lg';
+      case 'gray': return 'status status-neutral status-lg';
+      default: return 'status status-neutral status-lg';
     }
   }
 
   // Get clean display URL (short version for cards)
   function getDisplayUrl(site) {
     if (!site.domain && (!site.deploymentSettings?.target || site.deploymentSettings.target === 'development')) {
+      // Localhost development
       const serverUrl = site.statusDots?.health?.serverUrl || 'localhost:5173';
       // Extract just the base part: localhost:5173 (without /sites/slug)
       return serverUrl.split('/sites/')[0] || serverUrl;
     }
-    return site.domain || site.slug;
+    
+    if (site.domain) {
+      // Has external domain
+      return site.domain;
+    }
+    
+    // Check if site is actually published/built
+    if (site.buildStatus === 'success' && site.lastBuildAt) {
+      return site.slug;
+    }
+    
+    // Not published - show "Not available"
+    return 'Not available';
   }
 
   // Get full URL for tooltips and actions
@@ -536,13 +549,13 @@
               <div class="flex items-center gap-2">
                 <!-- Publication Status Dot -->
                 <div 
-                  class="{getStatusClass(site.statusDots?.publication?.status)} w-3 h-3"
+                  class="{getStatusClass(site.statusDots?.publication?.status)}"
                   title="{m.sites_status_publication_title()}"
                 ></div>
                 
                 <!-- Health Status Dot -->
                 <div 
-                  class="{getStatusClass(site.statusDots?.health?.status)} w-3 h-3"
+                  class="{getStatusClass(site.statusDots?.health?.status)}"
                   title="{m.sites_status_health_title()}"
                 ></div>
                 
@@ -552,7 +565,7 @@
                     site.syncStatus === 'out-of-sync' ? 'red' : 
                     site.syncStatus === 'up-to-date' ? 'green' : 
                     'gray'
-                  )} w-3 h-3"
+                  )}"
                   title="{site.generationMode === 'dynamic' ? m.sites_status_data_layer_title() : m.sites_status_sync_title()}"
                 ></div>
               </div>
@@ -786,8 +799,10 @@
           <div class="flex items-center gap-2 text-sm text-base-content/60">
             {#if !site.domain && (!site.deploymentSettings?.target || site.deploymentSettings.target === 'development')}
               <Computer class="h-4 w-4" />
-            {:else}
+            {:else if site.domain || (site.buildStatus === 'success' && site.lastBuildAt)}
               <Globe class="h-4 w-4" />
+            {:else}
+              <AlertTriangle class="h-4 w-4" />
             {/if}
             <span 
               title="Full URL: {getFullUrl(site)}{site.statusDots?.health?.serverStatus ? ` - Status: ${site.statusDots.health.serverStatus}` : ''}"
