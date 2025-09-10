@@ -383,6 +383,25 @@
     return fallbackMessage;
   }
 
+  // Get meaningful health status message based on status color
+  function getHealthStatusMessage(statusDot) {
+    if (statusDot?.message) {
+      return statusDot.message;
+    }
+    
+    // Generate meaningful message based on status color
+    switch (statusDot?.status) {
+      case 'green':
+        return m.sites_health_all_ok();
+      case 'red':
+        return m.sites_health_issues();
+      case 'yellow':
+        return m.sites_health_database_slow();
+      default:
+        return m.sites_status_health_title(); // Fallback to generic
+    }
+  }
+
   // Get sync status message based on site data
   function getSyncStatusMessage(site) {
     if (site.generationMode === 'dynamic') {
@@ -392,13 +411,13 @@
       }
       return 'Data layer status unknown';
     } else {
-      // For static sites, show sync status
+      // For static sites, show sync status with more specific messages
       if (site.syncStatus === 'up-to-date') {
         return m.sites_sync_status_up_to_date();
       } else if (site.syncStatus === 'out-of-sync') {
-        return m.sites_sync_status_out_of_sync();
+        return m.sites_sync_not_synced(); // More specific than "Content updated"
       } else {
-        return m.sites_sync_status_unknown();
+        return m.sites_sync_never_built(); // More specific than "Unknown"
       }
     }
   }
@@ -581,7 +600,7 @@
                 </div>
                 
                 <!-- Health Status Dot -->
-                <div class="tooltip tooltip-top cursor-pointer" data-tip="{getActualStatusMessage(site.statusDots?.health, m.sites_status_health_title())}">
+                <div class="tooltip tooltip-top cursor-pointer" data-tip="{getHealthStatusMessage(site.statusDots?.health)}">
                   <div class="{getStatusClass(site.statusDots?.health?.status)}"></div>
                 </div>
                 
