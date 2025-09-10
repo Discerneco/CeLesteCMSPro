@@ -375,6 +375,34 @@
     }
   }
 
+  // Get actual status message instead of generic category names
+  function getActualStatusMessage(statusDot, fallbackMessage = 'Unknown') {
+    if (statusDot?.message) {
+      return statusDot.message;
+    }
+    return fallbackMessage;
+  }
+
+  // Get sync status message based on site data
+  function getSyncStatusMessage(site) {
+    if (site.generationMode === 'dynamic') {
+      // For dynamic sites, show data layer status
+      if (site.statusDots?.syncData?.message) {
+        return site.statusDots.syncData.message;
+      }
+      return 'Data layer status unknown';
+    } else {
+      // For static sites, show sync status
+      if (site.syncStatus === 'up-to-date') {
+        return m.sites_sync_status_up_to_date();
+      } else if (site.syncStatus === 'out-of-sync') {
+        return m.sites_sync_status_out_of_sync();
+      } else {
+        return m.sites_sync_status_unknown();
+      }
+    }
+  }
+
   // Get clean display URL (short version for cards)
   function getDisplayUrl(site) {
     if (!site.domain && (!site.deploymentSettings?.target || site.deploymentSettings.target === 'development')) {
@@ -548,26 +576,23 @@
               <!-- Three Status Dots -->
               <div class="flex items-center gap-2">
                 <!-- Publication Status Dot -->
-                <div 
-                  class="{getStatusClass(site.statusDots?.publication?.status)}"
-                  title="{m.sites_status_publication_title()}"
-                ></div>
+                <div class="tooltip tooltip-top cursor-pointer" data-tip="{getActualStatusMessage(site.statusDots?.publication, m.sites_status_publication_title())}">
+                  <div class="{getStatusClass(site.statusDots?.publication?.status)}"></div>
+                </div>
                 
                 <!-- Health Status Dot -->
-                <div 
-                  class="{getStatusClass(site.statusDots?.health?.status)}"
-                  title="{m.sites_status_health_title()}"
-                ></div>
+                <div class="tooltip tooltip-top cursor-pointer" data-tip="{getActualStatusMessage(site.statusDots?.health, m.sites_status_health_title())}">
+                  <div class="{getStatusClass(site.statusDots?.health?.status)}"></div>
+                </div>
                 
                 <!-- Sync/Data Layer Status Dot -->
-                <div 
-                  class="{getStatusClass(
+                <div class="tooltip tooltip-top cursor-pointer" data-tip="{getSyncStatusMessage(site)}">
+                  <div class="{getStatusClass(
                     site.syncStatus === 'out-of-sync' ? 'red' : 
                     site.syncStatus === 'up-to-date' ? 'green' : 
                     'gray'
-                  )}"
-                  title="{site.generationMode === 'dynamic' ? m.sites_status_data_layer_title() : m.sites_status_sync_title()}"
-                ></div>
+                  )}"></div>
+                </div>
               </div>
               
               <!-- Interactive Sync Status Info Dot -->
