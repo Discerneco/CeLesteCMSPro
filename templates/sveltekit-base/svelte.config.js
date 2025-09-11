@@ -15,7 +15,8 @@ const config = {
 		}),
 		paths: {
 			relative: true
-		}
+		},
+		trailingSlash: 'always'
 	}
 };
 
