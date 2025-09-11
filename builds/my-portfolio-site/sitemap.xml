@@ -3,15 +3,21 @@
 
   <url>
     <loc>https://localhost:5173/</loc>
-    <lastmod>2025-09-06T04:23:05.877Z</lastmod>
+    <lastmod>2025-09-11T02:16:52.281Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://localhost:5173/blog/</loc>
-    <lastmod>2025-09-06T04:23:05.877Z</lastmod>
+    <lastmod>2025-09-11T02:16:52.281Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://localhost:5173/blog/anlise-de-superman-2025/</loc>
+    <lastmod>2025-09-07T01:46:19.000Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
   </url>
   <url>
     <loc>https://localhost:5173/blog/event-venue-finalized-for-the-reunion/</loc>
