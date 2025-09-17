@@ -111,6 +111,22 @@ export default defineConfig({
 		}),
 		sitesServePlugin()
 	],
+	optimizeDeps: {
+		include: [
+			// Heavy ORM library
+			'drizzle-orm',
+
+			// Authentication library
+			'arctic',
+
+			// TipTap extensions
+			'@tiptap/extension-link',
+
+			// Frequently used utilities
+			'@paralleldrive/cuid2',
+			'mrmime'
+		]
+	},
 	server: {
 		watch: {
 			ignored: ['**/build_temp/**', '**/builds/**']

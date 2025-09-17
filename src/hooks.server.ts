@@ -1,5 +1,6 @@
 import type { Handle } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
+import { json } from '@sveltejs/kit';
 import { paraglideMiddleware } from '$lib/paraglide/server';
 import { validateSession, deleteSession } from '$lib/server/auth-oslo';
 
@@ -74,6 +75,18 @@ const handleAuth: Handle = async ({ event, resolve }) => {
 	return resolve(event);
 };
 
+const handleAPIProtection: Handle = async ({ event, resolve }) => {
+	const isAPIRoute = event.url.pathname.startsWith('/api');
+	const isAuthAPI = event.url.pathname.startsWith('/api/auth');
+	
+	// Protect ALL API routes except auth endpoints
+	if (isAPIRoute && !isAuthAPI && !event.locals.user?.isAuthenticated) {
+		return json({ error: 'Unauthorized. Authentication required.' }, { status: 401 });
+	}
+	
+	return resolve(event);
+};
+
 const handleRouteProtection: Handle = async ({ event, resolve }) => {
 	const isAdminRoute = event.url.pathname.startsWith('/admin');
 	const isLoginRoute = event.url.pathname === '/admin/login' || event.url.pathname === '/admin/signup';
@@ -86,4 +99,4 @@ const handleRouteProtection: Handle = async ({ event, resolve }) => {
 	return resolve(event);
 };
 
-export const handle: Handle = sequence(handleParaglide, handleAuth, handleRouteProtection);
+export const handle: Handle = sequence(handleParaglide, handleAuth, handleAPIProtection, handleRouteProtection);

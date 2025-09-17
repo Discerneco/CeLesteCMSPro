@@ -221,11 +221,12 @@
       <div class="px-6 py-4">
         <div class="flex flex-wrap gap-2">
           {#each categories as category}
+            {@const Icon = category.icon}
             <button
               onclick={() => selectedCategory = category.id}
               class="btn btn-sm gap-2 transition-all duration-150 {selectedCategory === category.id ? 'btn-outline border-primary bg-primary/10 text-primary hover:bg-primary/20' : 'btn-ghost border-base-content/10 text-base-content/70 hover:border-base-content/20 hover:bg-base-content/5'}"
             >
-              <svelte:component this={category.icon} class="w-4 h-4" />
+              <Icon class="w-4 h-4" />
               {category.name}
             </button>
           {/each}
@@ -236,10 +237,11 @@
     <!-- Plugin Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
       {#each filteredPlugins() as plugin (plugin.id)}
+        {@const PluginIcon = getCategoryIcon(plugin.category)}
         <div class="card bg-base-100 shadow-sm hover:shadow-lg transition-shadow">
           <!-- Plugin Image/Icon -->
           <div class="h-32 bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center">
-            <svelte:component this={getCategoryIcon(plugin.category)} class="w-12 h-12 text-base-content/30" />
+            <PluginIcon class="w-12 h-12 text-base-content/30" />
           </div>
           
           <div class="card-body">
@@ -345,11 +347,12 @@
       <div class="px-6 py-4">
         <div class="flex flex-wrap gap-2">
           {#each categories as category}
+            {@const Icon = category.icon}
             <button
               onclick={() => installedSelectedCategory = category.id}
               class="btn btn-sm gap-2 transition-all duration-150 {installedSelectedCategory === category.id ? 'btn-outline border-primary bg-primary/10 text-primary hover:bg-primary/20' : 'btn-ghost border-base-content/10 text-base-content/70 hover:border-base-content/20 hover:bg-base-content/5'}"
             >
-              <svelte:component this={category.icon} class="w-4 h-4" />
+              <Icon class="w-4 h-4" />
               {category.name}
             </button>
           {/each}
@@ -361,13 +364,14 @@
     <div class="space-y-3">
       {#if filteredInstalledPlugins().length > 0}
         {#each filteredInstalledPlugins() as plugin (plugin.id)}
+          {@const PluginIcon = getCategoryIcon(plugin.category)}
           <div class="card bg-base-100 shadow-sm">
             <div class="card-body">
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-4">
                   <!-- Plugin Icon -->
                   <div class="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <svelte:component this={getCategoryIcon(plugin.category)} class="w-6 h-6 text-primary" />
+                    <PluginIcon class="w-6 h-6 text-primary" />
                   </div>
                   
                   <!-- Plugin Info -->

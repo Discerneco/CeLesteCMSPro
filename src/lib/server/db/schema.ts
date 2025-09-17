@@ -189,6 +189,25 @@ export const postTagRelations = relations(typeTable(postTags), ({ one }) => ({
   tag: one(typeTable(tags), { fields: [typeTable(postTags.tagId)], references: [typeTable(tags.id)] }),
 }));
 
+// ================ POST AUTOSAVES ================
+
+export const postAutosaves = sqliteTable('post_autosaves', {
+  postId: text('post_id').notNull().references(() => posts.id, { onDelete: 'cascade' }),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  title: text('title'),
+  slug: text('slug'),
+  content: text('content'),
+  excerpt: text('excerpt'),
+  metaData: text('meta_data', { mode: 'json' }).$type<Record<string, any>>(),
+  featuredImageId: text('featured_image_id'),
+  status: text('status'),
+  updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
+}, (table) => {
+  return {
+    pk: primaryKey({ columns: [table.postId, table.userId] }), // One autosave per post per user
+  };
+});
+
 // ================ PAGES ================
 
 export const pages = sqliteTable('pages', {

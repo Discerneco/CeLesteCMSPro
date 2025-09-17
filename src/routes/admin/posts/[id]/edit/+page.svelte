@@ -11,6 +11,7 @@
     Globe
   } from '@lucide/svelte';
   import { goto } from '$app/navigation';
+  import { onMount, onDestroy } from 'svelte';
   
   // Import i18n messages
   import * as m from '$lib/paraglide/messages';
@@ -39,6 +40,18 @@
   let previewMode = $state(false);
   let isLoading = $state(false);
   
+  // Auto-save state
+  let hasChanges = $state(false);
+  let lastAutoSave = $state<Date | null>(null);
+  let autoSaveStatus = $state('');
+  let autoSaveTimer: ReturnType<typeof setTimeout> | null = null;
+  let lastContentHash = $state('');
+  let isTyping = $state(false);
+  
+  // Auto-save comparison modal state
+  let showComparisonModal = $state(false);
+  let pendingAutosave: any = $state(null);
+  
   // Content state for both languages - initialized from existing data
   let content = $state({
     en: {
@@ -63,6 +76,38 @@
   
   const togglePreview = () => previewMode = !previewMode;
   
+  // Calculate word count and reading time
+  const getWordCount = (text: string) => {
+    return text.trim() ? text.trim().split(/\s+/).length : 0;
+  };
+  
+  const getCharCount = (text: string) => {
+    return text.length;
+  };
+  
+  const getReadingTime = (wordCount: number) => {
+    const wordsPerMinute = 200;
+    const minutes = Math.ceil(wordCount / wordsPerMinute);
+    return minutes;
+  };
+  
+  // Reactive calculations for current language content
+  let currentContent = $derived(activeTab === 'en' ? content.en : content.pt);
+  let wordCount = $derived(getWordCount(currentContent.content));
+  let charCount = $derived(getCharCount(currentContent.content));
+  let readingTime = $derived(getReadingTime(wordCount));
+  
+  // Handle language switch with proper dropdown closure and context update
+  const handleLanguageSwitch = (newLang: 'en' | 'pt') => {
+    activeTab = newLang;
+    // Force recalculation of content hash for new language
+    lastContentHash = generateContentHash();
+    // Close the dropdown by removing focus
+    if (typeof document !== 'undefined') {
+      (document.activeElement as HTMLElement)?.blur();
+    }
+  };
+  
   const handleTitleInput = (event: Event) => {
     const target = event.target as HTMLInputElement;
     if (activeTab === 'en') {
@@ -70,6 +115,9 @@
     } else {
       content.pt.title = target.value;
     }
+    hasChanges = true;
+    isTyping = true;
+    scheduleAutoSave();
   };
 
   const handleExcerptInput = (event: Event) => {
@@ -79,6 +127,9 @@
     } else {
       content.pt.excerpt = target.value;
     }
+    hasChanges = true;
+    isTyping = true;
+    scheduleAutoSave();
   };
 
   const handleContentUpdate = (newContent: string) => {
@@ -86,6 +137,224 @@
       content.en.content = newContent;
     } else {
       content.pt.content = newContent;
+    }
+    hasChanges = true;
+    isTyping = true;
+    scheduleAutoSave();
+  };
+  
+  // Generate content hash for change detection
+  const generateContentHash = () => {
+    const contentString = JSON.stringify({
+      title: { en: content.en.title, pt: content.pt.title },
+      excerpt: { en: content.en.excerpt, pt: content.pt.excerpt },
+      content: { en: content.en.content, pt: content.pt.content },
+      status: status,
+      featured: isFeatured,
+      featuredImageId: featuredImageId
+    });
+    // Simple hash function - in production you might want crypto.subtle.digest
+    let hash = 0;
+    for (let i = 0; i < contentString.length; i++) {
+      const char = contentString.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash; // Convert to 32-bit integer
+    }
+    return hash.toString();
+  };
+  
+  // Check if content has actually changed
+  const hasContentChanged = () => {
+    const currentHash = generateContentHash();
+    return currentHash !== lastContentHash;
+  };
+  
+  // Debounced auto-save function (Ghost-inspired)
+  const scheduleAutoSave = () => {
+    // Clear existing timer
+    if (autoSaveTimer) {
+      clearTimeout(autoSaveTimer);
+    }
+    
+    // Only auto-save drafts (never published content)
+    if (status === 'published') {
+      return;
+    }
+    
+    // Set 3-second debounce timer
+    autoSaveTimer = setTimeout(() => {
+      performAutoSave();
+    }, 3000);
+  };
+  
+  // Perform the actual auto-save
+  const performAutoSave = async () => {
+    // Skip if no real content changes
+    if (!hasContentChanged()) {
+      isTyping = false;
+      return;
+    }
+    
+    try {
+      autoSaveStatus = 'saving';
+      isTyping = false;
+      
+      const postData = {
+        title: content.en.title || content.pt.title,
+        slug: postSlug,
+        excerpt: content.en.excerpt || content.pt.excerpt,
+        content: content.en.content || content.pt.content,
+        status: status,
+        featured: isFeatured,
+        featuredImageId: featuredImageId,
+        metaData: {
+          multilingual: content,
+          activeLanguage: activeTab,
+          autoSaveTimestamp: new Date().toISOString()
+        }
+      };
+      
+      const response = await fetch(`/api/posts/${postId}/autosave`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(postData)
+      });
+      
+      if (response.ok) {
+        lastAutoSave = new Date();
+        lastContentHash = generateContentHash();
+        hasChanges = false;
+        autoSaveStatus = 'saved';
+      } else {
+        autoSaveStatus = 'error';
+      }
+    } catch (error) {
+      console.error('Auto-save error:', error);
+      autoSaveStatus = 'error';
+    }
+  };
+  
+  // Format time ago
+  const getTimeAgo = (date: Date | null) => {
+    if (!date) return '';
+    const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
+    if (seconds < 60) return `${seconds} seconds ago`;
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) return `${minutes} ${minutes === 1 ? 'minute' : 'minutes'} ago`;
+    const hours = Math.floor(minutes / 60);
+    return `${hours} ${hours === 1 ? 'hour' : 'hours'} ago`;
+  };
+  
+  // Get auto-save status message
+  const getAutoSaveStatus = () => {
+    if (isTyping && status !== 'published') return 'Typing...';
+    if (autoSaveStatus === 'saving') return 'Saving...';
+    if (autoSaveStatus === 'error') return 'Save failed';
+    if (lastAutoSave) return `Auto-saved ${getTimeAgo(lastAutoSave)}`;
+    if (status === 'published' && hasChanges) return 'Draft changes';
+    return '';
+  };
+  
+  // Restore auto-save content
+  const restoreAutosave = () => {
+    if (!pendingAutosave) return;
+    
+    const autosave = pendingAutosave;
+    
+    // Restore content
+    if (autosave.metaData?.multilingual) {
+      content = { ...autosave.metaData.multilingual };
+    } else {
+      content.en.title = autosave.title || '';
+      content.en.excerpt = autosave.excerpt || '';
+      content.en.content = autosave.content || '';
+    }
+    
+    // Restore other fields
+    postSlug = autosave.slug || postSlug;
+    status = autosave.status || status;
+    featuredImageId = autosave.featuredImageId || null;
+    
+    // Switch to the language that was being edited
+    activeTab = autosave.activeLanguage || 'en';
+    
+    // Update state
+    lastAutoSave = autosave.autosaveTime;
+    hasChanges = true; // Mark as having changes since we restored
+    
+    // Close modal
+    showComparisonModal = false;
+    pendingAutosave = null;
+  };
+  
+  // Keep current content (dismiss auto-save)
+  const dismissAutosave = async () => {
+    if (!pendingAutosave) return;
+    
+    // Delete the auto-save from server since user chose to keep current
+    try {
+      await fetch(`/api/posts/${postId}/autosave`, {
+        method: 'DELETE'
+      });
+    } catch (error) {
+      console.error('Error deleting auto-save:', error);
+    }
+    
+    // Close modal
+    showComparisonModal = false;
+    pendingAutosave = null;
+  };
+  
+  // Check if auto-save has meaningful differences in ANY language
+  const hasMeaningfulDifferences = (autosave: any) => {
+    if (!autosave.metaData?.multilingual) return false;
+    
+    // Check BOTH languages for differences, not just the active one
+    const languages = ['en', 'pt'] as const;
+    
+    for (const lang of languages) {
+      const currentContent = content[lang];
+      const autosaveContent = autosave.metaData.multilingual[lang];
+      
+      if (autosaveContent) {
+        const normalizeText = (text: string) => text.trim().replace(/\s+/g, ' ');
+        
+        const titleDiff = normalizeText(currentContent.title || '') !== normalizeText(autosaveContent.title || '');
+        const excerptDiff = normalizeText(currentContent.excerpt || '') !== normalizeText(autosaveContent.excerpt || '');
+        const contentDiff = normalizeText(currentContent.content || '') !== normalizeText(autosaveContent.content || '');
+        
+        // Check for meaningful content differences (5+ chars)
+        if (contentDiff) {
+          const charDiff = Math.abs((currentContent.content || '').length - (autosaveContent.content || '').length);
+          if (charDiff >= 5) return true;
+        }
+        
+        // Title and excerpt changes are always meaningful
+        if (titleDiff || excerptDiff) return true;
+      }
+    }
+    
+    return false;
+  };
+  
+  // Get differences between current and auto-saved content
+  const getContentDiff = (current: string, autosaved: string) => {
+    const normalizeText = (text: string) => text.trim().replace(/\s+/g, ' ');
+    
+    if (normalizeText(current) === normalizeText(autosaved)) return 'No changes';
+    
+    const currentWords = current.trim() ? current.trim().split(/\s+/).length : 0;
+    const autosavedWords = autosaved.trim() ? autosaved.trim().split(/\s+/).length : 0;
+    const wordDiff = autosavedWords - currentWords;
+    
+    if (wordDiff > 0) {
+      return `+${wordDiff} words added`;
+    } else if (wordDiff < 0) {
+      return `${Math.abs(wordDiff)} words removed`;
+    } else {
+      return 'Content modified';
     }
   };
   
@@ -142,6 +411,16 @@
         const result = await response.json();
         console.log('✅ Post updated successfully:', result);
         console.log('✅ Updated post data:', result.post);
+        
+        // Clear auto-save after successful manual save
+        await fetch(`/api/posts/${postId}/autosave`, {
+          method: 'DELETE'
+        });
+        
+        hasChanges = false;
+        lastAutoSave = null;
+        lastContentHash = generateContentHash();
+        
         // Success - redirect to posts list
         goto('/admin/posts');
       } else {
@@ -170,6 +449,63 @@
   const handleBack = () => {
     goto('/admin/posts');
   };
+  
+  // Lifecycle hooks for auto-save
+  onMount(async () => {
+    // Check for existing auto-save on load
+    try {
+      const response = await fetch(`/api/posts/${postId}/autosave`);
+      if (response.ok) {
+        const autosaveData = await response.json();
+        if (autosaveData.exists && autosaveData.autosave) {
+          const autosave = autosaveData.autosave;
+          const autosaveTime = new Date(autosave.updatedAt);
+          const postTime = data.post.updatedAt ? new Date(data.post.updatedAt) : new Date();
+          
+          // If auto-save is newer than saved version, we have unsaved changes
+          if (autosaveTime > postTime) {
+            // Set hasChanges to true since there are unsaved changes
+            hasChanges = true;
+            console.log('✅ Auto-save detected, setting hasChanges = true');
+            
+            const pendingData = {
+              ...autosave,
+              autosaveTime,
+              postTime,
+              activeLanguage: autosave.metaData?.activeLanguage || 'en',
+              timestamp: autosave.metaData?.autoSaveTimestamp || autosave.updatedAt
+            };
+            
+            // Only show modal if there are meaningful differences
+            if (hasMeaningfulDifferences(pendingData)) {
+              pendingAutosave = pendingData;
+              showComparisonModal = true;
+              console.log('📋 Showing comparison modal for meaningful differences');
+            } else {
+              console.log('⚠️ Auto-save exists but no meaningful differences detected');
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error checking for auto-save:', error);
+    }
+    
+    // Initialize content hash
+    lastContentHash = generateContentHash();
+  });
+  
+  onDestroy(() => {
+    // Clean up timer
+    if (autoSaveTimer) {
+      clearTimeout(autoSaveTimer);
+    }
+    
+    // Perform final auto-save if there are unsaved changes
+    if (hasChanges && hasContentChanged() && status !== 'published') {
+      performAutoSave();
+    }
+  });
 </script>
 
 <!-- Page Header -->
@@ -188,6 +524,14 @@
     </button>
     
     <button 
+      onclick={togglePreview}
+      class="btn btn-outline gap-2"
+    >
+      <Eye class="h-4 w-4" />
+      {m.posts_form_preview()}
+    </button>
+    
+    <button 
       onclick={handleSave}
       class="btn btn-primary gap-2"
       disabled={isLoading}
@@ -203,25 +547,60 @@
   </div>
 </div>
 
-<!-- Language Tabs -->
-{#if !previewMode}
-  <div class="tabs tabs-bordered mb-6 border-b border-base-300">
-    <button
-      class="tab {activeTab === 'en' ? 'tab-active border-b-2 border-primary text-primary' : 'text-base-content/70'}"
-      onclick={() => activeTab = 'en'}
-    >
-      <Globe class="h-4 w-4 mr-2" />
-      {m.posts_form_tab_english()}
-    </button>
-    <button
-      class="tab {activeTab === 'pt' ? 'tab-active border-b-2 border-primary text-primary' : 'text-base-content/70'}"
-      onclick={() => activeTab = 'pt'}
-    >
-      <Globe class="h-4 w-4 mr-2" />
-      {m.posts_form_tab_portuguese()}
-    </button>
+<!-- Info Ruler -->
+<div class="bg-base-200 px-4 py-2 mb-4 rounded-lg flex items-center justify-between text-sm">
+  <div class="flex items-center gap-4">
+    <!-- Word count -->
+    <div class="text-base-content/70">
+      <span class="font-medium">Words:</span> {wordCount}
+    </div>
+    
+    <!-- Character count -->
+    <div class="text-base-content/70">
+      <span class="font-medium">Characters:</span> {charCount}
+    </div>
+    
+    <!-- Reading time -->
+    <div class="text-base-content/70">
+      <span class="font-medium">Reading time:</span> {readingTime} min
+    </div>
   </div>
-{/if}
+  
+  <div class="flex items-center gap-4">
+    <!-- Language dropdown -->
+    <div class="dropdown dropdown-end">
+      <button class="btn btn-sm btn-ghost gap-2">
+        <Globe class="h-4 w-4" />
+        <span class="font-medium">Language:</span> {activeTab === 'en' ? 'EN' : 'PT'}
+        <ChevronDown class="h-3 w-3" />
+      </button>
+      <ul class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-40">
+        <li><button onclick={() => handleLanguageSwitch('en')}>English (EN)</button></li>
+        <li><button onclick={() => handleLanguageSwitch('pt')}>Português (PT)</button></li>
+      </ul>
+    </div>
+    
+    <!-- Status with auto-save info -->
+    <div class="text-base-content/70">
+      <span class="font-medium">Status:</span> 
+      {#if status === 'published' && hasChanges}
+        Published (editing)
+      {:else}
+        {status}
+      {/if}
+      {#if getAutoSaveStatus()}
+        <span class="ml-2 text-xs px-2 py-1 rounded-full
+          {autoSaveStatus === 'saving' || isTyping ? 'bg-blue-100 text-blue-600' : 
+           autoSaveStatus === 'error' ? 'bg-red-100 text-red-600' : 
+           'bg-green-100 text-green-600'}">
+          {getAutoSaveStatus()}
+        </span>
+      {/if}
+    </div>
+  </div>
+</div>
+
+<!-- Content/SEO/Advanced Tabs (to be implemented in later phases) -->
 
 {#if previewMode}
   <!-- Preview Mode -->
@@ -362,14 +741,6 @@
           </div>
           
           <div class="divider"></div>
-          
-          <button 
-            onclick={togglePreview}
-            class="btn btn-outline w-full gap-2"
-          >
-            <Eye class="h-4 w-4" />
-            {m.posts_form_preview()}
-          </button>
         </div>
       </div>
     </div>
@@ -437,6 +808,139 @@
           onRemove={handleFeaturedImageRemove}
           showLabel={false}
         />
+      </div>
+    </div>
+  </div>
+{/if}
+
+<!-- Auto-save Comparison Modal -->
+{#if showComparisonModal && pendingAutosave}
+  <div class="modal modal-open">
+    <div class="modal-box w-11/12 max-w-5xl">
+      <!-- Header -->
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <h3 class="font-bold text-lg">Auto-saved Version Found</h3>
+          <p class="text-sm text-base-content/70">
+            Edited in {pendingAutosave.activeLanguage?.toUpperCase()} • {getTimeAgo(pendingAutosave.autosaveTime)}
+          </p>
+        </div>
+        <button class="btn btn-sm btn-circle btn-ghost" onclick={() => showComparisonModal = false}>
+          <X class="h-4 w-4" />
+        </button>
+      </div>
+
+      <!-- Language Indicator -->
+      <div class="alert alert-info mb-4">
+        <Globe class="h-4 w-4" />
+        <span>This auto-save was made while editing <strong>{pendingAutosave.activeLanguage === 'en' ? 'English' : 'Portuguese'}</strong> content</span>
+      </div>
+
+      <!-- Content Comparison -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <!-- Current Version -->
+        <div class="border rounded-lg p-4 bg-base-200">
+          <h4 class="font-semibold text-sm mb-3 flex items-center gap-2">
+            <div class="w-3 h-3 rounded-full bg-success"></div>
+            Current Saved Version
+          </h4>
+          
+          <div class="space-y-3 text-sm">
+            <div>
+              <span class="font-medium">Title:</span>
+              <p class="text-base-content/80 mt-1">
+                {pendingAutosave.activeLanguage === 'en' ? content.en.title : content.pt.title || 'No title'}
+              </p>
+            </div>
+            
+            <div>
+              <span class="font-medium">Excerpt:</span>
+              <p class="text-base-content/80 mt-1">
+                {pendingAutosave.activeLanguage === 'en' ? content.en.excerpt : content.pt.excerpt || 'No excerpt'}
+              </p>
+            </div>
+            
+            <div>
+              <span class="font-medium">Content:</span>
+              <div class="mt-1 p-2 bg-base-100 rounded border max-h-40 overflow-y-auto text-xs">
+                {pendingAutosave.activeLanguage === 'en' ? content.en.content : content.pt.content || 'No content'}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Auto-saved Version -->
+        <div class="border rounded-lg p-4 bg-warning/10">
+          <h4 class="font-semibold text-sm mb-3 flex items-center gap-2">
+            <div class="w-3 h-3 rounded-full bg-warning"></div>
+            Auto-saved Version
+          </h4>
+          
+          <div class="space-y-3 text-sm">
+            <div>
+              <span class="font-medium">Title:</span>
+              <p class="text-base-content/80 mt-1">
+                {#if pendingAutosave.metaData?.multilingual}
+                  {pendingAutosave.activeLanguage === 'en' 
+                    ? pendingAutosave.metaData.multilingual.en?.title 
+                    : pendingAutosave.metaData.multilingual.pt?.title || 'No title'}
+                {:else}
+                  {pendingAutosave.title || 'No title'}
+                {/if}
+              </p>
+            </div>
+            
+            <div>
+              <span class="font-medium">Excerpt:</span>
+              <p class="text-base-content/80 mt-1">
+                {#if pendingAutosave.metaData?.multilingual}
+                  {pendingAutosave.activeLanguage === 'en' 
+                    ? pendingAutosave.metaData.multilingual.en?.excerpt 
+                    : pendingAutosave.metaData.multilingual.pt?.excerpt || 'No excerpt'}
+                {:else}
+                  {pendingAutosave.excerpt || 'No excerpt'}
+                {/if}
+              </p>
+            </div>
+            
+            <div>
+              <span class="font-medium">Content:</span>
+              <div class="mt-1 p-2 bg-base-100 rounded border max-h-40 overflow-y-auto text-xs">
+                {#if pendingAutosave.metaData?.multilingual}
+                  {pendingAutosave.activeLanguage === 'en' 
+                    ? pendingAutosave.metaData.multilingual.en?.content 
+                    : pendingAutosave.metaData.multilingual.pt?.content || 'No content'}
+                {:else}
+                  {pendingAutosave.content || 'No content'}
+                {/if}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Differences Summary -->
+      <div class="alert alert-warning mb-4">
+        <span class="font-medium">Changes detected:</span>
+        {#if pendingAutosave.metaData?.multilingual}
+          {@const currentContent = pendingAutosave.activeLanguage === 'en' ? content.en.content : content.pt.content}
+          {@const autosaveContent = pendingAutosave.activeLanguage === 'en' 
+            ? pendingAutosave.metaData.multilingual.en?.content 
+            : pendingAutosave.metaData.multilingual.pt?.content}
+          {getContentDiff(currentContent || '', autosaveContent || '')}
+        {:else}
+          {getContentDiff(content.en.content || '', pendingAutosave.content || '')}
+        {/if}
+      </div>
+
+      <!-- Actions -->
+      <div class="modal-action">
+        <button class="btn btn-ghost" onclick={dismissAutosave}>
+          Keep Current Version
+        </button>
+        <button class="btn btn-warning" onclick={restoreAutosave}>
+          Restore Auto-save
+        </button>
       </div>
     </div>
   </div>

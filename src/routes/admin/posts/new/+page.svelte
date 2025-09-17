@@ -21,6 +21,10 @@
   let previewMode = $state(false);
   let isLoading = $state(false);
   
+  // Auto-save state for new posts (simpler - no existing auto-save to compare)
+  let hasChanges = $state(false);
+  let isTyping = $state(false);
+  
   // Content state for both languages
   let content = $state({
     en: {
@@ -41,6 +45,36 @@
   
   const togglePreview = () => previewMode = !previewMode;
   
+  // Calculate word count and reading time
+  const getWordCount = (text: string) => {
+    return text.trim() ? text.trim().split(/\s+/).length : 0;
+  };
+  
+  const getCharCount = (text: string) => {
+    return text.length;
+  };
+  
+  const getReadingTime = (wordCount: number) => {
+    const wordsPerMinute = 200;
+    const minutes = Math.ceil(wordCount / wordsPerMinute);
+    return minutes;
+  };
+  
+  // Reactive calculations for current language content
+  let currentContent = $derived(activeTab === 'en' ? content.en : content.pt);
+  let wordCount = $derived(getWordCount(currentContent.content));
+  let charCount = $derived(getCharCount(currentContent.content));
+  let readingTime = $derived(getReadingTime(wordCount));
+  
+  // Handle language switch with proper dropdown closure
+  const handleLanguageSwitch = (newLang: 'en' | 'pt') => {
+    activeTab = newLang;
+    // Close the dropdown by removing focus
+    if (typeof document !== 'undefined') {
+      (document.activeElement as HTMLElement)?.blur();
+    }
+  };
+  
   const handleTitleInput = (event: Event) => {
     const target = event.target as HTMLInputElement;
     if (activeTab === 'en') {
@@ -48,6 +82,13 @@
     } else {
       content.pt.title = target.value;
     }
+    hasChanges = true;
+    isTyping = true;
+    
+    // Simple feedback for typing (no auto-save on new posts until first manual save)
+    setTimeout(() => {
+      isTyping = false;
+    }, 2000);
   };
 
   const handleExcerptInput = (event: Event) => {
@@ -57,6 +98,13 @@
     } else {
       content.pt.excerpt = target.value;
     }
+    hasChanges = true;
+    isTyping = true;
+    
+    // Simple feedback for typing
+    setTimeout(() => {
+      isTyping = false;
+    }, 2000);
   };
 
   const handleContentInput = (event: Event) => {
@@ -66,6 +114,13 @@
     } else {
       content.pt.content = target.value;
     }
+    hasChanges = true;
+    isTyping = true;
+    
+    // Simple feedback for typing
+    setTimeout(() => {
+      isTyping = false;
+    }, 2000);
   };
   
   const handleSave = async () => {
@@ -81,10 +136,10 @@
         status: status,
         featured: isFeatured,
         publishedAt: status === 'published' ? new Date(publicationDate).toISOString() : null,
-        // For now, we'll store the multilingual content in a simple way
-        // Later we can enhance this with proper i18n content management
+        // Store the multilingual content with active language tracking
         metaData: JSON.stringify({
-          multilingual: content
+          multilingual: content,
+          activeLanguage: activeTab
         })
       };
       
@@ -149,6 +204,14 @@
     </button>
     
     <button 
+      onclick={togglePreview}
+      class="btn btn-outline gap-2"
+    >
+      <Eye class="h-4 w-4" />
+      {m.posts_form_preview()}
+    </button>
+    
+    <button 
       onclick={handleSave}
       class="btn btn-primary gap-2"
       disabled={isLoading}
@@ -164,25 +227,56 @@
   </div>
 </div>
 
-<!-- Language Tabs -->
-{#if !previewMode}
-  <div class="tabs tabs-bordered mb-6">
-    <button
-      class="tab {activeTab === 'en' ? 'tab-active' : ''}"
-      onclick={() => activeTab = 'en'}
-    >
-      <Globe class="h-4 w-4 mr-2" />
-      {m.posts_form_tab_english()}
-    </button>
-    <button
-      class="tab {activeTab === 'pt' ? 'tab-active' : ''}"
-      onclick={() => activeTab = 'pt'}
-    >
-      <Globe class="h-4 w-4 mr-2" />
-      {m.posts_form_tab_portuguese()}
-    </button>
+<!-- Info Ruler -->
+<div class="bg-base-200 px-4 py-2 mb-4 rounded-lg flex items-center justify-between text-sm">
+  <div class="flex items-center gap-4">
+    <!-- Word count -->
+    <div class="text-base-content/70">
+      <span class="font-medium">Words:</span> {wordCount}
+    </div>
+    
+    <!-- Character count -->
+    <div class="text-base-content/70">
+      <span class="font-medium">Characters:</span> {charCount}
+    </div>
+    
+    <!-- Reading time -->
+    <div class="text-base-content/70">
+      <span class="font-medium">Reading time:</span> {readingTime} min
+    </div>
   </div>
-{/if}
+  
+  <div class="flex items-center gap-4">
+    <!-- Language dropdown -->
+    <div class="dropdown dropdown-end">
+      <button class="btn btn-sm btn-ghost gap-2">
+        <Globe class="h-4 w-4" />
+        <span class="font-medium">Language:</span> {activeTab === 'en' ? 'EN' : 'PT'}
+        <ChevronDown class="h-3 w-3" />
+      </button>
+      <ul class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-40">
+        <li><button onclick={() => handleLanguageSwitch('en')}>English (EN)</button></li>
+        <li><button onclick={() => handleLanguageSwitch('pt')}>Português (PT)</button></li>
+      </ul>
+    </div>
+    
+    <!-- Status with typing indicator -->
+    <div class="text-base-content/70">
+      <span class="font-medium">Status:</span> {status}
+      {#if isTyping}
+        <span class="ml-2 text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-600">
+          Typing...
+        </span>
+      {:else if hasChanges}
+        <span class="ml-2 text-xs px-2 py-1 rounded-full bg-yellow-100 text-yellow-600">
+          Unsaved changes
+        </span>
+      {/if}
+    </div>
+  </div>
+</div>
+
+<!-- Content/SEO/Advanced Tabs (to be implemented in later phases) -->
 
 {#if previewMode}
   <!-- Preview Mode -->
@@ -235,12 +329,13 @@
         <h2 class="cms-card-title">{m.posts_form_settings()}</h2>
         <div class="space-y-4">
           <div>
-            <label class="label">
+            <label for="publication-date" class="label">
               <span class="label-text">{m.posts_form_publication_date()}</span>
             </label>
             <div class="relative">
-              <input 
-                type="date" 
+              <input
+                id="publication-date"
+                type="date"
                 bind:value={publicationDate}
                 class="input w-full pr-8"
               />
@@ -249,11 +344,12 @@
           </div>
           
           <div>
-            <label class="label">
+            <label for="post-status" class="label">
               <span class="label-text">{m.posts_form_status()}</span>
             </label>
             <div class="relative">
-              <select 
+              <select
+                id="post-status"
                 bind:value={status}
                 class="select w-full"
               >
@@ -298,11 +394,12 @@
         
         <div class="space-y-4">
           <div>
-            <label class="label">
+            <label for="post-title" class="label">
               <span class="label-text">{m.posts_form_title()}</span>
             </label>
-            <input 
-              type="text" 
+            <input
+              id="post-title"
+              type="text"
               class="input w-full"
               value={activeTab === 'en' ? content.en.title : content.pt.title}
               oninput={handleTitleInput}
@@ -311,11 +408,12 @@
           </div>
           
           <div>
-            <label class="label">
+            <label for="post-excerpt" class="label">
               <span class="label-text">{m.posts_form_excerpt()}</span>
             </label>
-            <input 
-              type="text" 
+            <input
+              id="post-excerpt"
+              type="text"
               class="input w-full"
               value={activeTab === 'en' ? content.en.excerpt : content.pt.excerpt}
               oninput={handleExcerptInput}
@@ -324,10 +422,11 @@
           </div>
           
           <div>
-            <label class="label">
+            <label for="post-content" class="label">
               <span class="label-text">{m.posts_form_content()}</span>
             </label>
-            <textarea 
+            <textarea
+              id="post-content"
               class="textarea w-full h-64"
               value={activeTab === 'en' ? content.en.content : content.pt.content}
               oninput={handleContentInput}

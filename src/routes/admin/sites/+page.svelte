@@ -634,7 +634,13 @@
                         <h4 class="font-semibold text-sm">{m.sites_sync_details_title()}</h4>
                         <p class="text-xs text-base-content/70">{m.sites_sync_details_subtitle()}</p>
                       </div>
-                      <button class="btn btn-ghost btn-xs btn-circle">
+                      <button 
+                        class="btn btn-ghost btn-xs btn-circle"
+                        onclick={() => {
+                          // Use DaisyUI's recommended approach to close dropdown
+                          document.activeElement?.blur();
+                        }}
+                      >
                         <X class="h-3 w-3" />
                       </button>
                     </div>
@@ -848,12 +854,12 @@
             {:else}
               <AlertTriangle class="h-4 w-4" />
             {/if}
-            <span 
-              title="Full URL: {getFullUrl(site)}{site.statusDots?.health?.serverStatus ? ` - Status: ${site.statusDots.health.serverStatus}` : ''}"
-              class="{site.statusDots?.health?.serverStatus === 'offline' ? 'text-base-content/50' : ''}"
-            >
-              {getDisplayUrl(site)}
-            </span>
+            <div class="tooltip tooltip-top cursor-pointer inline-block" 
+                 data-tip="Full URL: {getFullUrl(site)}{site.statusDots?.health?.serverStatus ? ` - Status: ${site.statusDots.health.serverStatus}` : ''}">
+              <span class="{site.statusDots?.health?.serverStatus === 'offline' ? 'text-base-content/50' : ''}">
+                {getDisplayUrl(site)}
+              </span>
+            </div>
           </div>
         </div>
         </div>
