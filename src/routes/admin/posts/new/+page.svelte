@@ -249,7 +249,7 @@
   <div class="flex items-center gap-4">
     <!-- Language dropdown -->
     <div class="dropdown dropdown-end">
-      <button class="btn btn-sm btn-ghost gap-2">
+      <button tabindex="0" class="btn btn-sm btn-ghost gap-2">
         <Globe class="h-4 w-4" />
         <span class="font-medium">Language:</span> {activeTab === 'en' ? 'EN' : 'PT'}
         <ChevronDown class="h-3 w-3" />
