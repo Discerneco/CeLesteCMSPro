@@ -1,14 +1,15 @@
 <script lang="ts">
-  import { 
-    ArrowLeft, 
-    Calendar, 
-    ChevronDown, 
-    Eye, 
-    Save, 
-    Sparkles, 
-    Trash2, 
+  import {
+    ArrowLeft,
+    Calendar,
+    ChevronDown,
+    Eye,
+    Save,
+    Sparkles,
+    Trash2,
     X,
-    Globe
+    Globe,
+    Info
   } from '@lucide/svelte';
   import { goto } from '$app/navigation';
   import { onMount, onDestroy } from 'svelte';
@@ -51,6 +52,7 @@
   // Auto-save comparison modal state
   let showComparisonModal = $state(false);
   let pendingAutosave: any = $state(null);
+  let showAutoSaveInfo = $state(false);
   
   // Content state for both languages - initialized from existing data
   let content = $state({
@@ -176,10 +178,7 @@
       clearTimeout(autoSaveTimer);
     }
     
-    // Only auto-save drafts (never published content)
-    if (status === 'published') {
-      return;
-    }
+    // Auto-save works for all posts (published, draft, scheduled)
     
     // Set 3-second debounce timer
     autoSaveTimer = setTimeout(() => {
@@ -199,6 +198,15 @@
       autoSaveStatus = 'saving';
       isTyping = false;
       
+      // Track which languages have content
+      const changedLanguages = [];
+      if (content.en.title || content.en.excerpt || content.en.content) {
+        changedLanguages.push('en');
+      }
+      if (content.pt.title || content.pt.excerpt || content.pt.content) {
+        changedLanguages.push('pt');
+      }
+
       const postData = {
         title: content.en.title || content.pt.title,
         slug: postSlug,
@@ -208,8 +216,9 @@
         featured: isFeatured,
         featuredImageId: featuredImageId,
         metaData: {
-          multilingual: content,
-          activeLanguage: activeTab,
+          multilingual: content, // All languages saved together
+          changedLanguages: changedLanguages, // Track which languages have content
+          activeLanguage: activeTab, // Which language was being edited
           autoSaveTimestamp: new Date().toISOString()
         }
       };
@@ -246,14 +255,28 @@
     const hours = Math.floor(minutes / 60);
     return `${hours} ${hours === 1 ? 'hour' : 'hours'} ago`;
   };
-  
-  // Get auto-save status message
+
+  // Format time as HH:MM
+  const formatTime = (date: Date | null) => {
+    if (!date) return '';
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    return `${hours}:${minutes}`;
+  };
+
+  // Get formatted status for display
+  const getFormattedStatus = () => {
+    const statusText = status.charAt(0).toUpperCase() + status.slice(1);
+    return statusText;
+  };
+
+  // Get auto-save status message (for the old style display)
   const getAutoSaveStatus = () => {
-    if (isTyping && status !== 'published') return 'Typing...';
+    if (isTyping) return 'Typing...';
     if (autoSaveStatus === 'saving') return 'Saving...';
     if (autoSaveStatus === 'error') return 'Save failed';
     if (lastAutoSave) return `Auto-saved ${getTimeAgo(lastAutoSave)}`;
-    if (status === 'published' && hasChanges) return 'Draft changes';
+    if (hasChanges) return 'Unsaved changes';
     return '';
   };
   
@@ -569,32 +592,41 @@
   <div class="flex items-center gap-4">
     <!-- Language dropdown -->
     <div class="dropdown dropdown-end">
-      <button class="btn btn-sm btn-ghost gap-2">
+      <button tabindex="0" role="button" class="btn btn-sm btn-ghost gap-2">
         <Globe class="h-4 w-4" />
         <span class="font-medium">Language:</span> {activeTab === 'en' ? 'EN' : 'PT'}
         <ChevronDown class="h-3 w-3" />
       </button>
-      <ul class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-40">
+      <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-40">
         <li><button onclick={() => handleLanguageSwitch('en')}>English (EN)</button></li>
         <li><button onclick={() => handleLanguageSwitch('pt')}>Português (PT)</button></li>
       </ul>
     </div>
     
     <!-- Status with auto-save info -->
-    <div class="text-base-content/70">
-      <span class="font-medium">Status:</span> 
-      {#if status === 'published' && hasChanges}
-        Published (editing)
-      {:else}
-        {status}
-      {/if}
-      {#if getAutoSaveStatus()}
-        <span class="ml-2 text-xs px-2 py-1 rounded-full
-          {autoSaveStatus === 'saving' || isTyping ? 'bg-blue-100 text-blue-600' : 
-           autoSaveStatus === 'error' ? 'bg-red-100 text-red-600' : 
-           'bg-green-100 text-green-600'}">
-          {getAutoSaveStatus()}
-        </span>
+    <div class="text-base-content/70 flex items-center gap-2">
+      <span>
+        <span class="font-medium">Status:</span> {getFormattedStatus()}
+        {#if lastAutoSave || hasChanges}
+          <span class="mx-1">•</span>
+          {#if lastAutoSave}
+            Last update at {formatTime(lastAutoSave)}
+          {:else if hasChanges}
+            Editing
+          {/if}
+          {#if hasChanges}
+            <span class="ml-1 text-warning">[Unsaved]</span>
+          {/if}
+        {/if}
+      </span>
+      {#if hasChanges || lastAutoSave}
+        <button
+          class="btn btn-ghost btn-xs btn-circle"
+          onclick={() => showAutoSaveInfo = true}
+          title="Auto-save information"
+        >
+          <Info class="h-3 w-3" />
+        </button>
       {/if}
     </div>
   </div>
@@ -940,6 +972,107 @@
         </button>
         <button class="btn btn-warning" onclick={restoreAutosave}>
           Restore Auto-save
+        </button>
+      </div>
+    </div>
+  </div>
+{/if}
+<!-- Auto-save Info Modal -->
+{#if showAutoSaveInfo}
+  <div class="modal modal-open">
+    <div class="modal-box">
+      <!-- Header -->
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="font-bold text-lg flex items-center gap-2">
+          <Info class="h-5 w-5" />
+          Content Status Information
+        </h3>
+        <button class="btn btn-sm btn-circle btn-ghost" onclick={() => showAutoSaveInfo = false}>
+          <X class="h-4 w-4" />
+        </button>
+      </div>
+
+      <div class="divider my-2"></div>
+
+      <!-- Language Status -->
+      <div class="space-y-3">
+        <div>
+          <div class="flex items-center gap-2 mb-2">
+            <Globe class="h-4 w-4 text-primary" />
+            <span class="font-medium">Language Changes:</span>
+          </div>
+
+          <div class="space-y-2 ml-6">
+            {#if content.en.title || content.en.excerpt || content.en.content}
+              <div class="flex items-center justify-between">
+                <span>English:</span>
+                {#if lastAutoSave}
+                  <span class="text-sm text-base-content/70">
+                    Last update at {formatTime(lastAutoSave)}
+                    {hasChanges ? "[Unsaved]" : "[Saved]"}
+                  </span>
+                {:else}
+                  <span class="text-sm text-warning">Not saved</span>
+                {/if}
+              </div>
+            {/if}
+
+            {#if content.pt.title || content.pt.excerpt || content.pt.content}
+              <div class="flex items-center justify-between">
+                <span>Portuguese:</span>
+                {#if lastAutoSave}
+                  <span class="text-sm text-base-content/70">
+                    Last update at {formatTime(lastAutoSave)}
+                    {hasChanges ? "[Unsaved]" : "[Saved]"}
+                  </span>
+                {:else}
+                  <span class="text-sm text-warning">Not saved</span>
+                {/if}
+              </div>
+            {/if}
+
+            {#if !content.en.title && !content.en.excerpt && !content.en.content && !content.pt.title && !content.pt.excerpt && !content.pt.content}
+              <div class="text-sm text-base-content/50">No content in any language</div>
+            {/if}
+          </div>
+        </div>
+
+        <!-- Auto-save Status -->
+        {#if hasChanges}
+          <div class="alert alert-warning">
+            <Info class="h-4 w-4" />
+            <span>You have unsaved changes. Auto-save will trigger 3 seconds after you stop typing.</span>
+          </div>
+        {:else if lastAutoSave}
+          <div class="alert alert-success">
+            <Info class="h-4 w-4" />
+            <span>All changes are auto-saved.</span>
+          </div>
+        {/if}
+      </div>
+
+      <!-- Actions -->
+      <div class="modal-action">
+        {#if hasChanges}
+          <button
+            class="btn btn-sm btn-ghost"
+            onclick={async () => {
+              // Discard auto-save
+              try {
+                await fetch(`/api/posts/${postId}/autosave`, { method: "DELETE" });
+                hasChanges = false;
+                lastAutoSave = null;
+                showAutoSaveInfo = false;
+              } catch (error) {
+                console.error("Error discarding auto-save:", error);
+              }
+            }}
+          >
+            Discard Auto-save
+          </button>
+        {/if}
+        <button class="btn btn-sm" onclick={() => showAutoSaveInfo = false}>
+          Close
         </button>
       </div>
     </div>
