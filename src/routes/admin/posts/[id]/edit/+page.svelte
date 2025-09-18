@@ -53,6 +53,9 @@
   let showComparisonModal = $state(false);
   let pendingAutosave: any = $state(null);
   let showAutoSaveInfo = $state(false);
+
+  // Initialization guard to prevent false triggers during page load (Ghost-inspired)
+  let isInitialized = $state(false);
   
   // Content state for both languages - initialized from existing data
   let content = $state({
@@ -111,36 +114,60 @@
   };
   
   const handleTitleInput = (event: Event) => {
+    // Ghost-inspired: Skip during initialization to prevent false triggers
+    if (!isInitialized) return;
+
     const target = event.target as HTMLInputElement;
     if (activeTab === 'en') {
       content.en.title = target.value;
     } else {
       content.pt.title = target.value;
     }
-    hasChanges = true;
+
+    // Ghost approach: Only mark changed after verifying actual content changes
+    if (hasContentChanged()) {
+      hasChanges = true;
+    }
+
     isTyping = true;
     scheduleAutoSave();
   };
 
   const handleExcerptInput = (event: Event) => {
+    // Ghost-inspired: Skip during initialization to prevent false triggers
+    if (!isInitialized) return;
+
     const target = event.target as HTMLInputElement;
     if (activeTab === 'en') {
       content.en.excerpt = target.value;
     } else {
       content.pt.excerpt = target.value;
     }
-    hasChanges = true;
+
+    // Ghost approach: Only mark changed after verifying actual content changes
+    if (hasContentChanged()) {
+      hasChanges = true;
+    }
+
     isTyping = true;
     scheduleAutoSave();
   };
 
   const handleContentUpdate = (newContent: string) => {
+    // Ghost-inspired: Skip during initialization to prevent false triggers
+    if (!isInitialized) return;
+
     if (activeTab === 'en') {
       content.en.content = newContent;
     } else {
       content.pt.content = newContent;
     }
-    hasChanges = true;
+
+    // Ghost approach: Only mark changed after verifying actual content changes
+    if (hasContentChanged()) {
+      hasChanges = true;
+    }
+
     isTyping = true;
     scheduleAutoSave();
   };
@@ -484,38 +511,72 @@
           const autosave = autosaveData.autosave;
           const autosaveTime = new Date(autosave.updatedAt);
           const postTime = data.post.updatedAt ? new Date(data.post.updatedAt) : new Date();
-          
+
           // If auto-save is newer than saved version, we have unsaved changes
           if (autosaveTime > postTime) {
-            // Set hasChanges to true since there are unsaved changes
+            // Always restore newer auto-save content (ANY change matters to user)
             hasChanges = true;
-            console.log('✅ Auto-save detected, setting hasChanges = true');
-            
-            const pendingData = {
+            lastAutoSave = autosaveTime;
+            console.log('✅ Auto-save detected, restoring content');
+
+            // Always restore auto-save content immediately
+            if (autosave.metaData?.multilingual) {
+              content = { ...autosave.metaData.multilingual };
+              console.log('✅ Auto-save content restored from multilingual data');
+            } else {
+              // Fallback for older auto-saves without multilingual structure
+              content.en.title = autosave.title || '';
+              content.en.excerpt = autosave.excerpt || '';
+              content.en.content = autosave.content || '';
+              console.log('✅ Auto-save content restored from legacy format');
+            }
+
+            // Switch to the language that was being edited
+            if (autosave.metaData?.activeLanguage) {
+              activeTab = autosave.metaData.activeLanguage;
+              console.log('✅ Switched to active language:', activeTab);
+            }
+
+            // Store pendingData for info modal (user-initiated)
+            pendingAutosave = {
               ...autosave,
               autosaveTime,
               postTime,
               activeLanguage: autosave.metaData?.activeLanguage || 'en',
               timestamp: autosave.metaData?.autoSaveTimestamp || autosave.updatedAt
             };
-            
-            // Only show modal if there are meaningful differences
-            if (hasMeaningfulDifferences(pendingData)) {
-              pendingAutosave = pendingData;
-              showComparisonModal = true;
-              console.log('📋 Showing comparison modal for meaningful differences');
-            } else {
-              console.log('⚠️ Auto-save exists but no meaningful differences detected');
-            }
+
+            // NO auto-opening modal - only opens when user clicks info icon
+            console.log('✅ Auto-save restored, modal available via info icon');
+          } else {
+            // Auto-save exists but is older than saved version
+            console.log('⚠️ Auto-save is older than saved version, ignoring');
           }
+        } else {
+          // No auto-save exists - ensure hasChanges is false
+          hasChanges = false;
+          lastAutoSave = null;
+          console.log('✅ No auto-save found, hasChanges = false');
         }
+      } else {
+        // API call failed or no auto-save - ensure hasChanges is false
+        hasChanges = false;
+        lastAutoSave = null;
+        console.log('✅ No auto-save API response, hasChanges = false');
       }
     } catch (error) {
       console.error('Error checking for auto-save:', error);
+      // On error, be conservative and set hasChanges = false
+      hasChanges = false;
+      lastAutoSave = null;
     }
-    
+
     // Initialize content hash
     lastContentHash = generateContentHash();
+
+    // Ghost approach: Enable change tracking after initialization
+    isInitialized = true;
+    console.log('✅ Initialization complete, change tracking enabled');
   });
   
   onDestroy(() => {
