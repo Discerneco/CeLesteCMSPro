@@ -653,12 +653,12 @@
   <div class="flex items-center gap-4">
     <!-- Language dropdown -->
     <div class="dropdown dropdown-end">
-      <button tabindex="0" role="button" class="btn btn-sm btn-ghost gap-2">
+      <button class="btn btn-sm btn-ghost gap-2">
         <Globe class="h-4 w-4" />
         <span class="font-medium">Language:</span> {activeTab === 'en' ? 'EN' : 'PT'}
         <ChevronDown class="h-3 w-3" />
       </button>
-      <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-40">
+      <ul class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-40">
         <li><button onclick={() => handleLanguageSwitch('en')}>English (EN)</button></li>
         <li><button onclick={() => handleLanguageSwitch('pt')}>Português (PT)</button></li>
       </ul>
