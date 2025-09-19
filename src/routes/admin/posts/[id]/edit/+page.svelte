@@ -54,6 +54,12 @@
   let pendingAutosave: any = $state(null);
   let showAutoSaveInfo = $state(false);
 
+  // Toast notification state
+  let showToast = $state(false);
+  let toastMessage = $state('');
+  let toastType = $state('success');
+  let toastTimer: ReturnType<typeof setTimeout> | null = null;
+
   // Initialization guard to prevent false triggers during page load (Ghost-inspired)
   let isInitialized = $state(false);
   
@@ -302,7 +308,48 @@
     if (hasChanges) return 'Unsaved changes';
     return '';
   };
-  
+
+  // Toast notification helpers
+  const showSuccessToast = (message: string) => {
+    toastMessage = message;
+    toastType = 'success';
+    showToast = true;
+
+    // Clear existing timer
+    if (toastTimer) {
+      clearTimeout(toastTimer);
+    }
+
+    // Auto-hide after 3 seconds
+    toastTimer = setTimeout(() => {
+      showToast = false;
+    }, 3000);
+  };
+
+  const showErrorToast = (message: string) => {
+    toastMessage = message;
+    toastType = 'error';
+    showToast = true;
+
+    // Clear existing timer
+    if (toastTimer) {
+      clearTimeout(toastTimer);
+    }
+
+    // Auto-hide after 5 seconds
+    toastTimer = setTimeout(() => {
+      showToast = false;
+    }, 5000);
+  };
+
+  const hideToast = () => {
+    showToast = false;
+    if (toastTimer) {
+      clearTimeout(toastTimer);
+      toastTimer = null;
+    }
+  };
+
   // Restore auto-save content
   const restoreAutosave = () => {
     if (!pendingAutosave) return;
@@ -464,15 +511,22 @@
         hasChanges = false;
         lastAutoSave = null;
         lastContentHash = generateContentHash();
+
+        // Show success toast
+        showSuccessToast('Post saved successfully');
       } else {
         const error = await response.text();
         console.error('❌ Failed to update post:', error);
         console.error('❌ Response status:', response.status);
-        alert('Failed to update post. Please try again.');
+
+        // Show error toast
+        showErrorToast('Failed to save post - please try again');
       }
     } catch (err) {
       console.error('Error updating post:', err);
-      alert('An error occurred while updating. Please try again.');
+
+      // Show error toast
+      showErrorToast('Failed to save post - please try again');
     } finally {
       isLoading = false;
     }
@@ -575,11 +629,14 @@
   });
   
   onDestroy(() => {
-    // Clean up timer
+    // Clean up timers
     if (autoSaveTimer) {
       clearTimeout(autoSaveTimer);
     }
-    
+    if (toastTimer) {
+      clearTimeout(toastTimer);
+    }
+
     // Perform final auto-save if there are unsaved changes
     if (hasChanges && hasContentChanged() && status !== 'published') {
       performAutoSave();
@@ -676,13 +733,14 @@
         {/if}
       </span>
       {#if hasChanges || lastAutoSave}
-        <div
+        <button
+          type="button"
           onclick={() => showAutoSaveInfo = true}
           class="w-4 h-4 bg-black dark:bg-gray-700 border border-gray-300 dark:border-gray-500 rounded-full flex items-center justify-center cursor-pointer hover:bg-gray-800 dark:hover:bg-gray-600 transition-colors ml-2"
-          title="Auto-save information"
+          aria-label="Show auto-save information"
         >
           <span class="text-white text-[11px] font-semibold">i</span>
-        </div>
+        </button>
       {/if}
     </div>
   </div>
@@ -1131,6 +1189,15 @@
           Close
         </button>
       </div>
+    </div>
+  </div>
+{/if}
+
+<!-- Toast Notifications -->
+{#if showToast}
+  <div class="toast toast-top toast-center" style="z-index: 9999;">
+    <div class="alert" class:alert-success={toastType === 'success'} class:alert-error={toastType === 'error'}>
+      <span>{toastMessage}</span>
     </div>
   </div>
 {/if}
