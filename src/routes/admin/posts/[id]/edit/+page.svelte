@@ -685,7 +685,7 @@
           class="w-4 h-4 bg-black dark:bg-gray-700 border border-gray-300 dark:border-gray-500 rounded-full flex items-center justify-center cursor-pointer hover:bg-gray-800 dark:hover:bg-gray-600 transition-colors ml-2"
           title="Auto-save information"
         >
-          <span class="text-white text-xs font-semibold">i</span>
+          <span class="text-white text-[11px] font-semibold">i</span>
         </div>
       {/if}
     </div>
