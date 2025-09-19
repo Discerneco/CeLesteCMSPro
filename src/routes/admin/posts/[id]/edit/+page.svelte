@@ -258,7 +258,6 @@
       if (response.ok) {
         lastAutoSave = new Date();
         lastContentHash = generateContentHash();
-        hasChanges = false;
         autoSaveStatus = 'saved';
       } else {
         autoSaveStatus = 'error';
