@@ -69,14 +69,34 @@ Published | Draft | Scheduled
 
 ### Database Structure
 - **`posts`** table - Current/active content
-- **`post_autosaves`** table - Temporary per-user working copies  
+- **`post_autosaves`** table - Temporary per-user working copies
 - **`post_editions`** table - Permanent historical snapshots (future)
+
+### Auto-Save Field Classification
+- **Auto-Saved Fields**:
+  - Title (EN/PT)
+  - Excerpt (EN/PT)
+  - Content (EN/PT)
+  - Active language tab
+- **Manual Save Fields**:
+  - Status (draft/published/scheduled)
+  - Categories and tags
+  - Featured flag
+  - Publication date
+  - Author assignment
+  - SEO metadata
 
 ### Auto-Save Behavior
 - **3-second debounce** - Save after user stops typing
 - **All post statuses** - Works for published and draft content
 - **Smart content loading** - Always show newest available content
 - **No interruption** - Seamless editing experience
+
+### Auto-Save Scope
+- **Content Fields Only** - Title, excerpt, content (multilingual)
+- **Settings Require Manual Save** - Status, categories, tags, featured flag
+- **Rationale** - Prevents accidental publishing, follows publishing best practices
+- **User Control** - Settings are intentional decisions requiring confirmation
 
 ## Brand Differentiation
 

@@ -172,15 +172,14 @@
     scheduleAutoSave();
   };
   
-  // Generate content hash for change detection
+  // Generate content hash for change detection (content fields only)
   const generateContentHash = () => {
     const contentString = JSON.stringify({
       title: { en: content.en.title, pt: content.pt.title },
       excerpt: { en: content.en.excerpt, pt: content.pt.excerpt },
       content: { en: content.en.content, pt: content.pt.content },
-      status: status,
-      featured: isFeatured,
-      featuredImageId: featuredImageId
+      activeTab: activeTab // Track which language is being edited
+      // Note: Settings fields (status, featured, etc.) excluded from auto-save
     });
     // Simple hash function - in production you might want crypto.subtle.digest
     let hash = 0;
@@ -234,20 +233,18 @@
         changedLanguages.push('pt');
       }
 
+      // Auto-save payload: content fields only (settings require manual save)
       const postData = {
         title: content.en.title || content.pt.title,
-        slug: postSlug,
         excerpt: content.en.excerpt || content.pt.excerpt,
         content: content.en.content || content.pt.content,
-        status: status,
-        featured: isFeatured,
-        featuredImageId: featuredImageId,
         metaData: {
           multilingual: content, // All languages saved together
           changedLanguages: changedLanguages, // Track which languages have content
           activeLanguage: activeTab, // Which language was being edited
           autoSaveTimestamp: new Date().toISOString()
         }
+        // Note: status, featured, slug, featuredImageId excluded - require manual save
       };
       
       const response = await fetch(`/api/posts/${postId}/autosave`, {
@@ -322,10 +319,8 @@
       content.en.content = autosave.content || '';
     }
     
-    // Restore other fields
-    postSlug = autosave.slug || postSlug;
-    status = autosave.status || status;
-    featuredImageId = autosave.featuredImageId || null;
+    // Content-only restoration: settings fields preserved
+    // Manual save required for status, featured, slug changes
     
     // Switch to the language that was being edited
     activeTab = autosave.activeLanguage || 'en';
@@ -530,6 +525,10 @@
               content.en.content = autosave.content || '';
               console.log('✅ Auto-save content restored from legacy format');
             }
+
+            // Content-only auto-save: settings fields (status, featured, etc.) not restored
+            // These require manual save for intentional publishing workflow
+            console.log('✅ Content fields restored, settings preserved from main post');
 
             // Switch to the language that was being edited
             if (autosave.metaData?.activeLanguage) {

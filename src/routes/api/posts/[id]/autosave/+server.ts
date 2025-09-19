@@ -21,7 +21,12 @@ export const POST: RequestHandler = async (event) => {
     const userId = event.locals.user.id;
     const body = await event.request.json();
     
-    // Prepare autosave data
+    // Prepare autosave data - include featured flag in metaData
+    const metaData = body.metaData || {};
+    if (body.featured !== undefined) {
+      metaData.featured = body.featured;
+    }
+
     const autosaveData = {
       postId,
       userId,
@@ -29,7 +34,7 @@ export const POST: RequestHandler = async (event) => {
       slug: body.slug || '',
       content: body.content || '',
       excerpt: body.excerpt || '',
-      metaData: body.metaData ? JSON.stringify(body.metaData) : null,
+      metaData: JSON.stringify(metaData),
       featuredImageId: body.featuredImageId || null,
       status: body.status || 'draft',
       updatedAt: new Date()
