@@ -465,9 +465,6 @@
         hasChanges = false;
         lastAutoSave = null;
         lastContentHash = generateContentHash();
-        
-        // Success - redirect to posts list
-        goto('/admin/posts');
       } else {
         const error = await response.text();
         console.error('❌ Failed to update post:', error);
