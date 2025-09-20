@@ -6,8 +6,8 @@
  */
 import { writable } from 'svelte/store';
 
-// Available themes from DaisyUI config
-export const AVAILABLE_THEMES = ['celesteLight', 'celesteDark'] as const;
+// Available themes from DaisyUI config (matching app.css configuration)
+export const AVAILABLE_THEMES = ['light', 'dark'] as const;
 export type Theme = typeof AVAILABLE_THEMES[number];
 
 // Helper to get initial theme from localStorage or fallback to default
@@ -24,30 +24,34 @@ function getInitialTheme(): Theme {
 // Create and export the theme store
 function createThemeStore() {
   const store = writable<Theme>(getInitialTheme());
-  
-  // Update DOM whenever theme changes
-  if (typeof window !== 'undefined') {
-    store.subscribe(theme => {
+
+  // Helper function to update DOM and localStorage
+  const updateDOM = (theme: Theme) => {
+    if (typeof window !== 'undefined') {
+      console.log('🎨 Theme store updating DOM:', theme);
       document.documentElement.setAttribute('data-theme', theme);
       localStorage.setItem('theme', theme);
-    });
-  }
-  
+    }
+  };
+
   return {
     subscribe: store.subscribe,
-    
+
     // Set theme directly if valid
     set: (value: Theme) => {
       if (AVAILABLE_THEMES.includes(value)) {
         store.set(value);
+        updateDOM(value);
       }
     },
-    
+
     // Toggle between light and dark
     toggle: () => {
-      store.update(current => 
-        current === 'celesteLight' ? 'celesteDark' : 'celesteLight'
-      );
+      store.update(current => {
+        const newTheme = current === 'light' ? 'dark' : 'light';
+        updateDOM(newTheme);
+        return newTheme;
+      });
     }
   };
 }

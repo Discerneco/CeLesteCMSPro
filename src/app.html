@@ -1,9 +1,20 @@
 <!doctype html>
-<html lang="%paraglide.lang%">
+<html lang="%paraglide.lang%" data-theme="light">
 	<head>
 		<meta charset="utf-8" />
 		<link rel="icon" href="%sveltekit.assets%/favicon.png" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<script>
+			// Early theme application to prevent FOUC (following DaisyUI + Svelte 5 best practices)
+			try {
+				const savedTheme = localStorage.getItem('theme');
+				if (savedTheme === 'dark' || savedTheme === 'light') {
+					document.documentElement.setAttribute('data-theme', savedTheme);
+				}
+			} catch (e) {
+				// Fallback to default theme if localStorage unavailable
+			}
+		</script>
 		%sveltekit.head%
 	</head>
 	<body data-sveltekit-preload-data="hover">

@@ -107,7 +107,7 @@
   let wordCount = $derived(getWordCount(currentContent.content));
   let charCount = $derived(getCharCount(currentContent.content));
   let readingTime = $derived(getReadingTime(wordCount));
-  
+
   // Handle language switch with proper dropdown closure and context update
   const handleLanguageSwitch = (newLang: 'en' | 'pt') => {
     activeTab = newLang;

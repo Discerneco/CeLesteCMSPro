@@ -26,19 +26,25 @@
   import { auth } from '$lib/stores/auth';
   import { page } from '$app/stores';
   import { browser } from '$app/environment';
+  import { theme } from '$lib/stores/theme';
 
   // Svelte 5 children prop for slot replacement
   let { children, data } = $props();
 
   // Modern Svelte 5 runes state management
-  let theme = $state('light');
+  let currentTheme = $state('light');
   let isSidebarOpen = $state(true);
-  
-  // Modern DaisyUI theme management
+
+  // Proper Svelte 5 store subscription - get current value and subscribe to changes
+  $effect(() => {
+    return theme.subscribe(value => {
+      currentTheme = value;
+    });
+  });
+
+  // Modern DaisyUI theme management using theme store
   function handleThemeToggle() {
-    theme = theme === 'light' ? 'dark' : 'light';
-    document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('theme', theme);
+    theme.toggle();
   }
   
   function handleSidebarToggle() {
@@ -62,14 +68,7 @@
     }
   });
 
-  // Initialize theme from localStorage on mount (Svelte 5 $effect)
-  $effect(() => {
-    if (browser) {
-      const savedTheme = localStorage.getItem('theme') || 'light';
-      theme = savedTheme;
-      document.documentElement.setAttribute('data-theme', savedTheme);
-    }
-  });
+  // Theme is now handled by the theme store and app.html inline script
 
   // Check if current route is active
   function isActiveRoute(route) {
@@ -116,7 +115,7 @@
   }
 </script>
 
-<div class="h-screen flex flex-col bg-base-200" data-theme={theme}>
+<div class="h-screen flex flex-col bg-base-200">
   <!-- Header -->
   <div class="navbar bg-base-100 sticky top-0 z-10 shadow-sm">
     <div class="navbar-start">
@@ -136,7 +135,7 @@
         onclick={handleThemeToggle} 
         class="btn btn-ghost btn-circle"
       >
-        {#if theme === 'dark'}
+        {#if currentTheme === 'dark'}
           <Sun class="h-5 w-5" />
         {:else}
           <Moon class="h-5 w-5" />
