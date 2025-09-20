@@ -1,7 +1,7 @@
 import { json } from '@sveltejs/kit';
 import { getDbFromEvent } from '$lib/server/db/utils';
-import { posts, users, contentTypes } from '$lib/server/db/schema';
-import { eq, ne } from 'drizzle-orm';
+import { posts, users, contentTypes, postAutosaves } from '$lib/server/db/schema';
+import { eq, ne, and, gt } from 'drizzle-orm';
 import type { RequestHandler } from './$types';
 
 /**
@@ -12,7 +12,7 @@ export const GET: RequestHandler = async (event) => {
   const db = getDbFromEvent(event);
   
   try {
-    // Fetch posts with author information using join
+    // Fetch posts with author information and auto-save data using joins
     const postsWithAuthors = await db
       .select({
         id: posts.id,
@@ -32,28 +32,40 @@ export const GET: RequestHandler = async (event) => {
           username: users.username,
           firstName: users.firstName,
           lastName: users.lastName
+        },
+        autosave: {
+          title: postAutosaves.title,
+          excerpt: postAutosaves.excerpt,
+          updatedAt: postAutosaves.updatedAt
         }
       })
       .from(posts)
       .leftJoin(users, eq(posts.authorId, users.id))
+      .leftJoin(postAutosaves, eq(posts.id, postAutosaves.postId))
       .where(ne(posts.status, 'trash')) // Exclude trashed posts
       .orderBy(posts.createdAt);
 
     // Transform the data to match our UI expectations
-    const transformedPosts = postsWithAuthors.map((post: any) => ({
-      id: post.id,
-      title: post.title,
-      slug: post.slug,
-      excerpt: post.excerpt || '',
-      status: post.status,
-      featured: !!post.featured,
-      author: post.author?.username || 'Unknown',
-      createdAt: post.createdAt,
-      publishedAt: post.publishedAt,
-      // Format dates for display
-      createdAtFormatted: post.createdAt ? new Date(post.createdAt).toLocaleDateString('pt-BR') : '',
-      publishedAtFormatted: post.publishedAt ? new Date(post.publishedAt).toLocaleDateString('pt-BR') : ''
-    }));
+    const transformedPosts = postsWithAuthors.map((post: any) => {
+      // Check if auto-save is newer than saved version
+      const hasNewerAutosave = post.autosave?.updatedAt && post.autosave.updatedAt > post.updatedAt;
+
+      return {
+        id: post.id,
+        title: hasNewerAutosave && post.autosave.title ? post.autosave.title : post.title,
+        slug: post.slug,
+        excerpt: hasNewerAutosave && post.autosave.excerpt ? post.autosave.excerpt : (post.excerpt || ''),
+        status: post.status,
+        featured: !!post.featured,
+        author: post.author?.username || 'Unknown',
+        createdAt: post.createdAt,
+        publishedAt: post.publishedAt,
+        hasUnsavedChanges: hasNewerAutosave,
+        // Format dates for display
+        createdAtFormatted: post.createdAt ? new Date(post.createdAt).toLocaleDateString('pt-BR') : '',
+        publishedAtFormatted: post.publishedAt ? new Date(post.publishedAt).toLocaleDateString('pt-BR') : ''
+      };
+    });
 
     return json(transformedPosts);
   } catch (error) {

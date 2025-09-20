@@ -289,6 +289,9 @@
                   {/if}
                   <h3 class="font-semibold text-base-content hover:text-primary cursor-pointer transition-colors duration-150 text-base leading-6">
                     {post.title}
+                    {#if post.hasUnsavedChanges}
+                      <span class="badge badge-soft badge-warning badge-sm ml-2">Edited</span>
+                    {/if}
                   </h3>
                 </div>
                 <p class="text-sm text-base-content/60 mt-2 line-clamp-2 leading-5">
@@ -400,6 +403,9 @@
               {/if}
               <h3 class="font-semibold text-base-content text-base leading-6 truncate">
                 {post.title}
+                {#if post.hasUnsavedChanges}
+                  <span class="badge badge-soft badge-warning badge-sm ml-2">Edited</span>
+                {/if}
               </h3>
             </div>
             <span class="cms-status-badge {getStatusClass(post.status)} ml-2 flex-shrink-0">
