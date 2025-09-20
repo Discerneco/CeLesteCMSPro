@@ -1120,13 +1120,15 @@
             {#if content.en.title || content.en.excerpt || content.en.content}
               <div class="flex items-center justify-between">
                 <span>English:</span>
-                {#if lastAutoSave}
+                {#if lastAutoSave && pendingAutosave?.activeLanguage === 'en'}
                   <span class="text-sm text-base-content/70">
                     Last update at {formatTime(lastAutoSave)}
                     {hasChanges ? "[Unsaved]" : "[Saved]"}
                   </span>
+                {:else if data.post.publishedAt}
+                  <span class="text-sm text-success">Published ({formatTime(new Date(data.post.publishedAt))})</span>
                 {:else}
-                  <span class="text-sm text-warning">Not saved</span>
+                  <span class="text-sm text-base-content/70">Draft (not edited recently)</span>
                 {/if}
               </div>
             {/if}
@@ -1134,13 +1136,15 @@
             {#if content.pt.title || content.pt.excerpt || content.pt.content}
               <div class="flex items-center justify-between">
                 <span>Portuguese:</span>
-                {#if lastAutoSave}
+                {#if lastAutoSave && pendingAutosave?.activeLanguage === 'pt'}
                   <span class="text-sm text-base-content/70">
                     Last update at {formatTime(lastAutoSave)}
                     {hasChanges ? "[Unsaved]" : "[Saved]"}
                   </span>
+                {:else if data.post.publishedAt}
+                  <span class="text-sm text-success">Published ({formatTime(new Date(data.post.publishedAt))})</span>
                 {:else}
-                  <span class="text-sm text-warning">Not saved</span>
+                  <span class="text-sm text-base-content/70">Draft (not edited recently)</span>
                 {/if}
               </div>
             {/if}
@@ -1169,9 +1173,17 @@
       <div class="modal-action">
         {#if hasChanges}
           <button
-            class="btn btn-sm btn-ghost"
+            class="btn btn-sm btn-primary"
+            onclick={() => {
+              showAutoSaveInfo = false;
+              showComparisonModal = true;
+            }}
+          >
+            More details
+          </button>
+          <button
+            class="btn btn-sm btn-ghost text-error"
             onclick={async () => {
-              // Discard auto-save
               try {
                 await fetch(`/api/posts/${postId}/autosave`, { method: "DELETE" });
                 hasChanges = false;
@@ -1182,7 +1194,7 @@
               }
             }}
           >
-            Discard Auto-save
+            Discard
           </button>
         {/if}
         <button class="btn btn-sm" onclick={() => showAutoSaveInfo = false}>
