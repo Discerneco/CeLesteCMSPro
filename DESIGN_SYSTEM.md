@@ -362,6 +362,228 @@ The design system builds on DaisyUI's semantic color tokens:
 ### Theme Support
 All components automatically support light/dark theme switching through DaisyUI's `data-theme` attribute system.
 
+## Theme Implementation
+
+### Overview
+CeLesteCMS Pro implements a robust theming system using DaisyUI v5 with seamless light/dark mode switching. The implementation follows DaisyUI best practices with client-side persistence and early theme application to ensure a smooth user experience.
+
+### Core Components
+
+#### 1. Early Theme Script (app.html)
+The theme is applied immediately before any components load to prevent visual inconsistencies:
+
+```html
+<!-- src/app.html -->
+<html lang="%paraglide.lang%" data-theme="light">
+  <head>
+    <script>
+      // Early theme application to prevent FOUC (following DaisyUI + Svelte 5 best practices)
+      try {
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark' || savedTheme === 'light') {
+          document.documentElement.setAttribute('data-theme', savedTheme);
+        }
+      } catch (e) {
+        // Fallback to default theme if localStorage unavailable
+      }
+    </script>
+  </head>
+</html>
+```
+
+**Key Features:**
+- Runs before Svelte hydration
+- Prevents any theme mismatch during page load
+- Graceful fallback for localStorage errors
+- Sets default theme in HTML as fallback
+
+#### 2. Theme Store (src/lib/stores/theme.ts)
+Centralized theme management with Svelte store:
+
+```typescript
+import { writable } from 'svelte/store';
+
+export const AVAILABLE_THEMES = ['light', 'dark'] as const;
+export type Theme = typeof AVAILABLE_THEMES[number];
+
+function createThemeStore() {
+  const store = writable<Theme>(getInitialTheme());
+
+  const updateDOM = (theme: Theme) => {
+    if (typeof window !== 'undefined') {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('theme', theme);
+    }
+  };
+
+  return {
+    subscribe: store.subscribe,
+    set: (value: Theme) => {
+      if (AVAILABLE_THEMES.includes(value)) {
+        store.set(value);
+        updateDOM(value);
+      }
+    },
+    toggle: () => {
+      store.update(current => {
+        const newTheme = current === 'light' ? 'dark' : 'light';
+        updateDOM(newTheme);
+        return newTheme;
+      });
+    }
+  };
+}
+```
+
+**Features:**
+- Type-safe theme management
+- Automatic DOM and localStorage synchronization
+- Simple toggle functionality
+- SSR-safe with browser checks
+
+#### 3. DaisyUI Configuration (app.css)
+Theme configuration using DaisyUI's modern syntax:
+
+```css
+@import "tailwindcss";
+
+@theme {
+  /* TailwindCSS 4.x theme configuration */
+}
+
+@plugin "@tailwindcss/typography";
+@plugin "@tailwindcss/forms";
+@source "../node_modules/daisyui/dist/daisyui.css";
+@utility daisyui;
+
+/* DaisyUI theme configuration */
+@config {
+  daisyui: {
+    themes: light --default, dark --prefersdark
+  }
+}
+```
+
+**Configuration:**
+- Standard `light` and `dark` themes
+- Automatic dark mode preference detection
+- Clean, modern DaisyUI v5 syntax
+
+#### 4. Component Integration
+Theme switching in components using Svelte 5 runes:
+
+```svelte
+<script>
+  // Initialize theme from DOM (already set by early script)
+  let theme = $state(
+    typeof document !== 'undefined'
+      ? document.documentElement.getAttribute('data-theme') || 'light'
+      : 'light'
+  );
+
+  function toggleTheme() {
+    theme = theme === 'light' ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', theme);
+    document.cookie = `theme=${theme}; path=/; max-age=31536000; SameSite=Lax`;
+  }
+</script>
+
+<button onclick={toggleTheme} class="btn btn-circle btn-ghost">
+  {#if theme === 'dark'}
+    <Sun class="h-5 w-5" />
+  {:else}
+    <Moon class="h-5 w-5" />
+  {/if}
+</button>
+```
+
+**Implementation Notes:**
+- Read initial theme from DOM (set by early script)
+- Use cookies for SSR compatibility when needed
+- Svelte 5 `$state` rune for reactivity
+- DaisyUI button components with theme-aware icons
+
+### Theme Persistence Strategy
+
+1. **localStorage**: Primary persistence mechanism for client-side theme preference
+2. **Cookies**: Optional for SSR scenarios where theme needs server-side awareness
+3. **Early Script**: Prevents visual inconsistencies by applying theme before component initialization
+4. **Default Fallback**: HTML `data-theme="light"` ensures a valid theme is always present
+
+### Best Practices
+
+1. **Always read initial theme from DOM** in components rather than localStorage
+2. **Use the early script pattern** to prevent theme mismatches
+3. **Provide visual feedback** with theme toggle buttons using appropriate icons
+4. **Test both themes** when developing new components
+5. **Use DaisyUI semantic colors** (`base-content`, `primary`, etc.) for automatic theme compatibility
+
+### Common Patterns
+
+#### Admin Layout Theme Integration
+```svelte
+<!-- src/routes/admin/+layout.svelte -->
+<script>
+  export let data;
+
+  // Theme from server or DOM
+  let theme = $state(data.theme || 'light');
+
+  // Apply theme to document
+  $effect(() => {
+    if (typeof document !== 'undefined') {
+      document.documentElement.setAttribute('data-theme', theme);
+    }
+  });
+</script>
+```
+
+#### Authentication Pages
+```svelte
+<!-- Standalone pages initialize theme independently -->
+<script>
+  import { onMount } from 'svelte';
+
+  let theme = $state(
+    typeof document !== 'undefined'
+      ? document.documentElement.getAttribute('data-theme') || 'light'
+      : 'light'
+  );
+
+  onMount(() => {
+    // Theme already set by early script, just sync local state
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    if (currentTheme) theme = currentTheme;
+  });
+</script>
+```
+
+### Theme Colors Reference
+
+DaisyUI provides semantic color variables that automatically adapt to the active theme:
+
+| Variable | Light Mode | Dark Mode | Usage |
+|----------|------------|-----------|--------|
+| `base-100` | `#ffffff` | `#1f2937` | Primary background |
+| `base-200` | `#f3f4f6` | `#374151` | Secondary background |
+| `base-300` | `#e5e7eb` | `#4b5563` | Tertiary background |
+| `base-content` | `#1f2937` | `#f9fafb` | Primary text |
+| `primary` | `#570df8` | `#818cf8` | Primary brand color |
+| `secondary` | `#f000b8` | `#f471b5` | Secondary actions |
+| `accent` | `#37cdbe` | `#6ee7b7` | Accent elements |
+| `neutral` | `#3d4451` | `#2a2e37` | Neutral elements |
+
+### Troubleshooting
+
+**Issue**: Theme reverts after navigation
+**Solution**: Ensure the early script is in app.html and components read from DOM
+
+**Issue**: Theme not persisting across sessions
+**Solution**: Check localStorage is enabled and accessible in the browser
+
+**Issue**: SSR hydration mismatch
+**Solution**: Use the early script pattern and read initial theme from DOM, not localStorage
+
 ## Migration Guide
 
 ### Before (Direct Tailwind)
