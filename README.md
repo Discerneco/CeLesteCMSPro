@@ -1,5 +1,16 @@
 # CeLesteCMS Pro
 
+> [!IMPORTANT]
+> **⚠️ This project is discontinued as of 2026-04-09.**
+>
+> On 2026-04-02, Cloudflare launched [**EmDash**](https://github.com/emdash-cms/emdash) — an official Cloudflare-built CMS on the same infrastructure (D1 + Workers) targeting the same WordPress-replacement market CeLesteCMS Pro was pursuing. Competing with the platform owner on their own stack is not viable. Discerneco has pivoted to **building the EmDash plugin ecosystem** instead.
+>
+> - **Full pivot rationale:** see [PIVOT.md](PIVOT.md)
+> - **Active work:** EmDash plugins under the [Discerneco](https://github.com/Discerneco) org and upstream contributions as [@csfalcao](https://github.com/csfalcao)
+> - **This repo is preserved for history.** It will be archived on GitHub (read-only) after this notice lands.
+
+---
+
 <div align="center">
   <img src="static/logo.png" alt="CeLesteCMS Pro Logo" width="200" />
   
