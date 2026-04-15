@@ -1,5 +1,7 @@
 # CeLesteCMS Pro Documentation Index
 
+> **⚠️ Archived 2026-04-09.** CeLesteCMS Pro development is discontinued — see [../PIVOT.md](../PIVOT.md) for the full context. The documentation below reflects the project's state at the time of archival (August 2025 review) and is not being updated.
+
 This index provides an overview of all documentation available for CeLesteCMS Pro. All documentation has been comprehensively reviewed and updated for August 2025.
 
 ## 📚 Documentation Structure
